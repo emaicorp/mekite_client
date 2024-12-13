@@ -6,7 +6,7 @@ import AboutHeroSection from "./component/About/AboutHeroSection";
 import ContactHeroSection from "./component/contact/ContactHeroSection";
 import PlanSection from "./component/plan/PlanSection";
 import TermsAndConditions from "./component/terms/TermsAndConditions";
-import AdminMessages from "./component/AdminDashboard/AdminMessages";
+// import AdminMessages from "./component/AdminDashboard/AdminMessages";
 
 // Mocked API endpoint for countries and languages
 const COUNTRY_API = "";
@@ -139,7 +139,7 @@ const App = () => {
           }
         />
 
-<Route
+{/* <Route
           path="/admin-message"
           element={
             <PageWrapper
@@ -149,7 +149,7 @@ const App = () => {
               networkStatus={networkStatus}
             />
           }
-        />
+        /> */}
         {/* Add other routes here */}
       </Routes>
 
