@@ -62,7 +62,7 @@ function RecentTransactions() {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % transactions.length);
         setIsVisible(true); // Start fade-in
       }, 500); // Time for fade-out animation
-    }, 10000); // Change every 3 seconds
+    }, 1000); // Change every 3 seconds
 
     return () => clearInterval(interval);
   }, []);

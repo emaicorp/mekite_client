@@ -7,6 +7,7 @@ import "swiper/css/navigation";
 import Navbar from "../../nav/Navbar";
 import CryptoPopularity from "./CryptoPopularity";
 import Steady from "./Steady";
+import CryptoPrices from "../Home/CryptoPrices";
 
 function AboutHeroSection() {
   return (
@@ -99,7 +100,7 @@ function AboutHeroSection() {
           </SwiperSlide>
         </Swiper>
       </section>
-
+      <CryptoPrices />
       <Steady />
       {/* Crypto Popularity Section */}
       <CryptoPopularity />

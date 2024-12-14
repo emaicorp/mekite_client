@@ -4,7 +4,6 @@ import EmojiPicker from 'emoji-picker-react';
 import { FiMessageCircle } from "react-icons/fi";
 import { MdCancel } from "react-icons/md";
 import { IoSend } from "react-icons/io5";
-import CryptoPrices from "./CryptoPrices";
 
 function Footer() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -162,7 +161,6 @@ function Footer() {
 )}
 
     </footer>
-    <CryptoPrices />
     </>
   );
 }
