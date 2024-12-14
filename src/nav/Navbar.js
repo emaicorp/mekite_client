@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa'; // Mobile icons
 import { IoLogoBitcoin } from 'react-icons/io'; // Replace with your icon
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'; // Chevron icons for dropdown
 
 const Navbar = () => {
@@ -33,7 +33,7 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8">
-          <Link to="/home" className="hover:text-gray-300 font-bold uppercase">Home</Link>
+          <NavLink to="/" className="hover:text-gray-300 font-bold uppercase">Home</NavLink>
 
             {/* Services Dropdown */}
             <div className="relative">
@@ -50,15 +50,15 @@ const Navbar = () => {
               </button>
               {servicesOpen && (
                 <div className="absolute left-0.3 mt-2 bg-black text-white w-48 py-2 rounded-md shadow-lg">
-                  <Link to="/plan" className="block font-bold px-4 py-2">Pricing Plan</Link>
-                  <Link to="/terms" className="block px-4 font-bold py-2">Terms & Conditions</Link>
-                  <Link to="/admin-message" className="block px-4 py-2">Service 3</Link>
+                  <NavLink to="/plan" className="block font-bold px-4 py-2">Pricing Plan</NavLink>
+                  <NavLink to="/terms" className="block px-4 font-bold py-2">Terms & Conditions</NavLink>
+                  <NavLink to="/admin-message" className="block px-4 py-2">Service 3</NavLink>
                 </div>
               )}
             </div>
 
-            <Link to="/about" className="hover:text-gray-300 font-bold uppercase">About Us</Link>
-            <Link to="/contact" className="hover:text-gray-300 font-bold uppercase">Contact</Link>
+            <NavLink to="/about" className="hover:text-gray-300 font-bold uppercase">About Us</NavLink>
+            <NavLink to="/contact" className="hover:text-gray-300 font-bold uppercase">Contact</NavLink>
           </div>
 
           {/* Connect Wallet Button */}
@@ -84,14 +84,14 @@ const Navbar = () => {
             <div className="flex items-center space-x-2">
               {/* Icon + Company Name */}
               <IoLogoBitcoin size={30} className="text-white" />
-              <h1 className="text-2xl font-bold">HospitalSite</h1>
+              <h1 className="text-2xl font-bold">BitfluxCapital</h1>
             </div>
             <button onClick={handleMenuToggle} className="text-white">
               <FaTimes size={30} />
             </button>
           </div>
           <div className="flex flex-col space-y-4 px-6">
-            <Link to="#home" className="text-lg">Home</Link>
+            <Link to="/" className="text-lg">Home</Link>
 
             {/* Mobile Services Dropdown */}
             <div>
@@ -108,15 +108,15 @@ const Navbar = () => {
               </button>
               {servicesOpen && (
                 <div className="ml-4 flex flex-col space-y-2">
-                  <Link to="#service1" className="text-lg">Service 1</Link>
-                  <Link to="#service2" className="text-lg">Service 2</Link>
-                  <Link to="#service3" className="text-lg">Service 3</Link>
+                  <NavLink to="/plan" className="text-lg">Pricing Plan</NavLink>
+                  <NavLink to="/terms" className="text-lg">Term & Condition</NavLink>
+                  <NavLink to="#service3" className="text-lg">Service 3</NavLink>
                 </div>
               )}
             </div>
 
-            <Link to="#about" className="text-lg">About Us</Link>
-            <Link to="#contact" className="text-lg">Contact</Link>
+            <NavLink to="/about" className="text-lg">About Us</NavLink>
+            <NavLink to="/contact" className="text-lg">Contact</NavLink>
           </div>
 
           {/* Connect Wallet Button in Mobile Menu */}

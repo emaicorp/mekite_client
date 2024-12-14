@@ -9,8 +9,8 @@ import TermsAndConditions from "./component/terms/TermsAndConditions";
 // import AdminMessages from "./component/AdminDashboard/AdminMessages";
 
 // Mocked API endpoint for countries and languages
-const COUNTRY_API = "";
-// const COUNTRY_API = "https://restcountries.com/v3.1/all";
+// const COUNTRY_API = "";
+const COUNTRY_API = "https://restcountries.com/v3.1/all";
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -58,25 +58,27 @@ const App = () => {
     <Router>
       {/* Language Selector */}
       <header className="bg-gray-800 text-white">
-        <div className="flex justify-between items-center">
-          <div>
-            <select
-              className="p-2 bg-gray-700 text-white rounded"
-              onChange={(e) => handleLanguageChange(e.target.value)}
-              value={selectedLanguage}
-            >
-              <option value="">Select Language</option>
-              {countries.map((country) =>
-                country.languages.map((language) => (
-                  <option key={`${country.name}-${language}`} value={language}>
-                    {language} ({country.name})
-                  </option>
-                ))
-              )}
-            </select>
-          </div>
-        </div>
-      </header>
+  <div className="flex justify-between items-center px-4 py-2 md:px-6">
+    {/* Language Selector */}
+    <div className="relative">
+      <select
+        className="p-2 bg-gray-700 text-white rounded-md w-full sm:w-auto"
+        onChange={(e) => handleLanguageChange(e.target.value)}
+        value={selectedLanguage}
+      >
+        <option value="">Select Language</option>
+        {countries.map((country) =>
+          country.languages.map((language) => (
+            <option key={`${country.name}-${language}`} value={language}>
+              {language} ({country.name})
+            </option>
+          ))
+        )}
+      </select>
+    </div>
+  </div>
+</header>
+
 
       <Routes>
         <Route

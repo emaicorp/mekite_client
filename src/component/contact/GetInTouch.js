@@ -65,7 +65,7 @@ function GetInTouch() {
 
   return (
     <>
-      <section className="bg-gradient-to-r from-black via-green-600 to-black text-white py-16">
+      <section className="bg-black text-white py-16">
         <div className="container mx-auto px-6 md:px-12 lg:px-20">
           <h2 className="text-4xl font-bold text-center text-white mb-8">
             Get in Touch

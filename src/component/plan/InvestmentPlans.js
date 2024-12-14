@@ -52,52 +52,53 @@ function InvestmentPlans() {
 
   return (
     <>
-        <section className="bg-black text-white py-16">
-      <div className="container mx-auto px-6 md:px-12 lg:px-20">
-        <h2 className="text-4xl font-bold text-center mb-6">Investment Plans</h2>
-        <p className="text-center text-gray-400 mb-12">
-          We understand the needs of our customers very much that our investment plans 
-          cover the widest range of benefits.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {plans.map((plan, index) => (
-            <div
-              key={index}
-              className="bg-gray-900 p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300"
-            >
-              <h3 className="text-2xl font-semibold text-center mb-4">
-                {plan.name}
-              </h3>
-              <p className="text-center text-lg text-gray-400 mb-6">
-                {plan.investment}
-              </p>
-              <div className="text-gray-300 space-y-2 mb-6">
-                <p>
-                  <span className="font-bold">Min:</span> {plan.min}
-                </p>
-                <p>
-                  <span className="font-bold">Max:</span> {plan.max}
-                </p>
-                <p>
-                  <span className="font-bold">Profit:</span> {plan.profit}
-                </p>
-                <p>
-                  <span className="font-bold">Referral Bonus:</span> {plan.referralBonus}
-                </p>
-                <p>
-                  <span className="font-bold">Duration:</span> {plan.duration}
-                </p>
-              </div>
-              <button className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition duration-300">
-                Get Started
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+      <section className="bg-white text-black py-20">
+        <div className="container mx-auto px-6 md:px-12 lg:px-20">
+          <h2 className="text-4xl font-bold text-black text-center mb-6">Investment Plans</h2>
+          <p className="text-center text-gray-800 mb-12">
+            We understand the needs of our customers and our investment plans
+            cover the widest range of benefits to suit everyone.
+          </p>
 
-    <Footer />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {plans.map((plan, index) => (
+              <div
+                key={index}
+                className="bg-white border-solid p-8 rounded-lg shadow-xl hover:shadow-2xl transition duration-300 ease-in-out"
+              >
+                <h3 className="text-2xl font-semibold text-center mb-4 text-yellow-600">
+                  {plan.name}
+                </h3>
+                <p className="text-center text-lg text-black mb-6">
+                  {plan.investment}
+                </p>
+                <div className="text-gray-800 space-y-3 mb-6">
+                  <p>
+                    <span className="font-bold text-gray-800">Min:</span> {plan.min}
+                  </p>
+                  <p>
+                    <span className="font-bold text-gray-800">Max:</span> {plan.max}
+                  </p>
+                  <p>
+                    <span className="font-bold text-gray-800">Profit:</span> {plan.profit}
+                  </p>
+                  <p>
+                    <span className="font-bold text-gray-800">Referral Bonus:</span> {plan.referralBonus}
+                  </p>
+                  <p>
+                    <span className="font-bold text-gray-800">Duration:</span> {plan.duration}
+                  </p>
+                </div>
+                <button className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-lg hover:bg-gradient-to-l transition duration-300">
+                  Get Started
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </>
   );
 }

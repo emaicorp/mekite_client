@@ -31,32 +31,45 @@ function CryptoPopularity() {
   }, []);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-900 text-white">
+        <p className="text-xl">Loading...</p>
+      </div>
+    );
   }
 
   return (
     <>
-         <div className="crypto-popularity-section bg-black p-8">
-      <h2 className="text-4xl font-bold mb-6 text-center text-white">Top 5 Cryptocurrencies by Market Cap</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cryptoData.map((crypto) => (
-          <div key={crypto.id} className="bg-gray-800 p-6 rounded-lg shadow-lg text-white">
-            <img
-              src={crypto.image}
-              alt={crypto.name}
-              className="w-16 h-16 mx-auto mb-4 rounded-full"
-            />
-            <h3 className="text-2xl font-semibold mb-2 text-center">{crypto.name}</h3>
-            <p className="text-center mb-2">Price: ${crypto.current_price.toLocaleString()}</p>
-            <p className="text-center mb-2">Market Cap: ${crypto.market_cap.toLocaleString()}</p>
-            <p className="text-center mb-2">24h Volume: ${crypto.total_volume.toLocaleString()}</p>
-            <p className="text-center mb-2">Rank: #{crypto.market_cap_rank}</p>
-          </div>
-        ))}
+      <div className="bg-white to-blue-800 p-8">
+        <h2 className="text-4xl font-extrabold text-center text-white mb-12">
+          Top 5 Cryptocurrencies by Market Cap
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          {cryptoData.map((crypto) => (
+            <div
+              key={crypto.id}
+              className="bg-gray-800 p-6 rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 ease-in-out"
+            >
+              <div className="flex justify-center mb-4">
+                <img
+                  src={crypto.image}
+                  alt={crypto.name}
+                  className="w-20 h-20 rounded-full border-4 border-white"
+                />
+              </div>
+              <h3 className="text-2xl font-semibold text-center text-white mb-2">{crypto.name}</h3>
+              <p className="text-center text-lg text-gray-300 mb-2">Price: ${crypto.current_price.toLocaleString()}</p>
+              <p className="text-center text-lg text-gray-300 mb-2">Market Cap: ${crypto.market_cap.toLocaleString()}</p>
+              <p className="text-center text-lg text-gray-300 mb-2">24h Volume: ${crypto.total_volume.toLocaleString()}</p>
+              <p className="text-center text-lg text-gray-300">Rank: #{crypto.market_cap_rank}</p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
 
-    <BuyBitcoinCritox />
+      <div className="bg-gray-900 py-12 px-6 text-white">
+        <BuyBitcoinCritox />
+      </div>
     </>
   );
 }
