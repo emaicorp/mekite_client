@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Footer from './Footer';
+import Sponsors from './Sponsors';
+import RecentTransactions from './RecentTransactions';
 
 function TryCrypto() {
   return (
@@ -41,7 +43,8 @@ function TryCrypto() {
           </div>
         </div>
       </section>
-
+      <RecentTransactions />
+      <Sponsors />
       <Footer />
     </>
   );

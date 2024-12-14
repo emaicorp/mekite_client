@@ -83,40 +83,58 @@ const Navbar = () => {
           <div className="flex justify-between items-center p-4">
             <div className="flex items-center space-x-2">
               {/* Icon + Company Name */}
-              <IoLogoBitcoin size={30} className="text-white" />
-              <h1 className="text-2xl font-bold">BitfluxCapital</h1>
+              <IoLogoBitcoin size={30} className="text-white text-2xl" />
+              <h1 className="text-2xl text-yellow-500 font-bold">BitfluxCapital</h1>
             </div>
             <button onClick={handleMenuToggle} className="text-white">
               <FaTimes size={30} />
             </button>
           </div>
-          <div className="flex flex-col space-y-4 px-6">
-            <Link to="/" className="text-lg">Home</Link>
+          <div className="flex flex-col space-y-12 px-6 mt-12">
+            <Link to="/" className="text-lg font-bold uppercase">Home</Link>
 
             {/* Mobile Services Dropdown */}
-            <div>
-              <button 
-                onClick={handleServicesToggle} 
-                className="flex items-center space-x-2 text-lg"
-              >
-                <span>Services</span>
-                {servicesOpen ? (
-                  <FaChevronUp className="text-white" />
-                ) : (
-                  <FaChevronDown className="text-white" />
-                )}
-              </button>
-              {servicesOpen && (
-                <div className="ml-4 flex flex-col space-y-2">
-                  <NavLink to="/plan" className="text-lg">Pricing Plan</NavLink>
-                  <NavLink to="/terms" className="text-lg">Term & Condition</NavLink>
-                  <NavLink to="#service3" className="text-lg">Service 3</NavLink>
-                </div>
-              )}
-            </div>
+            <div className="relative">
+      <button
+        onClick={handleServicesToggle}
+        className="flex items-center justify-between w-full px-1 py-3 text-white rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out"
+      >
+        <span className="text-lg font-bold uppercase">Services</span>
+        {servicesOpen ? (
+          <FaChevronUp className="text-white transition-transform duration-300" />
+        ) : (
+          <FaChevronDown className="text-white transition-transform duration-300" />
+        )}
+      </button>
 
-            <NavLink to="/about" className="text-lg">About Us</NavLink>
-            <NavLink to="/contact" className="text-lg">Contact</NavLink>
+      {servicesOpen && (
+        <div className="absolute left-0 mt-2 w-full bg-gray-800 rounded-lg shadow-lg">
+          <div className="flex flex-col space-y-2 p-4">
+            <NavLink
+              to="/plan"
+              className="text-white text-lg hover:bg-gray-600 font-bold uppercase hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg transition duration-300 ease-in-out"
+            >
+              Pricing Plan
+            </NavLink>
+            <NavLink
+              to="/terms"
+              className="text-white text-lg font-bold uppercase hover:bg-gray-600 hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg transition duration-300 ease-in-out"
+            >
+              Terms & Conditions
+            </NavLink>
+            <NavLink
+              to="#service3"
+              className="text-white text-lg font-bold uppercase hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg transition duration-300 ease-in-out"
+            >
+              Service 3
+            </NavLink>
+          </div>
+        </div>
+      )}
+    </div>
+
+            <NavLink to="/about" className="text-lg font-bold  uppercase">About Us</NavLink>
+            <NavLink to="/contact" className="text-lg font-bold uppercase">Contact</NavLink>
           </div>
 
           {/* Connect Wallet Button in Mobile Menu */}

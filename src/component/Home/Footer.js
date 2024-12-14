@@ -4,6 +4,7 @@ import EmojiPicker from 'emoji-picker-react';
 import { FiMessageCircle } from "react-icons/fi";
 import { MdCancel } from "react-icons/md";
 import { IoSend } from "react-icons/io5";
+import CryptoPrices from "./CryptoPrices";
 
 function Footer() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -18,7 +19,8 @@ function Footer() {
   };
 
   return (
-    <footer className="bg-gray-900 text-white py-8">
+    <>
+      <footer className="bg-gray-900 text-white py-8">
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
           {/* Quick Links */}
@@ -160,6 +162,9 @@ function Footer() {
 )}
 
     </footer>
+
+    <CryptoPrices />
+    </>
   );
 }
 
