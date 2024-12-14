@@ -52,7 +52,7 @@ const Navbar = () => {
                 <div className="absolute left-0.3 mt-2 bg-black text-white w-48 py-2 rounded-md shadow-lg">
                   <NavLink to="/plan" className="block font-bold px-4 py-2">Pricing Plan</NavLink>
                   <NavLink to="/terms" className="block px-4 font-bold py-2">Terms & Conditions</NavLink>
-                  <NavLink to="/admin-message" className="block px-4 py-2">Service 3</NavLink>
+                  <NavLink to="/register" className="block px-4 py-2 font-bold">Create Account</NavLink>
                 </div>
               )}
             </div>
@@ -123,10 +123,10 @@ const Navbar = () => {
               Terms & Conditions
             </NavLink>
             <NavLink
-              to="#service3"
+              to="/register"
               className="text-white text-lg font-bold uppercase hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg transition duration-300 ease-in-out"
             >
-              Service 3
+              Create Account
             </NavLink>
           </div>
         </div>

@@ -6,6 +6,9 @@ import AboutHeroSection from "./component/About/AboutHeroSection";
 import ContactHeroSection from "./component/contact/ContactHeroSection";
 import PlanSection from "./component/plan/PlanSection";
 import TermsAndConditions from "./component/terms/TermsAndConditions";
+import Register from "./component/auth/Register"
+import Login from "./component/auth/Login";
+import Dashboard from "./component/Dashboard/Dashboard";
 // import AdminMessages from "./component/AdminDashboard/AdminMessages";
 
 // Mocked API endpoint for countries and languages
@@ -134,6 +137,39 @@ const App = () => {
           element={
             <PageWrapper
               component={TermsAndConditions}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+        <Route path ="/register"
+          element ={
+            <PageWrapper 
+            component={Register}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route path ="/login"
+          element ={
+            <PageWrapper 
+            component={Login}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route path ="/dashboard"
+          element ={
+            <PageWrapper 
+            component={Dashboard}
               loading={loading}
               setLoading={setLoading}
               networkStatus={networkStatus}
