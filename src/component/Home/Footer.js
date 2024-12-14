@@ -162,7 +162,6 @@ function Footer() {
 )}
 
     </footer>
-
     <CryptoPrices />
     </>
   );

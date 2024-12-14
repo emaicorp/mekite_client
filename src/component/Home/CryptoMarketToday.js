@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import GetStarted from "./GetStarted";
+import CryptoChart from "./CryptoChart";
 
 const CryptoMarketToday = () => {
   const [hotList, setHotList] = useState([]);
@@ -128,7 +129,7 @@ const CryptoMarketToday = () => {
           </div>
         </div>
       </div>
-
+      <CryptoChart coinId="bitcoin" currency="usd" days={30} />
       <GetStarted />
     </>
   );
