@@ -41,74 +41,95 @@ const CryptoMarketToday = () => {
     fetchData();
   }, []);
 
-  if (loading) return <p className="text-center text-xl text-white">Loading...</p>;
+  if (loading) return <p className="text-center text-xl text-black">Loading...</p>;
 
   return (
     <>
-        <div className="bg-black text-white py-12">
-      <div className="max-w-6xl mx-auto px-4 lg:px-6">
-        {/* Heading */}
-        <h1 className="text-3xl font-bold text-center mb-8">Crypto Market Today</h1>
+      <div className="bg-white text-black py-12">
+        <div className="max-w-6xl mx-auto px-4 lg:px-6">
+          {/* Heading */}
+          <h1 className="text-3xl font-bold text-center mb-8">Crypto Market Today</h1>
 
-        {/* Hot List of Coins */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-center mb-4">Hot List of Coins</h2>
-          <div className="space-y-4">
-            {hotList.map((coin) => (
-              <div key={coin.id} className="flex items-center justify-between bg-gray-800 p-4 rounded-lg shadow-lg">
-                <div className="flex items-center">
-                  <img src={coin.image} alt={coin.name} className="w-10 h-10 mr-4" />
-                  <span className="font-semibold">{coin.name}</span>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold">${coin.current_price.toFixed(2)}</p>
-                  <p className="text-sm text-gray-400">Volume: ${coin.total_volume.toLocaleString()}</p>
-                </div>
-              </div>
-            ))}
+          {/* Hot List of Coins */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold text-center mb-4">Hot List of Coins</h2>
+            <table className="min-w-full bg-white shadow-lg rounded-lg">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-3 px-4 text-left">Coin</th>
+                  <th className="py-3 px-4 text-left">Price</th>
+                  <th className="py-3 px-4 text-left">Volume</th>
+                </tr>
+              </thead>
+              <tbody>
+                {hotList.map((coin) => (
+                  <tr key={coin.id} className="border-b hover:bg-gray-100">
+                    <td className="py-3 px-4 flex items-center">
+                      <img src={coin.image} alt={coin.name} className="w-8 h-8 mr-4" />
+                      {coin.name}
+                    </td>
+                    <td className="py-3 px-4">${coin.current_price.toFixed(2)}</td>
+                    <td className="py-3 px-4">${coin.total_volume.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
 
-        {/* New Coins */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-center mb-4">New Coins</h2>
-          <div className="space-y-4">
-            {newCoins.map((coin) => (
-              <div key={coin.id} className="flex items-center justify-between bg-gray-800 p-4 rounded-lg shadow-lg">
-                <span className="font-semibold">{coin.name}</span>
-              </div>
-            ))}
+          {/* New Coins */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold text-center mb-4">New Coins</h2>
+            <table className="min-w-full bg-white shadow-lg rounded-lg">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-3 px-4 text-left">Coin</th>
+                </tr>
+              </thead>
+              <tbody>
+                {newCoins.map((coin) => (
+                  <tr key={coin.id} className="border-b hover:bg-gray-100">
+                    <td className="py-3 px-4">{coin.name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
 
-        {/* Top Gainers */}
-        <div>
-          <h2 className="text-2xl font-semibold text-center mb-4">Top Gainers</h2>
-          <div className="space-y-4">
-            {topGainers.map((coin) => (
-              <div key={coin.id} className="flex items-center justify-between bg-gray-800 p-4 rounded-lg shadow-lg">
-                <div className="flex items-center">
-                  <img src={coin.image} alt={coin.name} className="w-10 h-10 mr-4" />
-                  <span className="font-semibold">{coin.name}</span>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold">${coin.current_price.toFixed(2)}</p>
-                  <p
-                    className={`text-sm ${
-                      coin.price_change_percentage_24h >= 0 ? "text-green-400" : "text-red-400"
-                    }`}
-                  >
-                    {coin.price_change_percentage_24h.toFixed(2)}%
-                  </p>
-                </div>
-              </div>
-            ))}
+          {/* Top Gainers */}
+          <div>
+            <h2 className="text-2xl font-semibold text-center mb-4">Top Gainers</h2>
+            <table className="min-w-full bg-white shadow-lg rounded-lg">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-3 px-4 text-left">Coin</th>
+                  <th className="py-3 px-4 text-left">Price</th>
+                  <th className="py-3 px-4 text-left">24h Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topGainers.map((coin) => (
+                  <tr key={coin.id} className="border-b hover:bg-gray-100">
+                    <td className="py-3 px-4 flex items-center">
+                      <img src={coin.image} alt={coin.name} className="w-8 h-8 mr-4" />
+                      {coin.name}
+                    </td>
+                    <td className="py-3 px-4">${coin.current_price.toFixed(2)}</td>
+                    <td
+                      className={`py-3 px-4 ${
+                        coin.price_change_percentage_24h >= 0 ? "text-green-500" : "text-red-500"
+                      }`}
+                    >
+                      {coin.price_change_percentage_24h.toFixed(2)}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-    </div>
 
-    <GetStarted />
+      <GetStarted />
     </>
   );
 };
