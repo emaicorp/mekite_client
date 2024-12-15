@@ -9,6 +9,7 @@ import TermsAndConditions from "./component/terms/TermsAndConditions";
 import Register from "./component/auth/Register"
 import Login from "./component/auth/Login";
 import Dashboard from "./component/Dashboard/Dashboard";
+import Profile from "./component/Dashboard/Profile";
 // import AdminMessages from "./component/AdminDashboard/AdminMessages";
 
 // Mocked API endpoint for countries and languages
@@ -170,6 +171,17 @@ const App = () => {
           element ={
             <PageWrapper 
             component={Dashboard}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route path ="/profile"
+          element ={
+            <PageWrapper 
+            component={Profile}
               loading={loading}
               setLoading={setLoading}
               networkStatus={networkStatus}

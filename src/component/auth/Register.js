@@ -59,24 +59,45 @@ const Register = () => {
     e.preventDefault();
     setError('');
     setMessage('');
-    setIsLoading(true); // Start loading state
-
+    setIsLoading(true);
+  
     try {
+      const payload = {
+        fullname: formData.fullname,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        secretQuestion: formData.secretQuestion,
+        secretAnswer: formData.secretAnswer,
+        wallets: {
+          bitcoin: formData.wallets.bitcoin,
+          ethereum: formData.wallets.ethereum,
+          usdt: formData.wallets.usdt,
+        },
+      };
+  
+      console.log('Payload Sent:', payload); // Debugging payload
+  
+      // Send data to backend
       const response = await axios.post(
         'https://mekite-crypto.onrender.com/api/users/register',
-        formData
+        payload
       );
-      setMessage(response.data.message);
-      setIsLoading(false); // Stop loading state
+  
+      setMessage(response.data.message || 'Registration successful. Check your email.');
+      setIsLoading(false);
+  
+      // Redirect to login after success
       setTimeout(() => {
-        // Navigate to login page after successful registration
         navigate('/login');
-      }, 2000); // Wait 2 seconds before redirecting
+      }, 2000);
     } catch (err) {
+      console.error('Error Response:', err.response || err.message);
       setError(err.response?.data?.message || 'An error occurred.');
-      setIsLoading(false); // Stop loading state
+      setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">

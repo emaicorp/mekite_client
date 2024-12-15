@@ -30,7 +30,7 @@ function CryptoPrices() {
   }, []);
 
   return (
-    <div className="overflow-hidden w-full bg-gray-900 py-4">
+    <div className="overflow-hidden w-full bg-gray-100 py-4">
       <div className="whitespace-nowrap animate-marquee">
         {coins.map((coin) => (
           <div
