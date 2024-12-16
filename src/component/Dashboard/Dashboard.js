@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import { FaTimes, FaCheckCircle, FaCopy } from "react-icons/fa";
+import { FaTimes, FaCopy } from "react-icons/fa";
 import { IoMdPerson } from "react-icons/io";
 import { RiExpandUpDownFill } from "react-icons/ri";
 import CryptoDashboard from "./CryptoDash";
@@ -55,14 +55,14 @@ function Dashboard() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-2xl font-bold text-gray-800">
-                  {user?.username}
+                  {user?.username} 
                 </h2>
-                <p className="text-gray-600">
+                {/* <p className="text-gray-600">
                   Email: {user?.email}{" "}
                   {user?.emailVerified && (
                     <FaCheckCircle className="inline-block text-green-500 ml-2" />
                   )}
-                </p>
+                </p> */}
               </div>
               <button onClick={toggleModal}>
                 <RiExpandUpDownFill className="text-3xl text-gray-600 cursor-pointer" />
@@ -107,7 +107,7 @@ function Dashboard() {
                   </div>
 
                   {/* Wallet Address with Copy */}
-                  <div className="flex items-center space-x-2">
+                  {/* <div className="flex items-center space-x-2">
                     <p className="font-semibold">Wallet Address:</p>
                     <span className="break-all">{user?.walletAddress}</span>
                     <FaCopy
@@ -119,7 +119,7 @@ function Dashboard() {
                     {copiedField === "walletAddress" && (
                       <span className="text-green-500 text-sm">Copied!</span>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

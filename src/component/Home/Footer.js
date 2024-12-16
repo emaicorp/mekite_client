@@ -70,7 +70,7 @@ function Footer() {
           <div>
             <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
             <p className="text-sm">
-              Welcome to CritoX, your gateway to the world of Web3 trading! Our
+              Welcome to Bitfluxcapital, your gateway to the world of Web3 trading! Our
               user-friendly platform empowers you to explore a wide range of
               popular cryptocurrencies.
             </p>

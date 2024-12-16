@@ -28,8 +28,8 @@ function ContactSection() {
               <FaEnvelope size={30} className="text-yellow-500" />
               <h3 className="text-xl font-semibold">Email Us</h3>
             </div>
-            <p className="text-gray-700 mb-4">Have a question? Email us at support@example.com</p>
-            <a href="mailto:support@example.com" className="text-blue-600 hover:underline">
+            <p className="text-gray-700 mb-4">Have a question? Email us at bitfluxcapital@gmail.com</p>
+            <a href="mailto:bitfluxcapital@gmail.com" className="text-blue-600 hover:underline">
               Send Email
             </a>
           </div>
@@ -55,7 +55,7 @@ function ContactSection() {
         {/* Contact Hours */}
         <div className="text-center mt-12">
           <p className="text-lg text-white">Contact Us: Mon-Fri from 8am to 5pm</p>
-          <p className="text-lg text-white mt-4">(239) 555-0108</p>
+          <p className="text-lg text-white mt-4">+61 485 976 232</p>
         </div>
 
         {/* Map Section */}

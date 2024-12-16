@@ -1,5 +1,6 @@
 import React from "react";
 import CryptoDashboard from "./CryptoDashboard";
+import { Link } from 'react-router-dom';
 
 const GetStarted = () => {
   return (
@@ -17,9 +18,9 @@ const GetStarted = () => {
               <p className="text-gray-600 mb-4">
                 Sign up for Bit<span className="text-yellow-500 font-semibold">flux</span>capital to create your profile and begin your crypto journey.
               </p>
-              <p className="inline-block bg-yellow-500 text-black py-2 px-6 rounded-lg text-lg font-semibold hover:bg-yellow-400 transition duration-300">
+              <Link to="/register" className="inline-block bg-yellow-500 text-black py-2 px-6 rounded-lg text-lg font-semibold hover:bg-yellow-400 transition duration-300">
                 Register Now
-              </p>
+              </Link>
             </div>
           </div>
 
@@ -30,9 +31,9 @@ const GetStarted = () => {
               <p className="text-gray-600 mb-4">
                 Complete the verification process in minutes to secure your account and unlock full platform access.
               </p>
-              <p className="inline-block bg-green-500 text-white py-2 px-6 rounded-lg text-lg font-semibold hover:bg-green-400 transition duration-300">
+              <Link to="/register" className="inline-block bg-green-500 text-white py-2 px-6 rounded-lg text-lg font-semibold hover:bg-green-400 transition duration-300">
                 Create Your Account First
-              </p>
+              </Link>
             </div>
           </div>
 

@@ -50,9 +50,6 @@ const HeroSection = () => {
               >
                 {showMore ? 'Show Less' : 'Learn More'}
               </button>
-              <button className="bg-yellow-600 text-white py-2 px-6 rounded-full hover:bg-yellow-300 transition-all">
-                Get Started
-              </button>
             </div>
           </div>
 

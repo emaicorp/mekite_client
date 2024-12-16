@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { FaBars } from "react-icons/fa";
 
@@ -56,9 +56,27 @@ const UserDetails = ({ userDetails }) => (
     <h2 className="text-xl font-semibold mb-2 text-gray-700">
       Updated User Details
     </h2>
-    <pre className="whitespace-pre-wrap text-sm bg-gray-100 p-3 rounded-lg overflow-x-auto">
-      {JSON.stringify(userDetails, null, 2)}
-    </pre>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      {/* Wallet Information */}
+      {Object.keys(userDetails.wallets).map((wallet) => (
+        <div key={wallet} className="p-4 bg-white rounded-lg shadow-md">
+          <h3 className="font-semibold text-gray-700 capitalize">{wallet} Wallet</h3>
+          <p className="text-gray-600">{userDetails.wallets[wallet]}</p>
+        </div>
+      ))}
+
+      {/* Referral Link */}
+      <div className="p-4 bg-white rounded-lg shadow-md">
+        <h3 className="font-semibold text-gray-700">Referral Link</h3>
+        <p className="text-blue-600 truncate">{userDetails.referralLink}</p>
+      </div>
+
+      {/* Total Earnings */}
+      <div className="p-4 bg-white rounded-lg shadow-md">
+        <h3 className="font-semibold text-gray-700">Total Earnings</h3>
+        <p className="text-gray-600">${userDetails.totalEarnings}</p>
+      </div>
+    </div>
   </div>
 );
 
@@ -102,12 +120,36 @@ const Profile = () => {
       const data = await response.json();
       setUserDetails(data.user);
       setMessage("Profile updated successfully!");
+
+      // Store wallet data in localStorage
+      localStorage.setItem("wallets", JSON.stringify(wallets));
     } catch (err) {
       console.error("Error:", err.message);
       setIsError(true);
       setMessage(err.message);
     }
   };
+
+  // Load user details on mount (if available)
+  useEffect(() => {
+    // Fetching user details when the component mounts
+    const fetchUserDetails = async () => {
+      try {
+        const response = await fetch("https://mekite-crypto.onrender.com/api/users/profile");
+        const data = await response.json();
+        setUserDetails(data.user);
+      } catch (err) {
+        console.error("Error loading user details:", err);
+      }
+    };
+    fetchUserDetails();
+
+    // Load wallet data from localStorage if available
+    const savedWallets = JSON.parse(localStorage.getItem("wallets"));
+    if (savedWallets) {
+      setWallets(savedWallets);
+    }
+  }, []);
 
   return (
     <section className="flex min-h-screen bg-gray-100">

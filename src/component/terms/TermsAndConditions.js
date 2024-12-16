@@ -9,7 +9,7 @@ function TermsAndConditions() {
       icon: <FaInfoCircle className="text-blue-500 text-3xl" />,
       title: "Introduction",
       content:
-        "Welcome to CritoX. By accessing or using our website and services ('Services'), you agree to comply with and be bound by these Terms & Conditions ('Terms'). Please read them carefully. If you do not agree with these Terms, you must not use our Services.",
+        "Welcome to Bitfluxcapital. By accessing or using our website and services ('Services'), you agree to comply with and be bound by these Terms & Conditions ('Terms'). Please read them carefully. If you do not agree with these Terms, you must not use our Services.",
     },
     {
       icon: <FaUser className="text-green-500 text-3xl" />,
@@ -36,7 +36,7 @@ function TermsAndConditions() {
       icon: <FaCogs className="text-indigo-500 text-3xl" />,
       title: "Intellectual Property",
       content:
-        "All content, trademarks, logos, and intellectual property on our website are the property of CritoX or its licensors. You are granted a limited, non-exclusive, non-transferable license to access and use our Services for personal, non-commercial purposes.",
+        "All content, trademarks, logos, and intellectual property on our website are the property of Bitfluxcapital or its licensors. You are granted a limited, non-exclusive, non-transferable license to access and use our Services for personal, non-commercial purposes.",
     },
     {
       icon: <FaCoins className="text-orange-500 text-3xl" />,
@@ -53,7 +53,7 @@ function TermsAndConditions() {
       icon: <FaBalanceScale className="text-gray-500 text-3xl" />,
       title: "Limitation of Liability",
       content:
-        "To the maximum extent permitted by law, CritoX shall not be liable for any damages arising out of your use of our Services, including but not limited to loss of profits, data, or goodwill.",
+        "To the maximum extent permitted by law, Bitfluxcapital shall not be liable for any damages arising out of your use of our Services, including but not limited to loss of profits, data, or goodwill.",
     },
     {
       icon: <FaSyncAlt className="text-teal-500 text-3xl" />,

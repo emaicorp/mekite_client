@@ -26,9 +26,9 @@ function Us() {
           <div className="container mx-auto text-center text-white">
             <h2 className="text-4xl font-semibold mb-6">About Us</h2>
             <p className="text-lg leading-relaxed mb-6">
-              Lenoxcoins.com is a cutting-edge online investment platform built by a team of seasoned traders and cryptocurrency experts. Specializing in crypto trading across multiple exchanges and Bitcoin mining, our platform adds value through innovation and expertise.
+              BitfluxCapital is a cutting-edge online investment platform built by a team of seasoned traders and cryptocurrency experts. Specializing in crypto trading across multiple exchanges and Bitcoin mining, our platform adds value through innovation and expertise.
               <br />
-              Our company is rapidly growing, expanding its trading operations, enhancing mining techniques, and welcoming top-tier traders and miners to the team. At Lenoxcoins.com, we are dedicated to educating, securing, and empowering individuals worldwide to capitalize on the opportunities within the cryptocurrency industry.
+              Our company is rapidly growing, expanding its trading operations, enhancing mining techniques, and welcoming top-tier traders and miners to the team. At BitfluxCapital, we are dedicated to educating, securing, and empowering individuals worldwide to capitalize on the opportunities within the cryptocurrency industry.
               <br />
               {isExpanded ? (
                 <>
@@ -57,7 +57,7 @@ function Us() {
             <p className="text-lg leading-relaxed">
               BitfluxCapital is a cutting-edge online investment platform, powered by a team of seasoned traders and cryptocurrency experts. We specialize in crypto trading across multiple exchanges and Bitcoin mining, bringing innovation and expertise to every transaction.
               <br />
-              As a rapidly growing company, we're expanding our trading operations, refining our mining techniques, and attracting top-tier traders and miners to join our team. At Lenoxcoins.com, we are committed to educating, securing, and empowering individuals worldwide, enabling them to take full advantage of the opportunities within the cryptocurrency market.
+              As a rapidly growing company, we're expanding our trading operations, refining our mining techniques, and attracting top-tier traders and miners to join our team. At BitfluxCapital, we are committed to educating, securing, and empowering individuals worldwide, enabling them to take full advantage of the opportunities within the cryptocurrency market.
               <br />
               Join us today and start earning passive income effortlessly, backed by our proven expertise in Bitcoin mining and crypto trading.
             </p>

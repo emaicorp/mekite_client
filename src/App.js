@@ -11,6 +11,8 @@ import Login from "./component/auth/Login";
 import Dashboard from "./component/Dashboard/Dashboard";
 import Profile from "./component/Dashboard/Profile";
 import SupportPage from "./component/Dashboard/SupportPage";
+import UserHistory from "./component/Dashboard/UserHistory";
+import Deposit from "./component/Dashboard/Deposit";
 // import AdminMessages from "./component/AdminDashboard/AdminMessages";
 
 // Mocked API endpoint for countries and languages
@@ -201,9 +203,34 @@ const App = () => {
             />
           }
         />
+
+<Route
+          path="/settings"
+          element={
+            <PageWrapper
+              component={UserHistory}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route
+          path="/deposit"
+          element={
+            <PageWrapper
+              component={Deposit}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
         {/* Add other routes here */}
       </Routes>
 
+      
       
     </Router>
   );

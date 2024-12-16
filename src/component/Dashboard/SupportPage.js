@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaHeadset, FaEnvelope, FaPhoneAlt, FaShieldAlt, FaQuestionCircle, FaTimes } from "react-icons/fa";
 import Sidebar from "./Sidebar";
+import { Link } from "react-router";
 
 function SupportPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -14,11 +15,11 @@ function SupportPage() {
   const openMessage = (title) => {
     const messages = {
       "24/7 Customer Support":
-        "Our team is always available to assist you. Reach out to us anytime for a seamless experience.\n\nEmail: support@cryptosite.com\nPhone: +1-800-123-4567",
+        "Our team is always available to assist you. Reach out to us anytime for a seamless experience.\n\nEmail: bitfluxcapital@gmail.com\nPhone: ++61 485 976 232",
       "Email Support":
-        "Send us an email at support@cryptosite.com. We'll respond promptly to address your concerns.",
+        "Send us an email at bitfluxcapital@gmail.com. We'll respond promptly to address your concerns.",
       "Call Us":
-        "Speak directly to our support team for immediate assistance. \n\nPhone: +1-800-123-4567",
+        "Speak directly to our support team for immediate assistance. \n\nPhone: +61 485 976 232",
       "Secure Transactions":
         "Your investments are safe with us. Our end-to-end encryption ensures secure transactions.\n\nFor more details, contact our support team.",
     };
@@ -39,13 +40,13 @@ function SupportPage() {
       id: 2,
       icon: <FaEnvelope className="text-4xl text-green-600" />,
       title: "Email Support",
-      description: "Reach out to us at support@cryptosite.com, and we’ll get back to you as soon as possible.",
+      description: "Reach out to us at bitfluxcapital@gmail.com, and we’ll get back to you as soon as possible.",
     },
     {
       id: 3,
       icon: <FaPhoneAlt className="text-4xl text-purple-600" />,
       title: "Call Us",
-      description: "Need immediate assistance? Call our toll-free number at +1-800-123-4567.",
+      description: "Need immediate assistance? Call our toll-free number at +61 485 976 232.",
     },
     {
       id: 4,
@@ -94,12 +95,12 @@ function SupportPage() {
 
               {/* Button */}
               {section.id === 5 ? (
-                <a
-                  href="/faq"
+                <Link
+                  href="/terms"
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-300"
                 >
                   Visit FAQs
-                </a>
+                </Link>
               ) : (
                 <button
                   onClick={() => openMessage(section.title)}

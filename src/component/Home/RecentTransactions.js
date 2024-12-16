@@ -100,7 +100,7 @@ function RecentTransactions() {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % transactions.length);
         setIsVisible(true); // Start fade-in
       }, 500); // Time for fade-out animation
-    }, 60000); // Set interval to 1 minute
+    }, 180000); // Set interval to 1 minute
 
     return () => clearInterval(interval);
   }, []);

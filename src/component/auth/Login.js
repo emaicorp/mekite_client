@@ -57,14 +57,14 @@ const Login = () => {
         {success && <div className="text-green-500 mb-3">{success}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
+          {/* <input
             type="email"
             name="email"
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
             className="w-full p-2 border rounded"
-          />
+          /> */}
           <input
             type="text"
             name="username"
