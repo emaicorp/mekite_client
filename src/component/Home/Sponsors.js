@@ -1,5 +1,6 @@
 import React from "react";
 import '../styles/Sponsor.css'
+import TestimonialCarousel from "./TestimonialCarousel";
 const Sponsors = () => {
   const sponsors = [
     { name: "FinNova Investment", image: "https://lenoxcoins.com/img/clients-logo-06.png" },
@@ -16,7 +17,8 @@ const Sponsors = () => {
   ];
 
   return (
-    <section className="py-8 bg-white">
+   <>
+     <section className="py-8 bg-white">
       <h2 className="text-center text-3xl font-bold text-black mb-6">
         Our Sponsors
       </h2>
@@ -38,6 +40,11 @@ const Sponsors = () => {
         </div>
       </div>
     </section>
+
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <TestimonialCarousel />
+    </div>
+   </>
   );
 };
 

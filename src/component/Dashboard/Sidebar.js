@@ -1,13 +1,17 @@
 import React from "react";
 import { FaTimes, FaBars } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 function Sidebar({ isSidebarOpen, toggleSidebar }) {
+   const location = useLocation();
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const user = location.state?.user || storedUser;
   return (
     <header className="bg-gray-800 text-white fixed top-0 left-0 right-0 z-50">
       {/* Desktop Header */}
       <nav className="hidden md:flex justify-between items-center px-6 py-3">
-        <h3 className="text-lg font-semibold">Your Dashboard</h3>
+        <h3 className="text-lg font-semibold">{user?.username}'s Dashboard</h3>
         <div className="flex space-x-8">
           <Link
             to="/dashboard"
@@ -38,7 +42,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
 
       {/* Mobile Sidebar */}
       <div className="flex md:hidden justify-between items-center p-4">
-        <h3 className="text-lg font-semibold">Your Dashboard</h3>
+        <h3 className="text-lg font-semibold">{user?.username}'s Dashboard</h3>
         {isSidebarOpen ? (
           <FaTimes
             className="text-white text-2xl cursor-pointer"

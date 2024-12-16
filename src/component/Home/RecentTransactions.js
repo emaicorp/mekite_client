@@ -88,7 +88,9 @@ const transactions = [
 
 
 function RecentTransactions() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(
+    Math.floor(Math.random() * transactions.length) // Start at a random index
+  );
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
