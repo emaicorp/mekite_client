@@ -10,6 +10,7 @@ import Register from "./component/auth/Register"
 import Login from "./component/auth/Login";
 import Dashboard from "./component/Dashboard/Dashboard";
 import Profile from "./component/Dashboard/Profile";
+import SupportPage from "./component/Dashboard/SupportPage";
 // import AdminMessages from "./component/AdminDashboard/AdminMessages";
 
 // Mocked API endpoint for countries and languages
@@ -189,17 +190,17 @@ const App = () => {
           }
         />
 
-{/* <Route
-          path="/admin-message"
+<Route
+          path="/support"
           element={
             <PageWrapper
-              component={AdminMessages}
+              component={SupportPage}
               loading={loading}
               setLoading={setLoading}
               networkStatus={networkStatus}
             />
           }
-        /> */}
+        />
         {/* Add other routes here */}
       </Routes>
 

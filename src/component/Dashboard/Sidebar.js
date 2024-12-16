@@ -25,6 +25,12 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
           >
             Profile
           </Link>
+          <Link
+            to="/Support"
+            className="text-gray-300 font-bold uppercase hover:text-white"
+          >
+            Support
+          </Link>
           <Link to="/settings" className="text-gray-300 hover:text-white">
             Settings
           </Link>
