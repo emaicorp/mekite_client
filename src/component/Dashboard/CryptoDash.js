@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { Line } from "react-chartjs-2";
 import "chart.js/auto";
+import Balance from "./Balance";
 
 function CryptoDash() {
   const [cryptoData, setCryptoData] = useState([]);
@@ -49,7 +50,9 @@ function CryptoDash() {
   }, [fetchCryptoData]);
 
   return (
-    <div className="p-6">
+    <>
+    <Balance />
+      <div className="p-6">
       <h1 className="text-3xl font-bold text-center mb-6">Crypto Dashboard</h1>
 
       {/* Table Section */}
@@ -100,6 +103,9 @@ function CryptoDash() {
         )}
       </div>
     </div>
+
+    {/* <Balance /> */}
+    </>
   );
 }
 
