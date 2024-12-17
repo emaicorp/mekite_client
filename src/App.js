@@ -13,6 +13,8 @@ import Profile from "./component/Dashboard/Profile";
 import SupportPage from "./component/Dashboard/SupportPage";
 import UserHistory from "./component/Dashboard/UserHistory";
 import Deposit from "./component/Dashboard/Deposit";
+import AdminDashboard from "./component/AdminDashbord.js/AdminDashboard";
+import AdminFundUser from "./component/AdminDashbord.js/AdminFundUser";
 // import AdminMessages from "./component/AdminDashboard/AdminMessages";
 
 // Mocked API endpoint for countries and languages
@@ -221,6 +223,30 @@ const App = () => {
           element={
             <PageWrapper
               component={Deposit}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route
+          path="/admin-dashboard"
+          element={
+            <PageWrapper
+              component={AdminDashboard}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route
+          path="/fund"
+          element={
+            <PageWrapper
+              component={AdminFundUser}
               loading={loading}
               setLoading={setLoading}
               networkStatus={networkStatus}

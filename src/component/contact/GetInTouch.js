@@ -36,7 +36,7 @@ function GetInTouch() {
     }
 
     try {
-      const response = await fetch("https://mekite-crypto.onrender.com/api/messages/send", {
+      const response = await fetch("https://mekite-crypto.onrender.com/api/users/api/messages/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

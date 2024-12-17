@@ -1,7 +1,7 @@
 import React from "react";
-import Footer from "../Home/Footer";
+// import Footer from "../Home/Footer";
 
-function InvestmentPlans() {
+function Investment() {
   const plans = [
     {
       name: "Starter Plan",
@@ -89,7 +89,7 @@ function InvestmentPlans() {
                     <span className="font-bold text-gray-800">Duration:</span> {plan.duration}
                   </p>
                 </div>
-                <button className="w-full hidden py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-lg hover:bg-gradient-to-l transition duration-300">
+                <button className="w-full py-3 hidden px-6 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-lg hover:bg-gradient-to-l transition duration-300">
                   Get Started
                 </button>
               </div>
@@ -98,9 +98,9 @@ function InvestmentPlans() {
         </div>
       </section>
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }
 
-export default InvestmentPlans;
+export default Investment;
