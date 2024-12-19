@@ -15,6 +15,8 @@ import UserHistory from "./component/Dashboard/UserHistory";
 import Deposit from "./component/Dashboard/Deposit";
 import AdminDashboard from "./component/AdminDashbord.js/AdminDashboard";
 import AdminFundUser from "./component/AdminDashbord.js/AdminFundUser";
+import AdminLogin from "./component/AdminDashbord.js/AdminLogin";
+import Dashboardd from "./component/Dashboard/Dashboardd";
 // import AdminMessages from "./component/AdminDashboard/AdminMessages";
 
 // Mocked API endpoint for countries and languages
@@ -247,6 +249,30 @@ const App = () => {
           element={
             <PageWrapper
               component={AdminFundUser}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route
+          path="/admin-login"
+          element={
+            <PageWrapper
+              component={AdminLogin}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route
+          path="/transactions"
+          element={
+            <PageWrapper
+              component={Dashboardd}
               loading={loading}
               setLoading={setLoading}
               networkStatus={networkStatus}

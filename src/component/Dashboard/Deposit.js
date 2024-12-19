@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Investment from "../Dashboard/Investment";
 import { FaCopy } from "react-icons/fa"; // Importing a copy icon from react-icons
+import FundAccount from "./FundAccount";
 
 function Deposit() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -118,7 +119,7 @@ function Deposit() {
     <>
       <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <Investment />
-
+      <FundAccount />
       <section className="p-4">
         <h1 className="text-2xl font-bold mb-4">Make Deposit</h1>
         <form onSubmit={handleSubmit} className="space-y-4">

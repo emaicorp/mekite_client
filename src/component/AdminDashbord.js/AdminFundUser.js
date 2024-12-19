@@ -1,125 +1,117 @@
-import React, { useState } from "react";
-import axios from "axios";
-import Sidebar from "./SideBard";
+import React, { useState } from 'react';
+import axios from 'axios';
 
-function AdminFundUser() {
+const AdminFundUser = () => {
   const [formData, setFormData] = useState({
-    walletAddress: "",
-    amount: "",
-    currency: "usdt",
+    walletAddress: '',
+    amount: '',
+    currency: 'usdt',
   });
+  const [responseMessage, setResponseMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const [responseMessage, setResponseMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
-
-  // Handle input changes
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setResponseMessage("");
-    setLoading(true);
+    setResponseMessage('');
+    setErrorMessage('');
 
     try {
-      const response = await axios.post(
-        "https://mekite-crypto.onrender.com/api/users/admin/fund-user", // Replace with your backend URL
-        {
-          walletAddress: formData.walletAddress,
-          amount: parseFloat(formData.amount), // Convert to number
-          currency: formData.currency,
-        }
-      );
+      const res = await axios.post('https://mekite-crypto.onrender.com/api/users/admin/fund-user', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-      setResponseMessage(response.data.message);
+      if (res.data && res.data.message) {
+        setResponseMessage(res.data.message);
+      } else {
+        setErrorMessage('Something went wrong. Please try again.');
+      }
     } catch (error) {
-      console.error("Error funding user:", error.message);
-      setResponseMessage(
-        error.response?.data?.message || "An error occurred. Please try again."
-      );
-    } finally {
-      setLoading(false);
+      if (error.response && error.response.data) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage('An error occurred while sending the request.');
+      }
     }
   };
 
   return (
-    <>
-          <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+      <div className="bg-white rounded-lg shadow-md w-full max-w-md p-6">
+        <h1 className="text-xl font-bold text-center text-gray-800 mb-4">
+          Fund a User's Account
+        </h1>
+        <p className="text-sm text-center text-gray-600 mb-6">
+          Use this form to fund a user's account. Provide the wallet address,
+          specify the amount, and choose the currency to complete the transaction.
+        </p>
 
-        <div className="p-6 max-w-lg mx-auto bg-white shadow-lg rounded-md">
-      <h2 className="text-2xl font-bold text-center mb-6">Admin Fund User</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Wallet Address */}
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">Wallet Address</label>
-          <input
-            type="text"
-            name="walletAddress"
-            value={formData.walletAddress}
-            onChange={handleChange}
-            placeholder="Enter wallet address"
-            className="w-full border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        {/* Amount */}
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">Amount</label>
-          <input
-            type="number"
-            name="amount"
-            value={formData.amount}
-            onChange={handleChange}
-            placeholder="Enter amount"
-            className="w-full border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            min="0.01"
-            step="0.01"
-            required
-          />
-        </div>
-
-        {/* Currency */}
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">Currency</label>
-          <select
-            name="currency"
-            value={formData.currency}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Wallet Address:
+            </label>
+            <input
+              type="text"
+              name="walletAddress"
+              value={formData.walletAddress}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Amount:
+            </label>
+            <input
+              type="number"
+              name="amount"
+              value={formData.amount}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Currency:
+            </label>
+            <select
+              name="currency"
+              value={formData.currency}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="usdt">USDT</option>
+              <option value="ethereum">Ethereum</option>
+              <option value="bitcoin">Bitcoin</option>
+            </select>
+          </div>
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition duration-200"
           >
-            <option value="usdt">USDT</option>
-            <option value="ethereum">Ethereum</option>
-            <option value="bitcoin">Bitcoin</option>
-          </select>
-        </div>
+            Fund User
+          </button>
+        </form>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
-          disabled={loading}
-        >
-          {loading ? "Processing..." : "Fund User"}
-        </button>
-      </form>
-
-      {/* Response Message */}
-      {responseMessage && (
-        <div className="mt-4 p-2 bg-green-100 border border-green-300 text-green-700 rounded-md">
-          {responseMessage}
-        </div>
-      )}
+        {responseMessage && (
+          <p className="text-green-600 text-center mt-4">{responseMessage}</p>
+        )}
+        {errorMessage && (
+          <p className="text-red-600 text-center mt-4">{errorMessage}</p>
+        )}
+      </div>
     </div>
-    </>
   );
-}
+};
 
 export default AdminFundUser;
