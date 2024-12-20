@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Sidebar from "../AdminDashbord.js/SideBard";
 
 const AdminDepositApproval = () => {
   const [deposits, setDeposits] = useState([]);
@@ -7,8 +8,16 @@ const AdminDepositApproval = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Fetch pending deposits
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+
+  useEffect(() => {
+    fetchPendingDeposits();
+  }, []);
+
   const fetchPendingDeposits = async () => {
     setLoading(true);
     setError(null);
@@ -16,7 +25,7 @@ const AdminDepositApproval = () => {
 
     try {
       const response = await axios.get(
-        "https://mekite-crypto.onrender.com/api/users/admin/deposits/pending" // Replace with your backend URL
+        "https://mekite-crypto.onrender.com/api/users/admin/deposits/pending"
       );
       setDeposits(response.data.pendingDeposits);
     } catch (err) {
@@ -26,11 +35,6 @@ const AdminDepositApproval = () => {
     }
   };
 
-  useEffect(() => {
-    fetchPendingDeposits();
-  }, []);
-
-  // Handle checkbox selection
   const handleCheckboxChange = (depositId) => {
     setSelectedDeposits((prev) =>
       prev.includes(depositId)
@@ -39,7 +43,6 @@ const AdminDepositApproval = () => {
     );
   };
 
-  // Approve or reject selected deposits
   const handleAction = async (status) => {
     setLoading(true);
     setError(null);
@@ -54,7 +57,7 @@ const AdminDepositApproval = () => {
       }
       setMessage(`Deposits ${status} successfully.`);
       setSelectedDeposits([]);
-      fetchPendingDeposits(); // Refresh the list
+      fetchPendingDeposits();
     } catch (err) {
       setError("Failed to update deposits. Please try again.");
     } finally {
@@ -63,78 +66,82 @@ const AdminDepositApproval = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-5 shadow-lg rounded-lg bg-white">
-      <h1 className="text-2xl font-bold mb-4">Pending Deposits</h1>
+   <>
+         <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-      {/* Success Message */}
+     <div className="max-w-6xl mx-auto mt-8 p-6 bg-gray-50 rounded shadow-lg">
+      <header className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Admin Deposit Approval</h1>
+        <p className="text-gray-600">Manage pending deposit approvals efficiently.</p>
+      </header>
+
       {message && (
-        <div className="mb-4 p-3 text-green-700 bg-green-100 border border-green-400 rounded">
+        <div className="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded">
           {message}
         </div>
       )}
 
-      {/* Error Message */}
       {error && (
-        <div className="mb-4 p-3 text-red-700 bg-red-100 border border-red-400 rounded">
+        <div className="mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded">
           {error}
         </div>
       )}
 
-      {loading && <p>Loading...</p>}
-
-      {/* Deposit List */}
-      {!loading && deposits.length > 0 ? (
-        <table className="w-full table-auto border-collapse border border-gray-300">
-          <thead>
-            <tr>
-              <th className="border px-4 py-2">Select</th>
-              <th className="border px-4 py-2">Username</th>
-              <th className="border px-4 py-2">Email</th>
-              <th className="border px-4 py-2">Wallet Address</th>
-              <th className="border px-4 py-2">Amount</th>
-              <th className="border px-4 py-2">Currency</th>
-              <th className="border px-4 py-2">Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {deposits.map((deposit) => (
-              <tr key={deposit.depositId}>
-                <td className="border px-4 py-2 text-center">
-                  <input
-                    type="checkbox"
-                    checked={selectedDeposits.includes(deposit.depositId)}
-                    onChange={() => handleCheckboxChange(deposit.depositId)}
-                  />
-                </td>
-                <td className="border px-4 py-2">{deposit.username}</td>
-                <td className="border px-4 py-2">{deposit.email}</td>
-                <td className="border px-4 py-2">{deposit.walletAddress}</td>
-                <td className="border px-4 py-2">{deposit.amount}</td>
-                <td className="border px-4 py-2">{deposit.currency}</td>
-                <td className="border px-4 py-2">
-                  {new Date(deposit.createdAt).toLocaleString()}
-                </td>
+      {loading ? (
+        <p className="text-gray-600 text-center">Loading...</p>
+      ) : deposits.length > 0 ? (
+        <div className="overflow-x-auto">
+          <table className="table-auto w-full text-left border-collapse border border-gray-300">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="px-4 py-2 border">Select</th>
+                <th className="px-4 py-2 border">Username</th>
+                <th className="px-4 py-2 border">Email</th>
+                <th className="px-4 py-2 border">Wallet Address</th>
+                <th className="px-4 py-2 border">Amount</th>
+                <th className="px-4 py-2 border">Currency</th>
+                <th className="px-4 py-2 border">Created At</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {deposits.map((deposit) => (
+                <tr key={deposit.depositId} className="hover:bg-gray-100">
+                  <td className="px-4 py-2 border text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedDeposits.includes(deposit.depositId)}
+                      onChange={() => handleCheckboxChange(deposit.depositId)}
+                    />
+                  </td>
+                  <td className="px-4 py-2 border">{deposit.username}</td>
+                  <td className="px-4 py-2 border">{deposit.email}</td>
+                  <td className="px-4 py-2 border">{deposit.walletAddress}</td>
+                  <td className="px-4 py-2 border">{deposit.amount}</td>
+                  <td className="px-4 py-2 border">{deposit.currency}</td>
+                  <td className="px-4 py-2 border">
+                    {new Date(deposit.createdAt).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
-        !loading && <p>No pending deposits found.</p>
+        <p className="text-center text-gray-600">No pending deposits found.</p>
       )}
 
-      {/* Action Buttons */}
       {deposits.length > 0 && (
-        <div className="mt-4 flex justify-end space-x-4">
+        <div className="mt-6 flex justify-end gap-4">
           <button
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
             onClick={() => handleAction("completed")}
+            className="px-6 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700"
             disabled={selectedDeposits.length === 0 || loading}
           >
             Approve Selected
           </button>
           <button
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
             onClick={() => handleAction("cancelled")}
+            className="px-6 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700"
             disabled={selectedDeposits.length === 0 || loading}
           >
             Reject Selected
@@ -142,6 +149,7 @@ const AdminDepositApproval = () => {
         </div>
       )}
     </div>
+   </>
   );
 };
 

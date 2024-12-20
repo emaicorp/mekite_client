@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Sidebar from '../AdminDashbord.js/SideBard';
 
 const AdminFundUser = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,9 @@ const AdminFundUser = () => {
   });
   const [responseMessage, setResponseMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +46,10 @@ const AdminFundUser = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <>
+          <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="bg-white rounded-lg shadow-md w-full max-w-md p-6">
         <h1 className="text-xl font-bold text-center text-gray-800 mb-4">
           Fund a User's Account
@@ -111,6 +118,7 @@ const AdminFundUser = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

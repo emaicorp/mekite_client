@@ -34,10 +34,10 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
           <Link to="/settings" className="text-gray-300 font-bold uppercase hover:text-white">
             History
           </Link>
-          <Link to="/transactions" className="text-gray-300 hover:text-white">
+          <Link to="/transactions" className="text-gray-300 font-bold uppercase hover:text-white">
             Transactions
           </Link>
-          <Link to="/support" className="text-gray-300 hover:text-white">
+          <Link to="/support" className="text-gray-300 font-bold uppercase hover:text-white">
             Support
           </Link>
           <Link to="/logout" className="text-gray-300 hover:text-white">
@@ -84,17 +84,20 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
             Profile
           </Link>
           <Link
+            to="/deposit"
+            onClick={toggleSidebar}
+            className="text-gray-300 font-bold uppercase hover:text-white"
+          >
+          Deposit
+          </Link>
+          <Link
             to="/settings"
             onClick={toggleSidebar}
             className="block text-gray-300 font-bold uppercase hover:text-white"
           >
             History
           </Link>
-          <Link
-            to="/transactions"
-            onClick={toggleSidebar}
-            className="block text-gray-300 hover:text-white"
-          >
+          <Link to="/transactions" className="text-gray-300 font-bold uppercase hover:text-white">
             Transactions
           </Link>
           <Link

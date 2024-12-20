@@ -16,7 +16,11 @@ import Deposit from "./component/Dashboard/Deposit";
 import AdminDashboard from "./component/AdminDashbord.js/AdminDashboard";
 import AdminFundUser from "./component/AdminDashbord.js/AdminFundUser";
 import AdminLogin from "./component/AdminDashbord.js/AdminLogin";
-import Dashboardd from "./component/Dashboard/Dashboardd";
+import ResetPassword from "./component/auth/ResetPassword";
+import ForgotPassword from "./component/auth/ForgotPassword";
+import WithdrawalForm from "./component/Dashboard/WithdrawalForm";
+import Logout from "./component/Dashboard/Logout";
+import AdminDepositApproval from "./component/AdminDashbord.js/AdminDepositApproval";
 // import AdminMessages from "./component/AdminDashboard/AdminMessages";
 
 // Mocked API endpoint for countries and languages
@@ -272,7 +276,55 @@ const App = () => {
           path="/transactions"
           element={
             <PageWrapper
-              component={Dashboardd}
+              component={WithdrawalForm}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route
+          path="/reset-password"
+          element={
+            <PageWrapper
+              component={ResetPassword}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route
+          path="/forgot-password"
+          element={
+            <PageWrapper
+              component={ForgotPassword}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route
+          path="/logout"
+          element={
+            <PageWrapper
+              component={Logout}
+              loading={loading}
+              setLoading={setLoading}
+              networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route
+          path="/deposit-approval"
+          element={
+            <PageWrapper
+              component={AdminDepositApproval}
               loading={loading}
               setLoading={setLoading}
               networkStatus={networkStatus}

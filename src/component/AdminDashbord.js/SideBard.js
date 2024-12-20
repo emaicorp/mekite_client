@@ -30,28 +30,10 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             Fund Clients
           </Link>
           <Link
-            to="/deposit"
+            to="/deposit-approval"
             className="text-gray-300 font-bold uppercase hover:text-white"
           >
-            Deposit
-          </Link>
-          <Link
-            to="/history"
-            className="text-gray-300 font-bold uppercase hover:text-white"
-          >
-            History
-          </Link>
-          <Link
-            to="/transactions"
-            className="text-gray-300 hover:text-white"
-          >
-            Transactions
-          </Link>
-          <Link
-            to="/support"
-            className="text-gray-300 hover:text-white"
-          >
-            Support
+            Approve Deposit
           </Link>
           <Link
             to="/logout"
@@ -102,32 +84,10 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             Fund Clients
           </Link>
           <Link
-            to="/deposit"
-            onClick={toggleSidebar}
-            className="block text-gray-300 font-bold uppercase hover:text-white"
+            to="/deposit-approval"
+            className="text-gray-300 font-bold uppercase hover:text-white"
           >
-            Deposit
-          </Link>
-          <Link
-            to="/history"
-            onClick={toggleSidebar}
-            className="block text-gray-300 font-bold uppercase hover:text-white"
-          >
-            History
-          </Link>
-          <Link
-            to="/transactions"
-            onClick={toggleSidebar}
-            className="block text-gray-300 hover:text-white"
-          >
-            Transactions
-          </Link>
-          <Link
-            to="/support"
-            onClick={toggleSidebar}
-            className="block text-gray-300 font-bold uppercase hover:text-white"
-          >
-            Support
+            Approve Deposit
           </Link>
           <Link
             to="/logout"

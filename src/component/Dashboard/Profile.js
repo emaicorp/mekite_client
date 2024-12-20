@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Sidebar from "./Sidebar";
 
 const Profile = () => {
   const [email, setEmail] = useState("");
@@ -8,6 +9,9 @@ const Profile = () => {
   const [usdtAddress, setUsdtAddress] = useState("");
   const [walletDetails, setWalletDetails] = useState(null);
   const [message, setMessage] = useState("");
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   // Load wallet details from localStorage on component mount
   useEffect(() => {
@@ -66,7 +70,9 @@ const Profile = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg mt-10">
+   <>
+           <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+     <div className="max-w-3xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg mt-10">
       <h2 className="text-3xl font-bold text-center text-gray-700 mb-6">
         Wallet Manager
       </h2>
@@ -177,6 +183,7 @@ const Profile = () => {
         </div>
       )}
     </div>
+   </>
   );
 };
 

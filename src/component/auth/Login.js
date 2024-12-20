@@ -4,12 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: "",
     username: "",
     password: "",
   });
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(""); // For success message
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -25,18 +24,26 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("https://mekite-crypto.onrender.com/api/users/login", formData);
-      const { token, user } = response.data;
+      const response = await axios.post(
+        "https://mekite-crypto.onrender.com/api/users/login",
+        formData
+      );
+
+      const { token, user, dashboardMessage } = response.data;
 
       // Store token and user details in localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
       // Set success message
-      setSuccess("Login successful! Redirecting to dashboard...");
+      setSuccess(dashboardMessage);
 
-      // Navigate to dashboard with user data
-      setTimeout(() => navigate("/dashboard", { state: { user } }), 1000);
+      // Check user role and navigate to the appropriate dashboard
+      if (user.roles.includes("admin")) {
+        setTimeout(() => navigate("/admin-dashboard", { state: { user } }), 1500);
+      } else {
+        setTimeout(() => navigate("/dashboard", { state: { user } }), 1500);
+      }
     } catch (err) {
       console.error("Login error:", err.response?.data?.message || err.message);
       setError(err.response?.data?.message || "Something went wrong. Please try again.");
@@ -57,14 +64,7 @@ const Login = () => {
         {success && <div className="text-green-500 mb-3">{success}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          /> */}
+          {/* Username */}
           <input
             type="text"
             name="username"
@@ -73,6 +73,8 @@ const Login = () => {
             onChange={handleChange}
             className="w-full p-2 border rounded"
           />
+
+          {/* Password */}
           <input
             type="password"
             name="password"
@@ -81,6 +83,8 @@ const Login = () => {
             onChange={handleChange}
             className="w-full p-2 border rounded"
           />
+
+          {/* Submit Button */}
           <button
             type="submit"
             className={`w-full p-2 rounded text-white ${
@@ -91,6 +95,16 @@ const Login = () => {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        {/* Forgot Password */}
+        <p className="mt-4 text-center">
+          <button
+            onClick={() => navigate("/forgot-password")}
+            className="text-blue-500 hover:underline"
+          >
+            Forgot your password?
+          </button>
+        </p>
 
         {/* Create Account Option */}
         <p className="mt-4 text-center">
