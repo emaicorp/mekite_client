@@ -1,257 +1,185 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../../nav/Navbar';
 
-const Register = () => {
+function Register() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullname: '',
+    fullName: '',
     username: '',
-    email: '',
     password: '',
-    secretQuestion: '',
-    secretAnswer: '',
-    wallets: { bitcoin: '', ethereum: '', usdt: '' }, // Default wallet structure
+    email: '',
+    recoveryQuestion: '',
+    recoveryAnswer: '',
+    agreedToTerms: false,
+    referredBy: '',
+    bitcoinWallet: '',
+    ethereumWallet: '',
+    usdtWallet: '',
   });
 
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Loading state for the button
+  const [responseMessage, setResponseMessage] = useState('');
 
-  const navigate = useNavigate(); // For navigating to another page
-
-  // Predefined Secret Questions
-  const secretQuestions = [
-    "What is your pet's name?",
-    "What is your mother's maiden name?",
-    "What was the name of your first school?",
-    "What is your favorite book?",
-    "What is your dream job?",
-    "What is your favorite movie?",
-    "What is the name of your hometown?",
-    "What is your favorite food?",
-    "Who is your childhood hero?",
-    "What was the make of your first car?",
-  ];
-
-  // Handle input changes
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Handle wallet fields separately
-    if (name in formData.wallets) {
-      setFormData({
-        ...formData,
-        wallets: {
-          ...formData.wallets,
-          [name]: value,
-        },
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setMessage('');
-    setIsLoading(true);
-  
     try {
-      const payload = {
-        fullname: formData.fullname,
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        secretQuestion: formData.secretQuestion,
-        secretAnswer: formData.secretAnswer,
-        wallets: {
-          bitcoin: formData.wallets.bitcoin,
-          ethereum: formData.wallets.ethereum,
-          usdt: formData.wallets.usdt,
+      const response = await fetch('https://mekite-crypto.onrender.com/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      };
+        body: JSON.stringify(formData),
+      });
   
-      console.log('Payload Sent:', payload); // Debugging payload
+      const data = await response.json();
+      console.log('Response Data:', data);
   
-      // Send data to backend
-      const response = await axios.post(
-        'https://mekite-crypto.onrender.com/api/users/register',
-        payload
-      );
-  
-      setMessage(response.data.message || 'Registration successful. Check your email.');
-      setIsLoading(false);
-  
-      // Redirect to login after success
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-    } catch (err) {
-      console.error('Error Response:', err.response || err.message);
-      setError(err.response?.data?.message || 'An error occurred.');
-      setIsLoading(false);
+      if (response.ok) {
+        // Navigate to the login page even if the email message was not sent
+        setResponseMessage('Registration successful. Redirecting to login...');
+        setTimeout(() => navigate('/login'), 2000); // Adds a short delay for UX
+      } else {
+        setResponseMessage(data.message || 'Registration failed.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setResponseMessage('An error occurred while registering. Please try again.');
     }
   };
   
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white p-6 rounded shadow-md"
-      >
-        <h2 className="text-2xl font-bold mb-4">Register</h2>
+    <>
+    <Navbar />
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="bg-gray-800 text-white shadow-lg rounded-lg w-full max-w-lg p-8">
+          <h2 className="text-3xl font-bold mb-6 text-center">Register</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Full Name</label>
+              <input
+                type="text"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Username</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Password</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Recovery Question</label>
+              <select
+                name="recoveryQuestion"
+                value={formData.recoveryQuestion}
+                onChange={handleChange}
+                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                <option value="" disabled>Select a question</option>
+                <option value="What is your favorite color?">What is your favorite color?</option>
+                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                <option value="What is the name of your favorite teacher?">What is the name of your favorite teacher?</option>
+                <option value="What is the name of the street you grew up on?">What is the name of the street you grew up on?</option>
+<option value="What was your childhood nickname?">What was your childhood nickname?</option>
+<option value="What is the name of your first school?">What is the name of your first school?</option>
+<option value="What is the title of your favorite book?">What is the title of your favorite book?</option>
+<option value="What is your favorite food?">What is your favorite food?</option>
+<option value="What city were you born in?">What city were you born in?</option>
+<option value="What was the make and model of your first car?">What was the make and model of your first car?</option>
+<option value="What is the name of your favorite childhood friend?">What is the name of your favorite childhood friend?</option>
+<option value="What was the name of the first company you worked for?">What was the name of the first company you worked for?</option>
+<option value="What is the name of your favorite sports team?">What is the name of your favorite sports team?</option>
+<option value="What is the name of your favorite vacation destination?">What is the name of your favorite vacation destination?</option>
+<option value="Who is your favorite musician or band?">Who is your favorite musician or band?</option>
+<option value="What is the first concert you attended?">What is the first concert you attended?</option>
+<option value="What is your father's middle name?">What is your father's middle name?</option>
+<option value="What is your oldest sibling's middle name?">What is your oldest sibling's middle name?</option>
+<option value="What is the name of the first person you kissed?">What is the name of the first person you kissed?</option>
+<option value="What was the first movie you saw in a theater?">What was the first movie you saw in a theater?</option>
+<option value="What was your dream job as a child?">What was your dream job as a child?</option>
+<option value="What is your favorite holiday tradition?">What is your favorite holiday tradition?</option>
+<option value="What is the name of your first love?">What is the name of your first love?</option>
 
-        {/* Fullname */}
-        <label className="block mb-2">
-          Full Name
-          <input
-            type="text"
-            name="fullname"
-            value={formData.fullname}
-            onChange={handleChange}
-            required
-            className="w-full p-2 mt-1 border rounded"
-          />
-        </label>
-
-        {/* Username */}
-        <label className="block mb-2">
-          Username
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            required
-            className="w-full p-2 mt-1 border rounded"
-          />
-        </label>
-
-        {/* Email */}
-        <label className="block mb-2">
-          Email
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full p-2 mt-1 border rounded"
-          />
-        </label>
-
-        {/* Password */}
-        <label className="block mb-2">
-          Password
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="w-full p-2 mt-1 border rounded"
-          />
-        </label>
-
-        {/* Secret Question Dropdown */}
-        <label className="block mb-2">
-          Secret Question
-          <select
-            name="secretQuestion"
-            value={formData.secretQuestion}
-            onChange={handleChange}
-            required
-            className="w-full p-2 mt-1 border rounded"
-          >
-            <option value="">-- Select a Secret Question --</option>
-            {secretQuestions.map((question, index) => (
-              <option key={index} value={question}>
-                {question}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        {/* Secret Answer */}
-        <label className="block mb-2">
-          Secret Answer
-          <input
-            type="text"
-            name="secretAnswer"
-            value={formData.secretAnswer}
-            onChange={handleChange}
-            required
-            className="w-full p-2 mt-1 border rounded"
-          />
-        </label>
-
-        {/* Optional Wallet Inputs */}
-        <h3 className="text-lg font-semibold mt-4 mb-2">Optional Wallets</h3>
-
-        {/* Bitcoin */}
-        <label className="block mb-2">
-          Bitcoin Wallet Address
-          <input
-            type="text"
-            name="bitcoin"
-            value={formData.wallets.bitcoin}
-            onChange={handleChange}
-            className="w-full p-2 mt-1 border rounded"
-          />
-        </label>
-
-        {/* Ethereum */}
-        <label className="block mb-2">
-          Ethereum Wallet Address
-          <input
-            type="text"
-            name="ethereum"
-            value={formData.wallets.ethereum}
-            onChange={handleChange}
-            className="w-full p-2 mt-1 border rounded"
-          />
-        </label>
-
-        {/* USDT */}
-        <label className="block mb-2">
-          USDT Wallet Address
-          <input
-            type="text"
-            name="usdt"
-            value={formData.wallets.usdt}
-            onChange={handleChange}
-            className="w-full p-2 mt-1 border rounded"
-          />
-        </label>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          disabled={isLoading} // Disable button while loading
-        >
-          {isLoading ? 'Registering...' : 'Register'}
-        </button>
-
-        {/* Message Display */}
-        {message && <p className="text-green-500 mt-4">{message}</p>}
-        {error && <p className="text-red-500 mt-4">{error}</p>}
-
-        {/* Go back to home and login prompt */}
-        <div className="mt-4 text-center">
-          <p className="text-gray-600">Already have an account? <Link to="/login" className="text-blue-500">Login</Link></p>
-          <p className="text-gray-600 mt-2">Don't have an account? Create an account with us today!</p>
-          <Link to="/" className="text-blue-500 mt-4 block">Go back to Home</Link>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Recovery Answer</label>
+              <input
+                type="text"
+                name="recoveryAnswer"
+                value={formData.recoveryAnswer}
+                onChange={handleChange}
+                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                name="agreedToTerms"
+                checked={formData.agreedToTerms}
+                onChange={handleChange}
+                className="w-5 h-5 bg-gray-700 text-blue-500 border-gray-600 rounded focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <label className="ml-2 text-sm">I agree to the Terms and Conditions</label>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 rounded-lg transition duration-200"
+            >
+              Register
+            </button>
+          </form>
+          {responseMessage && (
+            <p className="mt-4 text-center text-sm text-green-400">{responseMessage}</p>
+          )}
         </div>
-      </form>
-    </div>
+      </div>
+    </>
   );
-};
+}
 
 export default Register;

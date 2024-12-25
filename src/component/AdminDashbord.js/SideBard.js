@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaTimes, FaBars } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 
-const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
+const Sidebar = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
   // Retrieve admin data from state or localStorage
   const storedAdmin = JSON.parse(localStorage.getItem("adminData"));
   const admin = location.state?.admin || storedAdmin;
+
+  // Toggle sidebar state
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
 
   return (
     <header className="bg-gray-800 text-white fixed top-0 left-0 right-0 z-50">
@@ -34,6 +40,12 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             className="text-gray-300 font-bold uppercase hover:text-white"
           >
             Approve Deposit
+          </Link>
+          <Link
+            to="/admin-login"
+            className="text-gray-300 font-bold uppercase hover:text-white"
+          >
+            Management
           </Link>
           <Link
             to="/logout"
@@ -68,7 +80,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:hidden`}
       >
-        <div className="flex flex-col space-y-12 p-6">
+        <div className="flex flex-col space-y-6 p-6">
           <Link
             to="/admin-dashboard"
             onClick={toggleSidebar}
@@ -85,9 +97,17 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
           </Link>
           <Link
             to="/deposit-approval"
-            className="text-gray-300 font-bold uppercase hover:text-white"
+            onClick={toggleSidebar}
+            className="block text-gray-300 font-bold uppercase hover:text-white"
           >
             Approve Deposit
+          </Link>
+          <Link
+            to="/admin-login"
+            onClick={toggleSidebar}
+            className="block text-gray-300 font-bold uppercase hover:text-white"
+          >
+            Management
           </Link>
           <Link
             to="/logout"

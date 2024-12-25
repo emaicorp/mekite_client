@@ -52,12 +52,13 @@ const Navbar = () => {
                 <div className="absolute left-0.3 mt-2 bg-black text-white w-48 py-2 rounded-md shadow-lg">
                   <NavLink to="/plan" className="block font-bold px-4 py-2">Pricing Plan</NavLink>
                   <NavLink to="/terms" className="block px-4 font-bold py-2">Terms & Conditions</NavLink>
-                  <NavLink to="/register" className="block px-4 py-2 font-bold">Create Account</NavLink>
                 </div>
               )}
             </div>
 
             <NavLink to="/about" className="hover:text-gray-300 font-bold uppercase">About Us</NavLink>
+            <NavLink to="/register" className="hover:text-gray-300 font-bold uppercase">Register</NavLink>
+            <NavLink to="/login" className="hover:text-gray-300 font-bold uppercase">Login</NavLink>
             <NavLink to="/contact" className="hover:text-gray-300 font-bold uppercase">Contact</NavLink>
           </div>
 

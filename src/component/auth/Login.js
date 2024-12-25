@@ -1,124 +1,125 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
+function Login() {
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     setLoading(true);
+    setError('');
+
+    if (!username || !password) {
+        setError('Both username and password are required');
+        setLoading(false);
+        return;
+    }
 
     try {
-      const response = await axios.post(
-        "https://mekite-crypto.onrender.com/api/users/login",
-        formData
-      );
+        const response = await axios.post('https://mekite-crypto.onrender.com/api/login', { username, password });
 
-      const { token, user, dashboardMessage } = response.data;
+        if (response.data.token) {
+            localStorage.setItem('authToken', response.data.token);
+            localStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
+        }
 
-      // Store token and user details in localStorage
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      // Set success message
-      setSuccess(dashboardMessage);
-
-      // Check user role and navigate to the appropriate dashboard
-      if (user.roles.includes("admin")) {
-        setTimeout(() => navigate("/admin-dashboard", { state: { user } }), 1500);
-      } else {
-        setTimeout(() => navigate("/dashboard", { state: { user } }), 1500);
-      }
+        // Redirect based on user role
+        if (response.data.userDetails.role === 'admin') {
+            navigate('/admin-dashboard'); // Navigate to admin dashboard
+        } else {
+            navigate('/dashboard'); // Navigate to user dashboard
+        }
     } catch (err) {
-      console.error("Login error:", err.response?.data?.message || err.message);
-      setError(err.response?.data?.message || "Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+        console.error('Error during login:', err);
+        setError('Invalid credentials, please try again');
     }
-  };
+    setLoading(false);
+};
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
-      <div className="w-full max-w-md bg-white p-6 rounded shadow">
-        <h2 className="text-2xl font-semibold text-center mb-4">Login</h2>
+    <div className="min-h-screen flex justify-center items-center bg-gray-900">
+      <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold text-center text-gray-900 mb-6">Login to Your Account</h2>
 
-        {/* Error message */}
-        {error && <div className="text-red-500 mb-3">{error}</div>}
+        {/* Error Message */}
+        {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
-        {/* Success message */}
-        {success && <div className="text-green-500 mb-3">{success}</div>}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter your username"
+            />
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Username */}
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={formData.username}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter your password"
+            />
+          </div>
 
-          {/* Password */}
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
+          <div className="flex justify-between items-center mb-6">
+            <label className="inline-flex items-center text-sm text-gray-700">
+              <input type="checkbox" className="mr-2" />
+              Remember me
+            </label>
+            <a href="/forgot-password" className="text-sm text-blue-500 hover:underline">
+              Forgot password?
+            </a>
+          </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full p-2 rounded text-white ${
-              loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
-            }`}
+            className="w-full py-2 bg-blue-600 text-white rounded-md font-medium shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? 'Logging in...' : 'Log In'}
           </button>
         </form>
 
-        {/* Forgot Password */}
-        <p className="mt-4 text-center">
-          <button
-            onClick={() => navigate("/forgot-password")}
-            className="text-blue-500 hover:underline"
-          >
-            Forgot your password?
-          </button>
-        </p>
-
-        {/* Create Account Option */}
-        <p className="mt-4 text-center">
-          Don’t have an account?{" "}
-          <button
-            onClick={() => navigate("/register")}
-            className="text-blue-500 hover:underline"
-          >
-            Create one here
-          </button>
-        </p>
+        <div className="text-center mt-6">
+          <p>
+            Create a new account?{' '}
+            <button
+              onClick={() => navigate('/register')} // Navigate to register page
+              className="text-blue-500 hover:text-blue-400"
+            >
+              Register
+            </button>
+          </p>
+          <p>
+            Or{' '}
+            <button
+              onClick={() => navigate('/')} // Navigate to home page
+              className="text-blue-500 hover:text-blue-400"
+            >
+              Go Back to Home
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );
-};
+}
 
 export default Login;

@@ -1,122 +1,86 @@
-import React from "react";
-import { FaTimes, FaBars } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { FaBars, FaTimes } from 'react-icons/fa';
+import { Link, NavLink } from 'react-router-dom';
+import { CgProfile } from "react-icons/cg";
 
-function Sidebar({ isSidebarOpen, toggleSidebar }) {
-   const location = useLocation();
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    const user = location.state?.user || storedUser;
+function Sidebar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [userDetails, setUserDetails] = useState(null);
+
+  useEffect(() => {
+    const storedUserDetails = JSON.parse(localStorage.getItem('userDetails'));
+    if (storedUserDetails) {
+      setUserDetails(storedUserDetails);
+    }
+  }, []);
+
+  const handleMenuToggle = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const navLinks = (
+    <>
+      <NavLink to="/dashboard" className="hover:text-gray-300 capitalize">Dashboard</NavLink>
+      <NavLink to="/profile" className="hover:text-gray-300 capitalize">Profile</NavLink>
+      <NavLink to="/deposit-list" className="hover:text-gray-300 capitalize">Deposit List</NavLink>
+      <NavLink to="/referral" className="hover:text-gray-300 capitalize">Referral Panel</NavLink>
+      <NavLink to="/transactions" className="hover:text-gray-300 capitalize">Withdrawal</NavLink>
+      <NavLink to="/deposit" className="hover:text-gray-300 capitalize">Deposit</NavLink>
+      <Link to="/logout" className="text-gray-300 hover:text-white">Logout</Link>
+    </>
+  );
+
   return (
-    <header className="bg-gray-800 text-white fixed top-0 left-0 right-0 z-50">
-      {/* Desktop Header */}
-      <nav className="hidden md:flex justify-between items-center px-6 py-3">
-        <h3 className="text-lg font-semibold">{user?.username}'s Dashboard</h3>
-        <div className="flex space-x-8">
-          <Link
-            to="/dashboard"
-            className="text-gray-300 font-bold uppercase hover:text-white"
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/profile"
-            className="text-gray-300 font-bold uppercase hover:text-white"
-          >
-            Profile
-          </Link>
-          <Link
-            to="/deposit"
-            className="text-gray-300 font-bold uppercase hover:text-white"
-          >
-          Deposit
-          </Link>
-          <Link to="/settings" className="text-gray-300 font-bold uppercase hover:text-white">
-            History
-          </Link>
-          <Link to="/transactions" className="text-gray-300 font-bold uppercase hover:text-white">
-            Transactions
-          </Link>
-          <Link to="/support" className="text-gray-300 font-bold uppercase hover:text-white">
-            Support
-          </Link>
-          <Link to="/logout" className="text-gray-300 hover:text-white">
-            Logout
-          </Link>
-        </div>
-      </nav>
+    <>
+      <header className="bg-black text-white shadow-md sticky top-0 z-50">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
 
-      {/* Mobile Sidebar */}
-      <div className="flex md:hidden justify-between items-center p-4">
-        <h3 className="text-lg font-semibold">{user?.username}'s Dashboard</h3>
-        {isSidebarOpen ? (
-          <FaTimes
-            className="text-white text-2xl cursor-pointer"
-            onClick={toggleSidebar}
-          />
-        ) : (
-          <FaBars
-            className="text-white text-2xl cursor-pointer"
-            onClick={toggleSidebar}
-          />
-        )}
-      </div>
+            {/* Desktop Menu */}
+            <div className="hidden md:flex space-x-8">
+              {navLinks}
+            </div>
 
-      {/* Sidebar for Mobile */}
-      <div
-        className={`fixed inset-0 bg-gray-800 text-white transform transition-transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:hidden`}
-      >
-        <div className="flex flex-col space-y-12 p-6">
-          <Link
-            to="/dashboard"
-            onClick={toggleSidebar}
-            className="block text-gray-300 font-bold uppercase hover:text-white"
+            {/* User Info */}
+            {userDetails && (
+              <div className="hidden md:flex items-center space-x-4">
+                <CgProfile
+                  src={userDetails.profileImage || 'default-avatar.jpg'}
+                  alt="User"
+                  className="w-8 h-8 rounded-full"
+                />
+                <span className="font-semibold text-white">{userDetails.username}</span>
+                <span className="text-sm text-gray-300">{userDetails.email}</span>
+              </div>
+            )}
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <button onClick={handleMenuToggle} className="text-white">
+                {menuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Sliding Menu */}
+          <div
+            className={`fixed inset-0 bg-black text-white z-40 transform transition-transform duration-300 ${
+              menuOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
           >
-            Dashboard
-          </Link>
-          <Link
-            to="/profile"
-            onClick={toggleSidebar}
-            className="block text-gray-300 font-bold uppercase hover:text-white"
-          >
-            Profile
-          </Link>
-          <Link
-            to="/deposit"
-            onClick={toggleSidebar}
-            className="text-gray-300 font-bold uppercase hover:text-white"
-          >
-          Deposit
-          </Link>
-          <Link
-            to="/settings"
-            onClick={toggleSidebar}
-            className="block text-gray-300 font-bold uppercase hover:text-white"
-          >
-            History
-          </Link>
-          <Link to="/transactions" className="text-gray-300 font-bold uppercase hover:text-white">
-            Transactions
-          </Link>
-          <Link
-            to="/support"
-            onClick={toggleSidebar}
-            className="block text-gray-300 font-bold uppercase hover:text-white"
-          >
-            Support
-          </Link>
-          <Link
-            to="/logout"
-            onClick={toggleSidebar}
-            className="block text-gray-300 hover:text-white"
-          >
-            Logout
-          </Link>
-        </div>
-      </div>
-    </header>
+            <div className="flex justify-between items-center p-4">
+              
+              <button onClick={handleMenuToggle} className="text-white">
+                <FaTimes size={30} />
+              </button>
+            </div>
+            <div className="flex flex-col space-y-6 px-6 mt-12">
+              {navLinks}
+            </div>
+          </div>
+        </nav>
+      </header>
+    </>
   );
 }
 

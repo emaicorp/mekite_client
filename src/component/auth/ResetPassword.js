@@ -1,64 +1,67 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-const ResetPassword = () => {
+function ResetPassword() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || '';
   const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState('');
-  const [message, setMessage] = useState(''); // Corrected here
-  const location = useLocation();
-  const navigate = useNavigate();
-  const email = location.state?.email;
+  const [success, setSuccess] = useState('');
 
-  if (!email) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-500">Invalid access. Please validate your email first.</p>
-      </div>
-    );
-  }
-
-  const handleResetPassword = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError('');
-    setMessage('');
+    setSuccess('');
+
+    if (!newPassword) {
+      setError('New password is required.');
+      return;
+    }
 
     try {
-      const res = await axios.post(
-        'https://mekite-crypto.onrender.com/api/users/reset-password',
-        { email, newPassword }
-      );
-
-      setMessage(res.data.message);
-
-      // Navigate to login page on successful password reset
-      navigate('/login');
-    } catch (error) {
-      setError(error.response?.data?.message || 'An error occurred. Please try again.');
+      const response = await axios.post('https://mekite-crypto.onrender.com/api/reset-password', { email, newPassword });
+      setSuccess(response.data.message);
+      setTimeout(() => navigate('/login'), 2000); // Navigate to login after success
+    } catch (err) {
+      setError(err.response?.data?.message || 'An error occurred. Please try again.');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-center">Reset Password</h2>
-        <input
-          type="password"
-          placeholder="Enter new password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          className="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          onClick={handleResetPassword}
-          className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600"
-        >
-          Reset Password
-        </button>
-        {message && <p className="text-green-500 mt-4">{message}</p>}
-        {error && <p className="text-red-500 mt-4">{error}</p>}
+    <div className="min-h-screen flex justify-center items-center bg-gray-900">
+      <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold text-center text-gray-900 mb-6">Reset Password</h2>
+
+        {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+        {success && <div className="text-green-500 text-sm mb-4">{success}</div>}
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
+              New Password
+            </label>
+            <input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter your new password"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-2 bg-blue-600 text-white rounded-md font-medium shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Reset Password
+          </button>
+        </form>
       </div>
     </div>
   );
-};
+}
 
 export default ResetPassword;

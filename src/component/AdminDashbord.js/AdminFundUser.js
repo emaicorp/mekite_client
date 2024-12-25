@@ -1,123 +1,153 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import Sidebar from '../AdminDashbord.js/SideBard';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import SideBard from "./SideBard";
 
 const AdminFundUser = () => {
-  const [formData, setFormData] = useState({
-    walletAddress: '',
-    amount: '',
-    currency: 'usdt',
-  });
-  const [responseMessage, setResponseMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [currency, setCurrency] = useState("bitcoin");
+  const [balanceChange, setBalanceChange] = useState(0);
+  const [isWithdrawal, setIsWithdrawal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(
+          "https://mekite-crypto.onrender.com/api/all-users"
+        );
+        setUsers(response.data.users);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchUsers();
+  }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setResponseMessage('');
-    setErrorMessage('');
+    if (!selectedUser) {
+      alert("Please select a user.");
+      return;
+    }
 
     try {
-      const res = await axios.post('https://mekite-crypto.onrender.com/api/users/admin/fund-user', formData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (res.data && res.data.message) {
-        setResponseMessage(res.data.message);
-      } else {
-        setErrorMessage('Something went wrong. Please try again.');
-      }
+      const response = await axios.put(
+        "https://mekite-crypto.onrender.com/api/update-balance",
+        {
+          walletAddress: selectedUser,
+          currency,
+          balanceChange: parseFloat(balanceChange),
+          isWithdrawal,
+        }
+      );
+      setSuccessMessage(response.data.message);
     } catch (error) {
-      if (error.response && error.response.data) {
-        setErrorMessage(error.response.data.message);
-      } else {
-        setErrorMessage('An error occurred while sending the request.');
-      }
+      console.error("Error updating balance:", error);
+      alert(error.response?.data?.message || "An error occurred.");
     }
   };
 
   return (
     <>
-          <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="bg-white rounded-lg shadow-md w-full max-w-md p-6">
-        <h1 className="text-xl font-bold text-center text-gray-800 mb-4">
-          Fund a User's Account
+      <SideBard />
+      <div className="container mx-auto p-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">
+          Admin Fund User
         </h1>
-        <p className="text-sm text-center text-gray-600 mb-6">
-          Use this form to fund a user's account. Provide the wallet address,
-          specify the amount, and choose the currency to complete the transaction.
-        </p>
+        <div className="border-b-2 border-gray-300 mb-4"></div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Wallet Address:
-            </label>
-            <input
-              type="text"
-              name="walletAddress"
-              value={formData.walletAddress}
-              onChange={handleInputChange}
-              required
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+        {successMessage && (
+          <div className="p-4 mb-6 text-white bg-green-500 rounded-md shadow-md">
+            {successMessage}
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Amount:
+        )}
+
+        <form
+          onSubmit={handleFormSubmit}
+          className="bg-white p-6 rounded-md shadow-lg max-w-md mx-auto"
+        >
+          <div className="mb-4">
+            <label
+              htmlFor="user"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Select User
+            </label>
+            <select
+              id="user"
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+              className="w-full mt-2 p-2 border rounded-md text-gray-800"
+            >
+              <option value="">-- Select User --</option>
+              {users.map((user) => (
+                <option key={user.walletAddress} value={user.walletAddress}>
+                  {user.fullName} ({user.walletAddress})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="currency"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Select Currency
+            </label>
+            <select
+              id="currency"
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="w-full mt-2 p-2 border rounded-md text-gray-800"
+            >
+              <option value="bitcoin">Bitcoin</option>
+              <option value="ethereum">Ethereum</option>
+              <option value="usdt">USDT</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="balanceChange"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Amount
             </label>
             <input
               type="number"
-              name="amount"
-              value={formData.amount}
-              onChange={handleInputChange}
-              required
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              id="balanceChange"
+              value={balanceChange}
+              onChange={(e) => setBalanceChange(e.target.value)}
+              className="w-full mt-2 p-2 border rounded-md text-gray-800"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Currency:
-            </label>
-            <select
-              name="currency"
-              value={formData.currency}
-              onChange={handleInputChange}
-              required
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+
+          <div className="flex items-center mb-6">
+            <input
+              type="checkbox"
+              id="isWithdrawal"
+              checked={isWithdrawal}
+              onChange={(e) => setIsWithdrawal(e.target.checked)}
+              className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label
+              htmlFor="isWithdrawal"
+              className="ml-2 text-sm text-gray-800"
             >
-              <option value="usdt">USDT</option>
-              <option value="ethereum">Ethereum</option>
-              <option value="bitcoin">Bitcoin</option>
-            </select>
+              Withdrawal (Check for withdrawal, uncheck for deposit)
+            </label>
           </div>
+
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition duration-200"
+            className="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition duration-200"
           >
-            Fund User
+            Submit
           </button>
         </form>
-
-        {responseMessage && (
-          <p className="text-green-600 text-center mt-4">{responseMessage}</p>
-        )}
-        {errorMessage && (
-          <p className="text-red-600 text-center mt-4">{errorMessage}</p>
-        )}
       </div>
-    </div>
     </>
   );
 };

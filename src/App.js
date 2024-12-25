@@ -21,6 +21,8 @@ import ForgotPassword from "./component/auth/ForgotPassword";
 import WithdrawalForm from "./component/Dashboard/WithdrawalForm";
 import Logout from "./component/Dashboard/Logout";
 import AdminDepositApproval from "./component/AdminDashbord.js/AdminDepositApproval";
+import DepositList from "./component/Dashboard/DepositList";
+import ReferralLink from "./component/Dashboard/ReferralLink";
 // import AdminMessages from "./component/AdminDashboard/AdminMessages";
 
 // Mocked API endpoint for countries and languages
@@ -328,6 +330,30 @@ const App = () => {
               loading={loading}
               setLoading={setLoading}
               networkStatus={networkStatus}
+            />
+          }
+        />
+
+        <Route 
+          path="deposit-list"
+          element={
+            <PageWrapper
+            component={DepositList}
+            loading={loading}
+            setLoading={setLoading}
+            networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route 
+          path="referral"
+          element={
+            <PageWrapper
+            component={ReferralLink}
+            loading={loading}
+            setLoading={setLoading}
+            networkStatus={networkStatus}
             />
           }
         />

@@ -1,86 +1,126 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import SideBard from './SideBard';
 
-const AdminLogin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
+function AdminLogin() {
+  const [users, setUsers] = useState([]);
+  const [action, setAction] = useState('');
+  const [userId, setUserId] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  // Fetch all users when component mounts
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('https://mekite-crypto.onrender.com/api/all-users');
+        if (response.data.users) {
+          setUsers(response.data.users);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setMessage('Error fetching users');
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  const handleActionSubmit = async () => {
+    if (!action || !userId) {
+      setMessage('Please provide both action and user ID');
+      return;
+    }
 
     try {
-      const response = await axios.post(
-        "https://mekite-crypto.onrender.com/admin/admin/login", // Replace with your backend URL
-        { email, password }
-      );
+      const response = await axios.post('https://mekite-crypto.onrender.com/api/admin/manage-user', {
+        action,
+        userId
+      });
 
-      // Save the token to local storage or a secure cookie
-      localStorage.setItem("adminToken", response.data.token);
-
-      // Redirect to admin dashboard
-      navigate("/admin-dashboard");
-
-    } catch (error) {
-      console.error("Login error:", error);
-      if (error.response && error.response.data) {
-        setErrorMessage(error.response.data.message);
-      } else {
-        setErrorMessage("An unexpected error occurred. Please try again.");
+      if (response.data.message) {
+        setMessage(response.data.message);
       }
+    } catch (error) {
+      console.error('Error managing user:', error);
+      setMessage('Error managing user');
     }
   };
 
+  // Copy user ID to clipboard
+  const handleCopyUserId = (id) => {
+    navigator.clipboard.writeText(id).then(() => {
+      setMessage('User ID copied to clipboard!');
+    }).catch((error) => {
+      console.error('Error copying user ID:', error);
+      setMessage('Failed to copy user ID');
+    });
+  };
+
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
-      <div className="w-full max-w-md bg-white rounded shadow-md p-6">
-        <h1 className="text-2xl font-semibold text-center text-blue-600 mb-6">
-          Admin Login
-        </h1>
-        {errorMessage && (
-          <div className="mb-4 text-red-600 text-sm text-center">{errorMessage}</div>
-        )}
-        <form onSubmit={handleLogin}>
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <SideBard />
+      <div className="flex-grow p-8 bg-white shadow-lg rounded-lg mx-4 my-8">
+        <h2 className="text-3xl font-semibold text-center text-gray-700 mb-6">Admin Dashboard</h2>
+
+        {/* Show a list of users */}
+        <h3 className="text-2xl font-semibold text-gray-800 mb-4">All Users</h3>
+        <ul className="space-y-4">
+          {users.map((user) => (
+            <li key={user._id} className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm hover:bg-gray-100 transition-all">
+              <div className="flex-1 text-lg text-gray-700">
+                {user.name} ({user.email})
+              </div>
+              <button 
+                className="bg-blue-500 text-white py-1 px-4 rounded-lg hover:bg-blue-600 transition-all"
+                onClick={() => handleCopyUserId(user._id)}
+              >
+                Copy ID
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {/* Manage User Action */}
+        <div className="mt-8">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Manage User</h3>
+
           <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
-              Email Address
-            </label>
+            <label className="block text-gray-700">Action:</label>
+            <select 
+              className="w-full p-3 border border-gray-300 rounded-lg mt-2"
+              value={action} 
+              onChange={(e) => setAction(e.target.value)}
+            >
+              <option value="">Select Action</option>
+              <option value="verify-email">Verify Email</option>
+              <option value="disable-account">Disable Account</option>
+              <option value="suspend-account">Suspend Account</option>
+            </select>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-gray-700">User ID:</label>
             <input
-              type="email"
-              id="email"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              type="text"
+              className="w-full p-3 border border-gray-300 rounded-lg mt-2"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              placeholder="Enter User ID"
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-gray-700 font-medium mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+
+          <button 
+            onClick={handleActionSubmit} 
+            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-all"
           >
-            Login
+            Submit Action
           </button>
-        </form>
+
+          {/* Display messages */}
+          {message && <p className="mt-4 text-center text-lg text-green-500">{message}</p>}
+        </div>
       </div>
     </div>
   );
-};
+}
 
 export default AdminLogin;

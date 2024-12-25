@@ -1,156 +1,125 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Sidebar from "../AdminDashbord.js/SideBard";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import SideBard from './SideBard';
 
-const AdminDepositApproval = () => {
-  const [deposits, setDeposits] = useState([]);
-  const [selectedDeposits, setSelectedDeposits] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+function AdminDepositApproval() {
+  const [pendingWithdrawals, setPendingWithdrawals] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [message, setMessage] = useState('');
 
-
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
-
+  // Fetch all pending withdrawals when component mounts
   useEffect(() => {
-    fetchPendingDeposits();
+    const fetchPendingWithdrawals = async () => {
+      try {
+        const response = await axios.get('https://mekite-crypto.onrender.com/api/admin/withdrawals/pending');
+        if (response.data.pendingWithdrawals) {
+          setPendingWithdrawals(response.data.pendingWithdrawals);
+        }
+      } catch (error) {
+        console.error('Error fetching pending withdrawals:', error);
+        setMessage('Error fetching pending withdrawals');
+      }
+    };
+
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('https://mekite-crypto.onrender.com/api/all-users');
+        if (response.data.users) {
+          setUsers(response.data.users);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setMessage('Error fetching users');
+      }
+    };
+
+    fetchPendingWithdrawals();
+    fetchUsers();
   }, []);
 
-  const fetchPendingDeposits = async () => {
-    setLoading(true);
-    setError(null);
-    setMessage(null);
-
+  // Handle approving or rejecting a withdrawal
+  const handleApproval = async (userId, investmentIndex, action) => {
     try {
-      const response = await axios.get(
-        "https://mekite-crypto.onrender.com/api/users/admin/deposits/pending"
+      const response = await axios.post(
+        `https://mekite-crypto.onrender.com/api/admin/withdrawals/${action}`,
+        { userId, investmentIndex }
       );
-      setDeposits(response.data.pendingDeposits);
-    } catch (err) {
-      setError("Failed to fetch pending deposits.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCheckboxChange = (depositId) => {
-    setSelectedDeposits((prev) =>
-      prev.includes(depositId)
-        ? prev.filter((id) => id !== depositId)
-        : [...prev, depositId]
-    );
-  };
-
-  const handleAction = async (status) => {
-    setLoading(true);
-    setError(null);
-    setMessage(null);
-
-    try {
-      for (const depositId of selectedDeposits) {
-        await axios.post(
-          `https://mekite-crypto.onrender.com/api/users/admin/deposits/${depositId}/approve`,
-          { status }
+      if (response.data.message) {
+        setMessage(response.data.message);
+        // Update pendingWithdrawals state to reflect the action
+        setPendingWithdrawals((prev) =>
+          prev.map((user) =>
+            user.userId === userId
+              ? {
+                  ...user,
+                  investments: user.investments.map((inv, index) =>
+                    index === investmentIndex ? { ...inv, status: action === 'approve' ? 'approved' : 'rejected' } : inv
+                  ),
+                }
+              : user
+          )
         );
       }
-      setMessage(`Deposits ${status} successfully.`);
-      setSelectedDeposits([]);
-      fetchPendingDeposits();
-    } catch (err) {
-      setError("Failed to update deposits. Please try again.");
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Error processing withdrawal:', error);
+      setMessage('Error processing withdrawal');
     }
   };
 
   return (
-   <>
-         <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+    <div className="container mx-auto p-8">
+      <SideBard />
+      <h2 className="text-3xl font-semibold text-center text-gray-700 mb-6">Admin Deposit Approval</h2>
 
-     <div className="max-w-6xl mx-auto mt-8 p-6 bg-gray-50 rounded shadow-lg">
-      <header className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Admin Deposit Approval</h1>
-        <p className="text-gray-600">Manage pending deposit approvals efficiently.</p>
-      </header>
-
-      {message && (
-        <div className="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded">
-          {message}
-        </div>
-      )}
-
-      {error && (
-        <div className="mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded">
-          {error}
-        </div>
-      )}
-
-      {loading ? (
-        <p className="text-gray-600 text-center">Loading...</p>
-      ) : deposits.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="table-auto w-full text-left border-collapse border border-gray-300">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="px-4 py-2 border">Select</th>
-                <th className="px-4 py-2 border">Username</th>
-                <th className="px-4 py-2 border">Email</th>
-                <th className="px-4 py-2 border">Wallet Address</th>
-                <th className="px-4 py-2 border">Amount</th>
-                <th className="px-4 py-2 border">Currency</th>
-                <th className="px-4 py-2 border">Created At</th>
-              </tr>
-            </thead>
-            <tbody>
-              {deposits.map((deposit) => (
-                <tr key={deposit.depositId} className="hover:bg-gray-100">
-                  <td className="px-4 py-2 border text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedDeposits.includes(deposit.depositId)}
-                      onChange={() => handleCheckboxChange(deposit.depositId)}
-                    />
-                  </td>
-                  <td className="px-4 py-2 border">{deposit.username}</td>
-                  <td className="px-4 py-2 border">{deposit.email}</td>
-                  <td className="px-4 py-2 border">{deposit.walletAddress}</td>
-                  <td className="px-4 py-2 border">{deposit.amount}</td>
-                  <td className="px-4 py-2 border">{deposit.currency}</td>
-                  <td className="px-4 py-2 border">
-                    {new Date(deposit.createdAt).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* Show pending withdrawals */}
+      <h3 className="text-2xl font-semibold text-gray-800 mb-4">Pending Withdrawals</h3>
+      {pendingWithdrawals.length === 0 ? (
+        <p>No pending withdrawals.</p>
       ) : (
-        <p className="text-center text-gray-600">No pending deposits found.</p>
+        pendingWithdrawals.map((user) => (
+          <div key={user.userId} className="bg-gray-50 p-4 rounded-lg shadow-sm mb-4">
+            <h4 className="text-lg font-semibold text-gray-700">{user.username}</h4>
+            {user.investments.map((investment, index) => (
+              <div key={index} className="flex justify-between items-center py-2">
+                <p>{`Investment Amount: ${investment.amount} - Payment Method: ${investment.paymentMethod}`}</p>
+                <div>
+                  <button
+                    className="bg-green-500 text-white py-1 px-4 rounded-lg mr-2 hover:bg-green-600"
+                    onClick={() => handleApproval(user.userId, index, 'approve')}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="bg-red-500 text-white py-1 px-4 rounded-lg hover:bg-red-600"
+                    onClick={() => handleApproval(user.userId, index, 'reject')}
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))
       )}
 
-      {deposits.length > 0 && (
-        <div className="mt-6 flex justify-end gap-4">
-          <button
-            onClick={() => handleAction("completed")}
-            className="px-6 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700"
-            disabled={selectedDeposits.length === 0 || loading}
-          >
-            Approve Selected
-          </button>
-          <button
-            onClick={() => handleAction("cancelled")}
-            className="px-6 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700"
-            disabled={selectedDeposits.length === 0 || loading}
-          >
-            Reject Selected
-          </button>
-        </div>
+      {/* Show all users */}
+      <h3 className="text-2xl font-semibold text-gray-800 mb-4">All Users</h3>
+      {users.length === 0 ? (
+        <p>No users found.</p>
+      ) : (
+        <ul>
+          {users.map((user) => (
+            <li key={user._id} className="text-gray-700">
+              {user.username} ({user.email})
+            </li>
+          ))}
+        </ul>
       )}
+
+      {/* Display success or error messages */}
+      {message && <p className="mt-4 text-center text-lg text-green-500">{message}</p>}
     </div>
-   </>
   );
-};
+}
 
 export default AdminDepositApproval;
