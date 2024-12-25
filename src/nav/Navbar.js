@@ -136,6 +136,8 @@ const Navbar = () => {
 
             <NavLink to="/about" className="text-lg font-bold  uppercase">About Us</NavLink>
             <NavLink to="/contact" className="text-lg font-bold uppercase">Contact</NavLink>
+            <NavLink to="/register" className="hover:text-gray-300 font-bold uppercase">Register</NavLink>
+            <NavLink to="/login" className="hover:text-gray-300 font-bold uppercase">Login</NavLink>
           </div>
 
           {/* Connect Wallet Button in Mobile Menu */}
