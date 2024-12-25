@@ -199,6 +199,8 @@ const plans = [
 ];
 
 function Deposit() {
+  const [selectedPlan, setSelectedPlan] = useState(null);
+
   
   return (
     <>
@@ -206,19 +208,24 @@ function Deposit() {
       <section className="bg-gray-100 p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {plans.map((plan, index) => (
-            <PlanCard key={index} plan={plan} />
+            <PlanCard key={index} plan={plan} onClick={() => setSelectedPlan(plan)} />
           ))}
         </div>
+        {selectedPlan && (
+          <PlanDetailsModal
+            plan={selectedPlan}
+            onClose={() => setSelectedPlan(null)}
+          />
+        )}
         <InvestForm />
       </section>
     </>
   );
 }
 
-function PlanCard({ plan }) {
+function PlanCard({ plan, onClick }) {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      {/* Plan Header */}
       <header className="flex items-center justify-between border-b pb-4">
         <div className="flex items-center space-x-4">
           {plan.icon}
@@ -226,12 +233,14 @@ function PlanCard({ plan }) {
         </div>
         <p className="text-2xl font-extrabold text-green-600">{plan.rate}</p>
       </header>
-
-      {/* Plan Details */}
       <PlanDetails details={plan.details} />
-
-      {/* Features */}
       <PlanFeatures features={plan.features} />
+      <button
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+        onClick={onClick}
+      >
+        View Details
+      </button>
     </div>
   );
 }
@@ -255,6 +264,7 @@ function PlanDetails({ details }) {
   );
 }
 
+
 function PlanFeatures({ features }) {
   return (
     <div className="mt-4">
@@ -271,94 +281,92 @@ function PlanFeatures({ features }) {
   );
 }
 
+// function PlanDetailsModal({ plan, onClose }) {
+//   return (
+//     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+//       <div className="bg-white rounded-lg p-6 w-96">
+//         <header className="flex justify-between items-center">
+//           <h2 className="text-xl font-bold text-purple-700">{plan.name}</h2>
+//           <button onClick={onClose} className="text-red-500 font-bold">
+//             X
+//           </button>
+//         </header>
+//         <PlanDetails details={plan.details} />
+//         <PlanFeatures features={plan.features} />
+//       </div>
+//     </div>
+//   );
+// }
+
 
 const InvestForm = () => {
-  const [userId, setUserId] = useState('');
-  const [selectedPackage, setSelectedPackage] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [amount, setAmount] = useState('');
-  const [message, setMessage] = useState('');
+  const [userId, setUserId] = useState("");
+  const [selectedPackage, setSelectedPackage] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [amount, setAmount] = useState("");
+  const [message, setMessage] = useState("");
   const [investment, setInvestment] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!selectedPackage || !paymentMethod || !amount) {
       setMessage("Please fill in all required fields.");
       return;
     }
 
-    const requestBody = {
-      userId,
-      selectedPackage,
-      paymentMethod,
-      amount,
-    };
+    const requestBody = { userId, selectedPackage, paymentMethod, amount };
 
     try {
-      const response = await fetch('https://mekite-crypto.onrender.com/api/invest', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'user-id': userId,
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const response = await fetch(
+        "https://mekite-crypto.onrender.com/api/invest",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "user-id": userId,
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
 
       const data = await response.json();
-
-      if (response.ok) {
-        setMessage(data.message);
-        setInvestment(data.investment);
-      } else {
-        setMessage(data.message || 'An error occurred.');
-      }
+      setMessage(data.message || (response.ok ? "Success!" : "Error occurred."));
+      if (response.ok) setInvestment(data.investment);
     } catch (error) {
-      console.error('Error submitting investment:', error);
-      setMessage('Server error. Please try again later.');
+      console.error("Error:", error);
+      setMessage("Server error. Try again later.");
     }
   };
 
-  const [userDetails, setUserDetails] = useState(null);
-
   useEffect(() => {
-    const storedUserDetails = JSON.parse(localStorage.getItem('userDetails'));
-    if (storedUserDetails) {
-      setUserDetails(storedUserDetails);
-    }
+    const storedUser = JSON.parse(localStorage.getItem("userDetails"));
+    if (storedUser) setUserId(storedUser.id);
   }, []);
 
-  if (!userDetails) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-r from-purple-500 via-indigo-600 to-blue-500">
-        <span className="text-white text-2xl font-semibold">Loading User Details...</span>
-      </div>
-    );
-  }
+  // if (!userDetails) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen bg-gradient-to-r from-purple-500 via-indigo-600 to-blue-500">
+  //       <span className="text-white text-2xl font-semibold">Loading User Details...</span>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="p-4 max-w-md mx-auto">
       <h1 className="text-2xl font-bold mb-4">Invest Form</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md">
+        {/* Select Package */}
         <div>
-          <label className="block font-semibold mb-1">User ID</label>
-          <input
-            type="text"
-            value={userDetails.id}
-            onChange={(e) => setUserId(e.target.value)}
-            className="w-full border p-2 rounded"
-            readOnly
-          />
-        </div>
-        <div>
-          <label className="block font-semibold mb-1">Selected Package</label>
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="package">
+            Select Package
+          </label>
           <select
+            id="package"
             value={selectedPackage}
             onChange={(e) => setSelectedPackage(e.target.value)}
-            className="w-full border p-2 rounded"
-            required
+            className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-500 focus:outline-none"
           >
-            <option value="">Select a Plan</option>
+            <option value="">-- Select a package --</option>
             {plans.map((plan, index) => (
               <option key={index} value={plan.name}>
                 {plan.name}
@@ -366,40 +374,67 @@ const InvestForm = () => {
             ))}
           </select>
         </div>
+
+        {/* Payment Method */}
         <div>
-          <label className="block font-semibold mb-1">Payment Method</label>
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="payment-method">
+            Payment Method
+          </label>
           <select
+            id="payment-method"
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value)}
-            className="w-full border p-2 rounded"
-            required
+            className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-500 focus:outline-none"
           >
-            <option value="">Select Payment Method</option>
-            <option value="Bitcoin">itcoin</option>
-            <option value="Ethereum">Ethereum</option>
-            <option value="USDT">USDT</option>
+            <option value="">-- Select a payment method --</option>
+            <option value="bitcoin">bitcoin</option>
+            <option value="ethereum">ethereum</option>
+            <option value="usdt">usdt</option>
           </select>
         </div>
+
+        {/* Amount */}
         <div>
-          <label className="block font-semibold mb-1">Amount</label>
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="amount">
+            Investment Amount
+          </label>
           <input
+            id="amount"
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full border p-2 rounded"
-            required
+            className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-500 focus:outline-none"
+            placeholder="Enter amount"
           />
         </div>
-        <div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded mt-4"
-            disabled={!selectedPackage || !paymentMethod || !amount}
-          >
-            Submit Investment
-          </button>
-        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full bg-indigo-500 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-600 transition duration-300"
+        >
+          Invest Now
+        </button>
+
+        {/* Response Message */}
+        {message && <p className="text-center text-red-500 mt-2">{message}</p>}
       </form>
+
+      {/* Display Investment Details */}
+      {investment && (
+        <div className="mt-6 p-4 bg-green-100 rounded-md shadow-md">
+          <h2 className="text-xl font-bold text-green-700">Investment Successful!</h2>
+          <p className="mt-2 text-gray-700">
+            <span className="font-bold">Package:</span> {investment.selectedPackage}
+          </p>
+          <p className="mt-1 text-gray-700">
+            <span className="font-bold">Amount:</span> ${investment.amount}
+          </p>
+          <p className="mt-1 text-gray-700">
+            <span className="font-bold">Payment Method:</span> {investment.paymentMethod}
+          </p>
+        </div>
+      )}
 
       {message && (
         <div className="mt-4 text-center text-lg font-semibold">
