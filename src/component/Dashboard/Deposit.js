@@ -1,223 +1,68 @@
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
-import { MdNightlife } from "react-icons/md";
-// import axios from "axios";
-// import { getUserDetails } from "./localStorageUtils";
+import { FaClipboard } from 'react-icons/fa'; // Importing a clipboard icon
 
 const plans = [
   {
-    name: "Lite Plan (Forex)",
-    icon: <MdNightlife className="text-purple-500 text-4xl" />,
-    rate: "5% Daily",
+    name: "STARTER PLAN",
+    rate: "6% Daily for 3 Days",
     details: {
-      minimum: "$100",
-      maximum: "$999",
+      INVESTMENT: "$50 - $999",
+      duration: "3 Days",
+      REFERRAL: "10%",
+    },
+    features: ["All payment systems", "Customer Support", "Automated Withdraw", "Daily Withdrawals"],
+  },
+  {
+    name: "PREMIUM PLAN",
+    rate: "10% Daily for 5 Days",
+    details: {
+      INVESTMENT: "$1,000 - $4,999",
       duration: "5 Days",
+      REFERRAL: "10%",
     },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
+    features: ["All payment systems", "Customer Support", "Automated Withdraw", "Daily Withdrawals"],
   },
   {
-    name: "Active Plan (Forex)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "10% Daily",
+    name: "PROFESSIONAL PLAN",
+    rate: "15% Daily for 5 Days",
     details: {
-      minimum: "$1,000",
-      maximum: "$4,999",
+      INVESTMENT: "$5,000 - Unlimited",
       duration: "5 Days",
+      REFERRAL: "10%",
     },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
+    features: ["All payment systems", "Customer Support", "Automated Withdraw", "Daily Withdrawals"],
   },
-
-  {
-    name: "Active Plan (Forex)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "15% Daily",
-    details: {
-      minimum: "$5,000",
-      maximum: "Unlimited",
-      duration: "5 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Starter Plan (Cryptocurrency)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "5% Daily",
-    details: {
-      minimum: "$50",
-      maximum: "$999",
-      duration: "5 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Premium Plan (Cryptocurrency)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "10% Daily",
-    details: {
-      minimum: "$1000",
-      maximum: "$5,999",
-      duration: "5 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Professional Plan (Cryptocurrency)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "15% Daily",
-    details: {
-      minimum: "$5000",
-      maximum: "Unlimited",
-      duration: "5 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Silver Plan (Cannabis)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "5% Daily",
-    details: {
-      minimum: "$500",
-      maximum: "$4,999",
-      duration: "30 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Gold Plan (Cannabis)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "10% Daily",
-    details: {
-      minimum: "$500",
-      maximum: "$Unlimited",
-      duration: "30 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Basic Plan (Real Estate)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "10% Daily",
-    details: {
-      minimum: "$1000",
-      maximum: "$4,999",
-      duration: "30 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Silver Plan (Cannabis)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "5% Daily",
-    details: {
-      minimum: "$500",
-      maximum: "$4,999",
-      duration: "30 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Gold Plan (Cannabis)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "10% Daily",
-    details: {
-      minimum: "$5000",
-      maximum: "Unlimited",
-      duration: "30 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Ethusiast Plan (Real Estate)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "15% Daily",
-    details: {
-      minimum: "$5000",
-      maximum: "Unlimited",
-      duration: "30 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Novice Plan (Pension Funds)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "5% Daily",
-    details: {
-      minimum: "$500",
-      maximum: "$4,999",
-      duration: "30 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Ethusiast Plan (Pension Funds)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "10% Daily",
-    details: {
-      minimum: "$5,000",
-      maximum: "Unlimited",
-      duration: "30 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Rookie Plan (NFP)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "5% Daily",
-    details: {
-      minimum: "$500",
-      maximum: "$4,999",
-      duration: "30 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-
-  {
-    name: "Social Plan (Cannabis)",
-    icon: <MdNightlife className="text-blue-500 text-4xl" />,
-    rate: "10% Daily",
-    details: {
-      minimum: "$5,000",
-      maximum: "Unlimited",
-      duration: "30 Days",
-    },
-    features: ["All payment systems", "Customer Support", "Automated Withdraw"],
-  },
-  // Add more plans here
 ];
 
 function Deposit() {
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [investmentDetails, setInvestmentDetails] = useState(null);
 
-  
+  const handlePlanSelection = (plan) => setSelectedPlan(plan);
+
+  const closePlanDetails = () => setSelectedPlan(null);
+
+  const handleInvestmentSuccess = (details) => {
+    setInvestmentDetails(details);
+  };
+
   return (
     <>
       <Sidebar />
       <section className="bg-gray-100 p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((plan, index) => (
-            <PlanCard key={index} plan={plan} onClick={() => setSelectedPlan(plan)} />
+            <PlanCard key={index} plan={plan} onClick={() => handlePlanSelection(plan)} />
           ))}
         </div>
+
         {selectedPlan && (
-          <PlanDetailsModal
-            plan={selectedPlan}
-            onClose={() => setSelectedPlan(null)}
-          />
+          <PlanDetailsModal plan={selectedPlan} onClose={closePlanDetails} />
         )}
-        <InvestForm />
+
+        <InvestForm onSuccess={handleInvestmentSuccess} />
+        {investmentDetails && <InvestmentSummary details={investmentDetails} />}
       </section>
     </>
   );
@@ -226,12 +71,9 @@ function Deposit() {
 function PlanCard({ plan, onClick }) {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <header className="flex items-center justify-between border-b pb-4">
-        <div className="flex items-center space-x-4">
-          {plan.icon}
-          <h2 className="text-xl font-bold text-purple-700">{plan.name}</h2>
-        </div>
-        <p className="text-2xl font-extrabold text-green-600">{plan.rate}</p>
+      <header className="border-b pb-4">
+        <h2 className="font-bold text-purple-700">{plan.name}</h2>
+        <p className="font-bold text-green-600">{plan.rate}</p>
       </header>
       <PlanDetails details={plan.details} />
       <PlanFeatures features={plan.features} />
@@ -248,252 +90,225 @@ function PlanCard({ plan, onClick }) {
 function PlanDetails({ details }) {
   return (
     <div className="mt-4">
-      <h3 className="text-lg font-semibold text-gray-800">Plan Details</h3>
-      <div className="mt-2 space-y-1 text-gray-700">
-        <p>
-          <span className="font-bold">Minimum:</span> {details.minimum}
-        </p>
-        <p>
-          <span className="font-bold">Maximum:</span> {details.maximum}
-        </p>
-        <p>
-          <span className="font-bold">Duration:</span> {details.duration}
-        </p>
-      </div>
+      <h3 className="text-lg font-semibold">Plan Details</h3>
+      <p><strong>Minimum:</strong> {details.INVESTMENT}</p>
+      <p><strong>Referral:</strong> {details.REFERRAL}</p>
+      <p><strong>Duration:</strong> {details.duration}</p>
     </div>
   );
 }
 
-
 function PlanFeatures({ features }) {
   return (
     <div className="mt-4">
-      <h3 className="text-lg font-semibold text-gray-800">Features</h3>
-      <ul className="mt-2 space-y-1 text-gray-700">
+      <h3 className="text-lg font-semibold">Features</h3>
+      <ul className="list-disc pl-6">
         {features.map((feature, index) => (
-          <li key={index} className="flex items-center space-x-2">
-            <span className="text-green-500">✔️</span>
-            <span>{feature}</span>
-          </li>
+          <li key={index}>{feature}</li>
         ))}
       </ul>
     </div>
   );
 }
 
-// function PlanDetailsModal({ plan, onClose }) {
-//   return (
-//     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-//       <div className="bg-white rounded-lg p-6 w-96">
-//         <header className="flex justify-between items-center">
-//           <h2 className="text-xl font-bold text-purple-700">{plan.name}</h2>
-//           <button onClick={onClose} className="text-red-500 font-bold">
-//             X
-//           </button>
-//         </header>
-//         <PlanDetails details={plan.details} />
-//         <PlanFeatures features={plan.features} />
-//       </div>
-//     </div>
-//   );
-// }
+function PlanDetailsModal({ plan, onClose }) {
+  return (
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg shadow-md max-w-md w-full">
+        <header className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">{plan.name}</h2>
+          <button onClick={onClose} className="text-red-500 font-bold">
+            X
+          </button>
+        </header>
+        <PlanDetails details={plan.details} />
+        <PlanFeatures features={plan.features} />
+      </div>
+    </div>
+  );
+}
 
-
-const InvestForm = () => {
+function InvestForm({ onSuccess }) {
   const [userId, setUserId] = useState("");
   const [selectedPackage, setSelectedPackage] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
-  const [investment, setInvestment] = useState(null);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedPackage || !paymentMethod || !amount) {
-      setMessage("Please fill in all required fields.");
-      return;
-    }
-
-    const requestBody = { userId, selectedPackage, paymentMethod, amount };
-
-    try {
-      const response = await fetch(
-        "https://mekite-crypto.onrender.com/api/invest",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "user-id": userId,
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
-
-      const data = await response.json();
-      setMessage(data.message || (response.ok ? "Success!" : "Error occurred."));
-      if (response.ok) setInvestment(data.investment);
-    } catch (error) {
-      console.error("Error:", error);
-      setMessage("Server error. Try again later.");
-    }
-  };
+  const [planDetails, setPlanDetails] = useState(null); // Store details of the selected plan
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("userDetails"));
     if (storedUser) setUserId(storedUser.id);
   }, []);
 
-  // if (!userDetails) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen bg-gradient-to-r from-purple-500 via-indigo-600 to-blue-500">
-  //       <span className="text-white text-2xl font-semibold">Loading User Details...</span>
-  //     </div>
-  //   );
-  // }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!selectedPackage || !paymentMethod || !amount) {
+      setMessage("Please fill in all required fields.");
+      return;
+    }
+
+    const selectedPlan = plans.find((plan) => plan.name === selectedPackage); // Get selected plan details
+
+    if (!selectedPlan) {
+      setMessage("Selected package is invalid.");
+      return;
+    }
+
+    // Validation for amount according to the selected plan
+    if (amount < selectedPlan.minAmount || amount > selectedPlan.maxAmount) {
+      setMessage(`Amount should be between $${selectedPlan.minAmount} and $${selectedPlan.maxAmount}`);
+      return;
+    }
+
+    try {
+      const response = await fetch("https://mekite-crypto.onrender.com/api/invest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "user-id": userId },
+        body: JSON.stringify({ userId, selectedPackage, paymentMethod, amount }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        onSuccess({ selectedPackage, paymentMethod, amount, details: selectedPlan.details });
+        setPlanDetails(selectedPlan); // Set the plan details for summary
+        setMessage("Investment successful!");
+      } else {
+        setMessage(data.message || "An error occurred.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setMessage("Server error. Try again later.");
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Wallet address copied!');
+    });
+  };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md">
       <h1 className="text-2xl font-bold mb-4">Invest Form</h1>
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md">
-        {/* Select Package */}
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="package">
-            Select Package
-          </label>
-          <select
-            id="package"
-            value={selectedPackage}
-            onChange={(e) => setSelectedPackage(e.target.value)}
-            className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-500 focus:outline-none"
-          >
-            <option value="">-- Select a package --</option>
-            {plans.map((plan, index) => (
-              <option key={index} value={plan.name}>
-                {plan.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Payment Method */}
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="payment-method">
-            Payment Method
-          </label>
-          <select
-            id="payment-method"
-            value={paymentMethod}
-            onChange={(e) => setPaymentMethod(e.target.value)}
-            className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-500 focus:outline-none"
-          >
-            <option value="">-- Select a payment method --</option>
-            <option value="bitcoin">bitcoin</option>
-            <option value="ethereum">ethereum</option>
-            <option value="usdt">usdt</option>
-          </select>
-        </div>
-
-        {/* Amount */}
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="amount">
-            Investment Amount
-          </label>
-          <input
-            id="amount"
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-500 focus:outline-none"
-            placeholder="Enter amount"
-          />
-        </div>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full bg-indigo-500 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-600 transition duration-300"
+      {message && <p className="text-red-500">{message}</p>}
+      <div>
+        <label className="block font-semibold mb-2">Select Package</label>
+        <select
+          value={selectedPackage}
+          onChange={(e) => setSelectedPackage(e.target.value)}
+          className="w-full border rounded p-2"
         >
-          Invest Now
-        </button>
+          <option value="">-- Select a package --</option>
+          {plans.map((plan, index) => (
+            <option key={index} value={plan.name}>
+              {plan.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block font-semibold mb-2">Payment Method</label>
+        <select
+          value={paymentMethod}
+          onChange={(e) => setPaymentMethod(e.target.value)}
+          className="w-full border rounded p-2"
+        >
+          <option value="">-- Select a payment method --</option>
+          <option value="bitcoin">Bitcoin</option>
+          <option value="ethereum">Ethereum</option>
+          <option value="usdt">USDT</option>
+        </select>
+      </div>
+      <div>
+        <label className="block font-semibold mb-2">Investment Amount</label>
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="w-full border rounded p-2"
+        />
+      </div>
+      <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-700">
+        Invest Now
+      </button>
 
-        {/* Response Message */}
-        {message && <p className="text-center text-red-500 mt-2">{message}</p>}
-      </form>
+      {/* Show investment summary if plan details exist */}
+      {planDetails && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 z-50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg w-full h-full max-w-none overflow-auto">
+            <h2 className="text-xl font-bold">Investment Summary</h2>
+            <p><strong>Package:</strong> {planDetails.name}</p>
+            <p><strong>Amount:</strong> ${amount}</p>
+            <p><strong>Payment Method:</strong> {paymentMethod}</p>
+            <p><strong>Rate:</strong> {planDetails.rate}</p>
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold">Plan Details</h3>
+              <p><strong>Investment Range:</strong> {planDetails.details.INVESTMENT}</p>
+              <p><strong>Duration:</strong> {planDetails.details.duration}</p>
+              <p><strong>Referral:</strong> {planDetails.details.REFERRAL}</p>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold">Features</h3>
+              <ul className="list-disc pl-6">
+                {planDetails.features.map((feature, index) => (
+                  <li key={index}>{feature}</li>
+                ))}
+              </ul>
+            </div>
 
-      {/* Display Investment Details */}
-      {investment && (
-        <div className="mt-6 p-4 bg-green-100 rounded-md shadow-md">
-          <h2 className="text-xl font-bold text-green-700">Investment Successful!</h2>
-          <p className="mt-2 text-gray-700">
-            <span className="font-bold">Package:</span> {investment.selectedPackage}
-          </p>
-          <p className="mt-1 text-gray-700">
-            <span className="font-bold">Amount:</span> ${investment.amount}
-          </p>
-          <p className="mt-1 text-gray-700">
-            <span className="font-bold">Payment Method:</span> {investment.paymentMethod}
-          </p>
-        </div>
-      )}
+            {/* Wallet Section */}
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold">Wallet Address</h3>
+              <div className="flex items-center space-x-4">
+                <input
+                  type="text"
+                  value="TS9rwoJP5CvB6efsprtWXJfngutq7Knhmq" // Example wallet address
+                  readOnly
+                  className="border p-2 rounded w-full"
+                />
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard("TS9rwoJP5CvB6efsprtWXJfngutq7Knhmq")}
+                  className="text-blue-500"
+                >
+                  <FaClipboard size={20} />
+                </button>
+              </div>
+            </div>
 
-      {message && (
-        <div className="mt-4 text-center text-lg font-semibold">
-          {message}
-        </div>
-      )}
-    </div>
-  );
-};
-
-
-// Modal Component for Plan Details
-function PlanDetailsModal({ plan, onClose }) {
-  return (
-    <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <header className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-800">{plan.name}</h2>
-          <button onClick={onClose} className="text-gray-600 hover:text-gray-800">
-            ✖
-          </button>
-        </header>
-
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold text-gray-800">Plan Details</h3>
-          <div className="mt-2 space-y-1 text-gray-700">
-            <p>
-              <span className="font-bold">Minimum:</span> {plan.details.minimum}
-            </p>
-            <p>
-              <span className="font-bold">Maximum:</span> {plan.details.maximum}
-            </p>
-            <p>
-              <span className="font-bold">Duration:</span> {plan.details.duration}
-            </p>
+            {/* Close and Invest Again buttons */}
+            <div className="mt-6 flex space-x-4">
+              <button
+                type="button"
+                onClick={() => setPlanDetails(null)}
+                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => setPlanDetails(null)} // Reset the form to allow the user to invest again
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+              >
+                Invest Again
+              </button>
+            </div>
           </div>
         </div>
+      )}
+    </form>
+  );
+}
 
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold text-gray-800">Features</h3>
-          <ul className="mt-2 space-y-1 text-gray-700">
-            {plan.features.map((feature, index) => (
-              <li key={index} className="flex items-center space-x-2">
-                <span className="text-green-500">✔️</span>
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="mt-4 text-center">
-          <button
-            onClick={onClose}
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-          >
-            Close
-          </button>
-        </div>
-      </div>
+function InvestmentSummary({ details }) {
+  return (
+    <div className="mt-6 p-4 bg-gray-100 rounded shadow">
+      <h2 className="text-xl font-bold">Investment Summary</h2>
+      <p><strong>Package:</strong> {details.selectedPackage}</p>
+      <p><strong>Amount:</strong> ${details.amount}</p>
+      <p><strong>Payment Method:</strong> {details.paymentMethod}</p>
     </div>
   );
 }
