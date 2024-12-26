@@ -185,7 +185,7 @@ function InvestForm({ onSuccess }) {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
-      alert('Wallet address copied!');
+      setMessage('Wallet address copied!');
     });
   };
 

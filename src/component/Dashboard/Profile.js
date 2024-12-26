@@ -6,6 +6,7 @@ import Sidebar from './Sidebar';
 function Profile() {
   const [userActivity, setUserActivity] = useState(null);
   const [formData, setFormData] = useState(() => {
+    // Load saved data from localStorage if available
     const storedData = JSON.parse(localStorage.getItem('userWallets')) || {};
     return {
       bitcoinWallet: storedData.bitcoinWallet || '',
@@ -110,75 +111,77 @@ function Profile() {
 
   return (
     <>
-    <Sidebar />
-      <div className="max-w-3xl mx-auto p-6 bg-gray-100 shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold text-blue-600 mb-4">User Profile</h2>
+      <Sidebar />
+      <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-xl">
+        <h2 className="text-3xl font-bold text-blue-600 mb-6">User Profile</h2>
 
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h3 className="text-lg font-bold text-gray-700 mb-2">Activity Details</h3>
-        <p><span className="font-semibold">Username:</span> {userActivity.username || 'N/A'}</p>
-        <p><span className="font-semibold">Email:</span> {userActivity.email || 'N/A'}</p>
-        <p><span className="font-semibold">Last Seen:</span> {userActivity.lastSeen ? new Date(userActivity.lastSeen).toLocaleString() : 'N/A'}</p>
+        <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-6">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">Activity Details</h3>
+          <p><span className="font-semibold">Username:</span> {userActivity.username || 'N/A'}</p>
+          <p><span className="font-semibold">Email:</span> {userActivity.email || 'N/A'}</p>
+          <p><span className="font-semibold">Last Seen:</span> {userActivity.lastSeen ? new Date(userActivity.lastSeen).toLocaleString() : 'N/A'}</p>
+        </div>
+
+        <form onSubmit={handleFormSubmit} className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">Update Wallets</h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Bitcoin Wallet</label>
+              <input
+                type="text"
+                name="bitcoinWallet"
+                value={formData.bitcoinWallet}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ethereum Wallet</label>
+              <input
+                type="text"
+                name="ethereumWallet"
+                value={formData.ethereumWallet}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">USDT Wallet</label>
+              <input
+                type="text"
+                name="usdtWallet"
+                value={formData.usdtWallet}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
+          >
+            Update Profile
+          </button>
+        </form>
+
+        {success && <div className="text-green-600 mt-6 text-center">{success}</div>}
+        {error && <div className="text-red-600 mt-6 text-center">{error}</div>}
       </div>
-
-      <form onSubmit={handleFormSubmit} className="mt-6 bg-white p-4 rounded-lg shadow-md">
-        <h3 className="text-lg font-bold text-gray-700 mb-4">Update Wallets</h3>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Bitcoin Wallet</label>
-          <input
-            type="text"
-            name="bitcoinWallet"
-            value={formData.bitcoinWallet}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Ethereum Wallet</label>
-          <input
-            type="text"
-            name="ethereumWallet"
-            value={formData.ethereumWallet}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">USDT Wallet</label>
-          <input
-            type="text"
-            name="usdtWallet"
-            value={formData.usdtWallet}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
-        >
-          Update Profile
-        </button>
-      </form>
-
-      {success && <div className="text-green-600 mt-4 text-center">{success}</div>}
-      {error && <div className="text-red-600 mt-4 text-center">{error}</div>}
-    </div>
     </>
   );
 }

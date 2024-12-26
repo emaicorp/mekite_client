@@ -22,7 +22,6 @@ function Sidebar() {
     <>
       <NavLink to="/dashboard" className="hover:text-gray-300 capitalize">Dashboard</NavLink>
       <NavLink to="/profile" className="hover:text-gray-300 capitalize">Profile</NavLink>
-      <NavLink to="/deposit-list" className="hover:text-gray-300 capitalize">Deposit List</NavLink>
       <NavLink to="/referral" className="hover:text-gray-300 capitalize">Referral Panel</NavLink>
       <NavLink to="/transactions" className="hover:text-gray-300 capitalize">Withdrawal</NavLink>
       <NavLink to="/deposit" className="hover:text-gray-300 capitalize">Deposit</NavLink>
