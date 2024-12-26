@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaBitcoin } from "react-icons/fa6";
 import { FaEthereum } from "react-icons/fa";
 import { FaOctopusDeploy } from "react-icons/fa";
+import  { Link } from "react-router-dom"
 import Sidebar from "./Sidebar";
 import WithdrawalReasons from "./WithdrawalReasons"
 
@@ -51,7 +52,9 @@ function WithdrawalForm() {
             </td>
             <td className="border border-gray-300 px-4 py-2">{bitcoinAvailable}</td>
             <td className="border border-gray-300 px-4 py-2">{bitcoinPending}</td>
-            <td className="border border-gray-300 px-4 py-2 text-gray-500 italic">not set</td>
+            <td className="border border-gray-300 px-4 py-2 text-gray-500 italic">
+            <Link to="/profile">not set</Link>
+            </td>
           </tr>
           <tr>
             <td className="border border-gray-300 px-4 py-2 flex items-center gap-2">
@@ -60,7 +63,9 @@ function WithdrawalForm() {
             </td>
             <td className="border border-gray-300 px-4 py-2">{ethereumAvailable}</td>
             <td className="border border-gray-300 px-4 py-2">{ethereumPending}</td>
-            <td className="border border-gray-300 px-4 py-2 text-gray-500 italic">not set</td>
+            <td className="border border-gray-300 px-4 py-2 text-gray-500 italic">
+            <Link to="/profile">not set</Link>
+            </td>
           </tr>
           <tr>
             <td className="border border-gray-300 px-4 py-2 flex items-center gap-2">
@@ -69,7 +74,9 @@ function WithdrawalForm() {
             </td>
             <td className="border border-gray-300 px-4 py-2">{usdtAvailable}</td>
             <td className="border border-gray-300 px-4 py-2">{usdtPending}</td>
-            <td className="border border-gray-300 px-4 py-2 text-gray-500 italic">not set</td>
+            <td className="border border-gray-300 px-4 py-2 text-gray-500 italic">
+              <Link to="/profile">not set</Link>
+            </td>
           </tr>
         </tbody>
       </table>

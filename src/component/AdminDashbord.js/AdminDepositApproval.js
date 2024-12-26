@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import SideBard from './SideBard';
 
 function AdminDepositApproval() {
@@ -7,7 +8,6 @@ function AdminDepositApproval() {
   const [users, setUsers] = useState([]);
   const [message, setMessage] = useState('');
 
-  // Fetch all pending withdrawals when component mounts
   useEffect(() => {
     const fetchPendingWithdrawals = async () => {
       try {
@@ -37,7 +37,6 @@ function AdminDepositApproval() {
     fetchUsers();
   }, []);
 
-  // Handle approving or rejecting a withdrawal
   const handleApproval = async (userId, investmentIndex, action) => {
     try {
       const response = await axios.post(
@@ -46,7 +45,6 @@ function AdminDepositApproval() {
       );
       if (response.data.message) {
         setMessage(response.data.message);
-        // Update pendingWithdrawals state to reflect the action
         setPendingWithdrawals((prev) =>
           prev.map((user) =>
             user.userId === userId
@@ -67,57 +65,85 @@ function AdminDepositApproval() {
   };
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="flex bg-gray-100 min-h-screen">
       <SideBard />
-      <h2 className="text-3xl font-semibold text-center text-gray-700 mb-6">Admin Deposit Approval</h2>
+      <div className="flex-1 p-8">
+        <header className="flex justify-between items-center bg-white shadow px-6 py-4 mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Admin Deposit Approval</h2>
+        </header>
 
-      {/* Show pending withdrawals */}
-      <h3 className="text-2xl font-semibold text-gray-800 mb-4">Pending Withdrawals</h3>
-      {pendingWithdrawals.length === 0 ? (
-        <p>No pending withdrawals.</p>
-      ) : (
-        pendingWithdrawals.map((user) => (
-          <div key={user.userId} className="bg-gray-50 p-4 rounded-lg shadow-sm mb-4">
-            <h4 className="text-lg font-semibold text-gray-700">{user.username}</h4>
-            {user.investments.map((investment, index) => (
-              <div key={index} className="flex justify-between items-center py-2">
-                <p>{`Investment Amount: ${investment.amount} - Payment Method: ${investment.paymentMethod}`}</p>
-                <div>
-                  <button
-                    className="bg-green-500 text-white py-1 px-4 rounded-lg mr-2 hover:bg-green-600"
-                    onClick={() => handleApproval(user.userId, index, 'approve')}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    className="bg-red-500 text-white py-1 px-4 rounded-lg hover:bg-red-600"
-                    onClick={() => handleApproval(user.userId, index, 'reject')}
-                  >
-                    Reject
-                  </button>
-                </div>
+        <div className="space-y-8">
+          {/* Pending Withdrawals */}
+          <section>
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">Pending Withdrawals</h3>
+            {pendingWithdrawals.length === 0 ? (
+              <p className="text-gray-600">No pending withdrawals.</p>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {pendingWithdrawals.map((user) => (
+                  <div key={user.userId} className="bg-white p-4 rounded-lg shadow-md">
+                    <h4 className="text-lg font-bold text-gray-700">{user.username}</h4>
+                    <div className="mt-2">
+                      {user.investments.map((investment, index) => (
+                        <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
+                          <div>
+                            <p className="text-sm text-gray-600">
+                              Amount: <span className="font-medium">{investment.amount}</span>
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Payment Method: <span className="font-medium">{investment.paymentMethod}</span>
+                            </p>
+                          </div>
+                          <div className="flex space-x-2">
+                            <button
+                              className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600"
+                              onClick={() => handleApproval(user.userId, index, 'approve')}
+                            >
+                              <FaCheckCircle />
+                            </button>
+                            <button
+                              className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                              onClick={() => handleApproval(user.userId, index, 'reject')}
+                            >
+                              <FaTimesCircle />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        ))
-      )}
+            )}
+          </section>
 
-      {/* Show all users */}
-      <h3 className="text-2xl font-semibold text-gray-800 mb-4">All Users</h3>
-      {users.length === 0 ? (
-        <p>No users found.</p>
-      ) : (
-        <ul>
-          {users.map((user) => (
-            <li key={user._id} className="text-gray-700">
-              {user.username} ({user.email})
-            </li>
-          ))}
-        </ul>
-      )}
+          {/* All Users */}
+          <section>
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">All Users</h3>
+            {users.length === 0 ? (
+              <p className="text-gray-600">No users found.</p>
+            ) : (
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <ul className="divide-y divide-gray-200">
+                  {users.map((user) => (
+                    <li key={user._id} className="py-2">
+                      <p className="text-sm font-medium text-gray-800">{user.username}</p>
+                      <p className="text-sm text-gray-600">{user.email}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </section>
 
-      {/* Display success or error messages */}
-      {message && <p className="mt-4 text-center text-lg text-green-500">{message}</p>}
+          {/* Success/Error Message */}
+          {message && (
+            <div className="mt-4 p-4 bg-green-100 border border-green-300 rounded-lg text-green-700">
+              {message}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

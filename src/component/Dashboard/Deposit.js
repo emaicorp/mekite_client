@@ -234,70 +234,113 @@ function InvestForm({ onSuccess }) {
         Invest Now
       </button>
 
-      {/* Show investment summary if plan details exist */}
       {planDetails && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 z-50 flex justify-center items-center">
-          <div className="bg-white p-8 rounded-lg shadow-lg w-full h-full max-w-none overflow-auto">
-            <h2 className="text-xl font-bold">Investment Summary</h2>
-            <p><strong>Package:</strong> {planDetails.name}</p>
-            <p><strong>Amount:</strong> ${amount}</p>
-            <p><strong>Payment Method:</strong> {paymentMethod}</p>
-            <p><strong>Rate:</strong> {planDetails.rate}</p>
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold">Plan Details</h3>
-              <p><strong>Investment Range:</strong> {planDetails.details.INVESTMENT}</p>
-              <p><strong>Duration:</strong> {planDetails.details.duration}</p>
-              <p><strong>Referral:</strong> {planDetails.details.REFERRAL}</p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold">Features</h3>
-              <ul className="list-disc pl-6">
-                {planDetails.features.map((feature, index) => (
-                  <li key={index}>{feature}</li>
-                ))}
-              </ul>
-            </div>
+  <div className="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex justify-center items-center">
+    <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[90vh] flex flex-col">
+      {/* Header */}
+      <div className="border-b p-4 text-center bg-gray-100">
+        <h2 className="text-2xl font-bold text-gray-800">Investment Summary</h2>
+      </div>
 
-            {/* Wallet Section */}
-            <div className="mt-6">
-              <h3 className="text-lg font-semibold">Wallet Address</h3>
-              <div className="flex items-center space-x-4">
-                <input
-                  type="text"
-                  value="TS9rwoJP5CvB6efsprtWXJfngutq7Knhmq" // Example wallet address
-                  readOnly
-                  className="border p-2 rounded w-full"
-                />
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard("TS9rwoJP5CvB6efsprtWXJfngutq7Knhmq")}
-                  className="text-blue-500"
-                >
-                  <FaClipboard size={20} />
-                </button>
-              </div>
-            </div>
+      {/* Scrollable Content */}
+      <div className="p-6 overflow-auto flex-1">
+        {/* Package Details */}
+        <div className="border p-4 rounded-lg bg-gray-50 mb-4">
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">Package Details</h3>
+          <table className="w-full text-left">
+            <tbody>
+              <tr>
+                <td className="font-medium text-gray-600">Package:</td>
+                <td>{planDetails.name}</td>
+              </tr>
+              <tr>
+                <td className="font-medium text-gray-600">Amount:</td>
+                <td>${amount}</td>
+              </tr>
+              <tr>
+                <td className="font-medium text-gray-600">Payment Method:</td>
+                <td>{paymentMethod}</td>
+              </tr>
+              <tr>
+                <td className="font-medium text-gray-600">Rate:</td>
+                <td>{planDetails.rate}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-            {/* Close and Invest Again buttons */}
-            <div className="mt-6 flex space-x-4">
-              <button
-                type="button"
-                onClick={() => setPlanDetails(null)}
-                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700"
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                onClick={() => setPlanDetails(null)} // Reset the form to allow the user to invest again
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-              >
-                Invest Again
-              </button>
-            </div>
+        {/* Plan Breakdown */}
+        <div className="border p-4 rounded-lg bg-gray-50 mb-4">
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">Plan Breakdown</h3>
+          <table className="w-full text-left">
+            <tbody>
+              <tr>
+                <td className="font-medium text-gray-600">Investment Range:</td>
+                <td>{planDetails.details.INVESTMENT}</td>
+              </tr>
+              <tr>
+                <td className="font-medium text-gray-600">Duration:</td>
+                <td>{planDetails.details.duration}</td>
+              </tr>
+              <tr>
+                <td className="font-medium text-gray-600">Referral:</td>
+                <td>{planDetails.details.REFERRAL}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Features Section */}
+        <div className="border p-4 rounded-lg bg-gray-50 mb-4">
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">Features</h3>
+          <ul className="list-disc pl-6 text-gray-600">
+            {planDetails.features.map((feature, index) => (
+              <li key={index}>{feature}</li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Wallet Section */}
+        <div className="border p-4 rounded-lg bg-gray-50">
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">Wallet Address</h3>
+          <div className="flex items-center">
+            <input
+              type="text"
+              value="TS9rwoJP5CvB6efsprtWXJfngutq7Knhmq"
+              readOnly
+              className="border p-2 rounded w-full text-gray-700"
+            />
+            <button
+              type="button"
+              onClick={() => copyToClipboard("TS9rwoJP5CvB6efsprtWXJfngutq7Knhmq")}
+              className="ml-4 text-blue-500 hover:text-blue-700"
+            >
+              <FaClipboard size={20} />
+            </button>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Footer Buttons */}
+      <div className="border-t p-4 flex justify-center bg-gray-100">
+        <button
+          type="button"
+          onClick={() => setPlanDetails(null)}
+          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700 mx-2"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          onClick={() => setPlanDetails(null)}
+          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 mx-2"
+        >
+          Invest Again
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </form>
   );
 }
