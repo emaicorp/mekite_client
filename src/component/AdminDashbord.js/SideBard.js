@@ -48,6 +48,12 @@ const Sidebar = () => {
             Management
           </Link>
           <Link
+            to="/approve"
+            className="text-gray-300 font-bold uppercase hover:text-white"
+          >
+            Withdrawal
+          </Link>
+          <Link
             to="/logout"
             className="text-gray-300 hover:text-white"
           >
@@ -108,6 +114,13 @@ const Sidebar = () => {
             className="block text-gray-300 font-bold uppercase hover:text-white"
           >
             Management
+          </Link>
+          <Link
+            to="/approve"
+            onClick={toggleSidebar}
+            className="block text-gray-300 font-bold uppercase hover:text-white"
+          >
+            Withdrawal
           </Link>
           <Link
             to="/logout"
