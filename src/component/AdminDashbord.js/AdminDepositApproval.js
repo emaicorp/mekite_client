@@ -45,24 +45,29 @@ function AdminDepositApproval() {
       );
       if (response.data.message) {
         setMessage(response.data.message);
-        setPendingWithdrawals((prev) =>
-          prev.map((user) =>
-            user.userId === userId
-              ? {
-                  ...user,
-                  investments: user.investments.map((inv, index) =>
-                    index === investmentIndex ? { ...inv, status: action === 'approve' ? 'approved' : 'rejected' } : inv
-                  ),
-                }
-              : user
-          )
-        );
+  
+        // Update the specific investment status
+        setPendingWithdrawals((prev) => {
+          return prev.map((user) => {
+            if (user.userId === userId) {
+              // Update the specific investment for this user
+              const updatedInvestments = user.investments.map((investment, index) =>
+                index === investmentIndex
+                  ? { ...investment, status: action === 'approve' ? 'approved' : 'rejected' }
+                  : investment
+              );
+              return { ...user, investments: updatedInvestments };
+            }
+            return user;
+          });
+        });
       }
     } catch (error) {
       console.error('Error processing withdrawal:', error);
       setMessage('Error processing withdrawal');
     }
   };
+  
 
   return (
     <div className="flex bg-gray-100 min-h-screen">

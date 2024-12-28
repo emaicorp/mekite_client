@@ -1,144 +1,146 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import SideBard from './SideBard';
 
 const ApproveWithdrawal = () => {
-  const [users, setUsers] = useState([]);
   const [pendingWithdrawals, setPendingWithdrawals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
 
-  // Fetch all users and pending withdrawals when the component mounts
+  // Fetch pending withdrawals when the component is mounted
   useEffect(() => {
-    // Fetch all users
-    const fetchAllUsers = async () => {
+    const fetchPendingWithdrawals = async () => {
       try {
-        const response = await axios.get('https://mekite-crypto.onrender.com/api/admin/pending-withdrawals');
+        const response = await axios.get(
+          'https://mekite-crypto.onrender.com/api/admin/pending-withdrawals'
+        );
         setPendingWithdrawals(response.data.pendingWithdrawals);
-      } catch (err) {
-        setError('Failed to fetch pending withdrawals.');
+      } catch (error) {
+        setError('Error fetching pending withdrawals');
+      } finally {
+        setLoading(false);
       }
     };
 
-    // Fetch all users
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('https://mekite-crypto.onrender.com/api/all-users');
-        setUsers(response.data.users);
-      } catch (err) {
-        setError('Failed to fetch users.');
-      }
-    };
-
-    fetchUsers();
-    fetchAllUsers();
-    setLoading(false);
+    fetchPendingWithdrawals();
   }, []);
 
+  // Handle approve or reject action
   const handleAction = async (userId, currency, action) => {
     try {
-      // Send PATCH request to the server to approve or reject the withdrawal
-      const response = await axios.patch(`https://mekite-crypto.onrender.com/api/admin/withdrawals/${userId}`, {
-        currency,
-        action
-      });
-  
-      // Handle success
-      setMessage(response.data.message);
-  
-      // Remove the processed withdrawal from the list
-      setPendingWithdrawals(prevState =>
-        prevState.filter(user => user.userId !== userId)
+      const response = await axios.patch(
+        `https://mekite-crypto.onrender.com/api/admin/withdrawals/${userId}`,
+        {
+          currency,
+          action,
+        }
       );
-    } catch (err) {
-      // Handle error response
-      setError(err.response ? err.response.data.message : 'An error occurred.');
+      // Update the UI after the action is successful
+      setPendingWithdrawals((prev) =>
+        prev.filter((user) => user.userId !== userId)
+      );
+      alert(response.data.message);
+    } catch (error) {
+      alert('Error performing action');
     }
   };
-  
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Admin Dashboard - Financial Management</h1>
+    <>
+      <SideBard />
+      <div className="container mx-auto p-6">
+        <h1 className="text-3xl font-bold mb-6 text-center">Pending Withdrawals</h1>
+        {loading ? (
+          <p className="text-center">Loading...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : pendingWithdrawals.length === 0 ? (
+          <p className="text-center">No pending withdrawals found.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pendingWithdrawals.map((user) => (
+              <div
+                key={user.userId}
+                className="bg-white shadow-md rounded-lg p-6 border border-gray-200"
+              >
+                <h2 className="text-xl font-semibold mb-2">{user.fullName}</h2>
+                <p className="text-gray-600 mb-2">User ID: {user.userId}</p>
+                <p className="text-gray-600 mb-2">Email: {user.email}</p>
 
-      {error && <div className="bg-red-500 text-white p-4 mb-4 rounded">{error}</div>}
-      {message && <div className="bg-green-500 text-white p-4 mb-4 rounded">{message}</div>}
+                <div className="mb-4">
+                  {user.bitcoinPending > 0 && (
+                    <p className="text-gray-700">
+                      Bitcoin Pending: <span className="font-bold">{user.bitcoinPending}</span>
+                    </p>
+                  )}
+                  {user.ethereumPending > 0 && (
+                    <p className="text-gray-700">
+                      Ethereum Pending: <span className="font-bold">{user.ethereumPending}</span>
+                    </p>
+                  )}
+                  {user.usdtPending > 0 && (
+                    <p className="text-gray-700">
+                      USDT Pending: <span className="font-bold">{user.usdtPending}</span>
+                    </p>
+                  )}
+                </div>
 
-      {loading ? (
-        <div className="text-center">
-          <span className="loader"></span> {/* Implement a loader icon */}
-        </div>
-      ) : (
-        <div>
-          {/* Users List */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">All Users</h2>
-            <table className="w-full text-left table-auto border-collapse">
-              <thead>
-                <tr className="border-b bg-gray-100">
-                  <th className="px-4 py-2">Full Name</th>
-                  <th className="px-4 py-2">Email</th>
-                  <th className="px-4 py-2">Total Withdrawals</th>
-                  <th className="px-4 py-2">Last Seen</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map(user => (
-                  <tr key={user._id} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-2">{user.fullName}</td>
-                    <td className="px-4 py-2">{user.email}</td>
-                    <td className="px-4 py-2">{user.totalWithdrawals}</td>
-                    <td className="px-4 py-2">{new Date(user.lastSeen).toLocaleString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-
-          {/* Pending Withdrawals List */}
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Pending Withdrawals</h2>
-            <table className="w-full text-left table-auto border-collapse">
-              <thead>
-                <tr className="border-b bg-gray-100">
-                  <th className="px-4 py-2">User</th>
-                  <th className="px-4 py-2">Currency</th>
-                  <th className="px-4 py-2">Amount</th>
-                  <th className="px-4 py-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pendingWithdrawals.map(user => (
-                  <tr key={user.userId} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-2">{user.fullName}</td>
-                    <td className="px-4 py-2">Bitcoin: {user.bitcoinPending} ETH: {user.ethereumPending} USDT: {user.usdtPending}</td>
-                    <td className="px-4 py-2">
-                      {user.bitcoinPending > 0 && <span>Bitcoin: {user.bitcoinPending}</span>}
-                      {user.ethereumPending > 0 && <span> Ethereum: {user.ethereumPending}</span>}
-                      {user.usdtPending > 0 && <span> USDT: {user.usdtPending}</span>}
-                    </td>
-                    <td className="px-4 py-2">
-                      <button 
-                        className="bg-green-500 text-white px-4 py-2 rounded mr-2"
+                <div className="space-y-2">
+                  {user.bitcoinPending > 0 && (
+                    <div className="flex justify-between">
+                      <button
+                        className="bg-green-500 text-white py-1 px-4 rounded hover:bg-green-600"
                         onClick={() => handleAction(user.userId, 'bitcoin', 'approve')}
                       >
                         Approve Bitcoin
                       </button>
-                      <button 
-                        className="bg-red-500 text-white px-4 py-2 rounded"
+                      <button
+                        className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600"
                         onClick={() => handleAction(user.userId, 'bitcoin', 'reject')}
                       >
                         Reject Bitcoin
                       </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-        </div>
-      )}
-    </div>
+                    </div>
+                  )}
+                  {user.ethereumPending > 0 && (
+                    <div className="flex justify-between">
+                      <button
+                        className="bg-green-500 text-white py-1 px-4 rounded hover:bg-green-600"
+                        onClick={() => handleAction(user.userId, 'ethereum', 'approve')}
+                      >
+                        Approve Ethereum
+                      </button>
+                      <button
+                        className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600"
+                        onClick={() => handleAction(user.userId, 'ethereum', 'reject')}
+                      >
+                        Reject Ethereum
+                      </button>
+                    </div>
+                  )}
+                  {user.usdtPending > 0 && (
+                    <div className="flex justify-between">
+                      <button
+                        className="bg-green-500 text-white py-1 px-4 rounded hover:bg-green-600"
+                        onClick={() => handleAction(user.userId, 'usdt', 'approve')}
+                      >
+                        Approve USDT
+                      </button>
+                      <button
+                        className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600"
+                        onClick={() => handleAction(user.userId, 'usdt', 'reject')}
+                      >
+                        Reject USDT
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

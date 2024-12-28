@@ -85,9 +85,9 @@ function WithdrawalForm() {
       <Sidebar />
       <section className="p-6">
         <div className="flex items-center space-x-6">
-          <FaWallet className="text-3xl text-white" />
-          <div>
-            <p className="text-sm text-gray-200">Available Balance</p>
+          <FaWallet className="text-3xl text-black" />
+          <div classname="flex item-center space-x-6">
+            <p className="text-sm text-gray-600">Available Balance</p>
             <p className="text-2xl font-semibold">{`$${userDetails.availableBalance}`}</p>
           </div>
         </div>
@@ -96,8 +96,8 @@ function WithdrawalForm() {
           <thead>
             <tr className="bg-gray-100 text-gray-700">
               <th className="border border-gray-300 px-4 py-2">Processing</th>
-              <th className="border border-gray-300 px-4 py-2">Available</th>
-              <th className="border border-gray-300 px-4 py-2">Pending</th>
+              <th className="border border-gray-300 px-4 py-2">Available in $</th>
+              <th className="border border-gray-300 px-4 py-2">Pending in $</th>
               <th className="border border-gray-300 px-4 py-2">Account</th>
             </tr>
           </thead>
