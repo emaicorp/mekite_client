@@ -12,11 +12,12 @@ const ApproveWithdrawal = () => {
     const fetchPendingWithdrawals = async () => {
       try {
         const response = await axios.get(
-          'https://mekite-btc.onrender.com/api/admin/pending-withdrawals'
+          'https://mekite-btc.onrender.com/api/admin/currency-pendings'
         );
-        setPendingWithdrawals(response.data.pendingWithdrawals);
+        setPendingWithdrawals(response.data.users || []);
       } catch (error) {
         setError('Error fetching pending withdrawals');
+        console.error('Fetch Error:', error);
       } finally {
         setLoading(false);
       }
@@ -25,23 +26,30 @@ const ApproveWithdrawal = () => {
     fetchPendingWithdrawals();
   }, []);
 
-  // Handle approve or reject action
   const handleAction = async (userId, currency, action) => {
     try {
-      const response = await axios.patch(
-        `https://mekite-btc.onrender.com/api/admin/withdrawals/${userId}`,
-        {
-          currency,
-          action,
-        }
-      );
-      // Update the UI after the action is successful
-      setPendingWithdrawals((prev) =>
-        prev.filter((user) => user.userId !== userId)
-      );
+      const endpoint =
+        action === 'approve'
+          ? `https://mekite-btc.onrender.com/api/admin/approve-currency/${userId}`
+          : `https://mekite-btc.onrender.com/api/admin/reject-currency/${userId}`;
+      const payload = { currency }; // You can include more details if necessary
+      const response = await axios.post(endpoint, payload);
+
       alert(response.data.message);
+      // Refresh the pending withdrawals list
+      setPendingWithdrawals((prev) =>
+        prev.map((user) =>
+          user.userId === userId
+            ? {
+                ...user,
+                [`${currency}Pending`]: action === 'approve' ? 0 : user[`${currency}Pending`],
+              }
+            : user
+        )
+      );
     } catch (error) {
-      alert('Error performing action');
+      console.error('Action Error:', error);
+      alert(error.response?.data?.message || 'Error performing action');
     }
   };
 
@@ -65,7 +73,6 @@ const ApproveWithdrawal = () => {
               >
                 <h2 className="text-xl font-semibold mb-2">{user.fullName}</h2>
                 <p className="text-gray-600 mb-2">User ID: {user.userId}</p>
-                <p className="text-gray-600 mb-2">Email: {user.email}</p>
 
                 <div className="mb-4">
                   {user.bitcoinPending > 0 && (
