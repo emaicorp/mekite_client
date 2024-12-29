@@ -30,8 +30,10 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Submitting form with data:', formData); // Debug log
+
     try {
-      const response = await fetch('https://mekite-crypto.onrender.com/api/register', {
+      const response = await fetch('https://mekite-btc.onrender.com/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,21 +42,19 @@ function Register() {
       });
   
       const data = await response.json();
-      console.log('Response Data:', data);
-  
+      console.log('Response Data:', data); // Debug log
+
       if (response.ok) {
-        // Navigate to the login page even if the email message was not sent
         setResponseMessage('Registration successful. Redirecting to login...');
         setTimeout(() => navigate('/login'), 2000); // Adds a short delay for UX
       } else {
         setResponseMessage(data.message || 'Registration failed.');
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error); // Debug log
       setResponseMessage('An error occurred while registering. Please try again.');
     }
   };
-  
 
   return (
     <>

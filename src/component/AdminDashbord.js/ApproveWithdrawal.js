@@ -12,7 +12,7 @@ const ApproveWithdrawal = () => {
     const fetchPendingWithdrawals = async () => {
       try {
         const response = await axios.get(
-          'https://mekite-crypto.onrender.com/api/admin/pending-withdrawals'
+          'https://mekite-btc.onrender.com/api/admin/pending-withdrawals'
         );
         setPendingWithdrawals(response.data.pendingWithdrawals);
       } catch (error) {
@@ -29,7 +29,7 @@ const ApproveWithdrawal = () => {
   const handleAction = async (userId, currency, action) => {
     try {
       const response = await axios.patch(
-        `https://mekite-crypto.onrender.com/api/admin/withdrawals/${userId}`,
+        `https://mekite-btc.onrender.com/api/admin/withdrawals/${userId}`,
         {
           currency,
           action,

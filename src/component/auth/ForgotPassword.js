@@ -19,7 +19,7 @@ function ForgotPassword() {
     }
 
     try {
-      const response = await axios.post('https://mekite-crypto.onrender.com/api/forgot-password', { email });
+      const response = await axios.post('https://mekite-btc.onrender.com/api/forgot-password', { email });
       setSuccess(response.data.message);
       setTimeout(() => navigate('/reset-password', { state: { email } }), 2000); // Pass email to ResetPassword
     } catch (err) {

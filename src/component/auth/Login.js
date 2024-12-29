@@ -21,7 +21,7 @@ function Login() {
     }
 
     try {
-        const response = await axios.post('https://mekite-crypto.onrender.com/api/login', { username, password });
+        const response = await axios.post('https://mekite-btc.onrender.com/api/login', { username, password });
 
         if (response.data.token) {
             localStorage.setItem('authToken', response.data.token);

@@ -16,7 +16,7 @@ function WalletDetails() {
 
     try {
       const response = await fetch(
-        `https://mekite-crypto.onrender.com/api/users/api/wallets?email=${encodeURIComponent(email)}`
+        `https://mekite-btc.onrender.com/api/users/api/wallets?email=${encodeURIComponent(email)}`
       );
 
       const data = await response.json();

@@ -9,7 +9,7 @@ function DeleteUser() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('https://mekite-crypto.onrender.com/api/all-users');
+        const response = await axios.get('https://mekite-btc.onrender.com/api/all-users');
         if (response.data.users) {
           setUsers(response.data.users);
         }
@@ -24,7 +24,7 @@ function DeleteUser() {
   // Handle Delete User
   const handleDeleteUser = async (userId) => {
     try {
-      const response = await axios.delete(`https://mekite-crypto.onrender.com/api/users/${userId}`);
+      const response = await axios.delete(`https://mekite-btc.onrender.com/api/users/${userId}`);
       if (response.data.success) {
         setMessage(response.data.message);
         // Remove deleted user from the list

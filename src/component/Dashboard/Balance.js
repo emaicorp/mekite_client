@@ -19,7 +19,7 @@ function Balance() {
     const fetchBalance = async () => {
       try {
         const response = await axios.get(
-          `https://mekite-crypto.onrender.com/api/users/user/balance/${user._id}`
+          `https://mekite-btc.onrender.com/api/users/user/balance/${user._id}`
         ); // Replace with your backend API URL
         setUserData(response.data);
       } catch (error) {

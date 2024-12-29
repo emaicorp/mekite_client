@@ -21,7 +21,7 @@ function ResetPassword() {
     }
 
     try {
-      const response = await axios.post('https://mekite-crypto.onrender.com/api/reset-password', { email, newPassword });
+      const response = await axios.post('https://mekite-btc.onrender.com/api/reset-password', { email, newPassword });
       setSuccess(response.data.message);
       setTimeout(() => navigate('/login'), 2000); // Navigate to login after success
     } catch (err) {

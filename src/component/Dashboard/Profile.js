@@ -28,7 +28,7 @@ function Profile() {
 
       try {
         const response = await axios.get(
-          'https://mekite-crypto.onrender.com/api/profile/activity',
+          'https://mekite-btc.onrender.com/api/profile/activity',
           {
             headers: {
               Authorization: `Bearer ${userDetails.token}`,

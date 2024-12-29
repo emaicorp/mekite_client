@@ -4,7 +4,7 @@ import { FaClipboard } from 'react-icons/fa'; // Importing a clipboard icon
 
 const plans = [
   {
-    name: "STARTER PLAN",
+    name: "Starter Plan",
     rate: "6% Daily for 3 Days",
     details: {
       INVESTMENT: "$50 - $999",
@@ -14,7 +14,7 @@ const plans = [
     features: ["All payment systems", "Customer Support", "Automated Withdraw", "Daily Withdrawals"],
   },
   {
-    name: "PREMIUM PLAN",
+    name: "Premium Plan",
     rate: "10% Daily for 5 Days",
     details: {
       INVESTMENT: "$1,000 - $4,999",
@@ -24,7 +24,7 @@ const plans = [
     features: ["All payment systems", "Customer Support", "Automated Withdraw", "Daily Withdrawals"],
   },
   {
-    name: "PROFESSIONAL PLAN",
+    name: "Professional Plan",
     rate: "15% Daily for 5 Days",
     details: {
       INVESTMENT: "$5,000 - Unlimited",
@@ -163,7 +163,7 @@ function InvestForm({ onSuccess }) {
     }
 
     try {
-      const response = await fetch("https://mekite-crypto.onrender.com/api/invest", {
+      const response = await fetch("https://mekite-btc.onrender.com/api/invest", {
         method: "POST",
         headers: { "Content-Type": "application/json", "user-id": userId },
         body: JSON.stringify({ userId, selectedPackage, paymentMethod, amount }),
@@ -216,9 +216,9 @@ function InvestForm({ onSuccess }) {
           className="w-full border rounded p-2"
         >
           <option value="">-- Select a payment method --</option>
-          <option value="bitcoin">Bitcoin</option>
-          <option value="ethereum">Ethereum</option>
-          <option value="usdt">USDT</option>
+          <option value="bitcoin">bitcoin</option>
+          <option value="ethereum">ethereumPendingthereum</option>
+          <option value="usdt">usdt</option>
         </select>
       </div>
       <div>
@@ -333,7 +333,7 @@ function InvestForm({ onSuccess }) {
         <button
           type="button"
           onClick={() => setPlanDetails(null)}
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 mx-2"
+          className="bg-blue-500 text-white  hidden py-2 px-4 rounded hover:bg-blue-700 mx-2"
         >
           Invest Again
         </button>

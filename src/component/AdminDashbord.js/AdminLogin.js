@@ -12,7 +12,7 @@ function AdminLogin() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('https://mekite-crypto.onrender.com/api/all-users');
+        const response = await axios.get('https://mekite-btc.onrender.com/api/all-users');
         if (response.data.users) {
           setUsers(response.data.users);
         }
@@ -31,7 +31,7 @@ function AdminLogin() {
     }
 
     try {
-      const response = await axios.post('https://mekite-crypto.onrender.com/api/admin/manage-user', {
+      const response = await axios.post('https://mekite-btc.onrender.com/api/admin/manage-user', {
         action,
         userId
       });

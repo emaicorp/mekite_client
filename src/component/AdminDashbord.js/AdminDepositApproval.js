@@ -11,7 +11,7 @@ function AdminDepositApproval() {
   useEffect(() => {
     const fetchPendingWithdrawals = async () => {
       try {
-        const response = await axios.get('https://mekite-crypto.onrender.com/api/admin/withdrawals/pending');
+        const response = await axios.get('https://mekite-btc.onrender.com/api/admin/withdrawals/pending');
         if (response.data.pendingWithdrawals) {
           setPendingWithdrawals(response.data.pendingWithdrawals);
         }
@@ -23,7 +23,7 @@ function AdminDepositApproval() {
 
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('https://mekite-crypto.onrender.com/api/all-users');
+        const response = await axios.get('https://mekite-btc.onrender.com/api/all-users');
         if (response.data.users) {
           setUsers(response.data.users);
         }
@@ -37,34 +37,26 @@ function AdminDepositApproval() {
     fetchUsers();
   }, []);
 
-  const handleApproval = async (userId, investmentIndex, action) => {
+  const handleApproval = async (investmentId, action) => {
     try {
-      const response = await axios.post(
-        `https://mekite-crypto.onrender.com/api/admin/withdrawals/${action}`,
-        { userId, investmentIndex }
+      const response = await axios.patch(
+        `https://mekite-btc.onrender.com/api/admin/withdrawals/${action}`,
+        { investmentId }
       );
       if (response.data.message) {
         setMessage(response.data.message);
-  
-        // Update the specific investment status
-        setPendingWithdrawals((prev) => {
-          return prev.map((user) => {
-            if (user.userId === userId) {
-              // Update the specific investment for this user
-              const updatedInvestments = user.investments.map((investment, index) =>
-                index === investmentIndex
-                  ? { ...investment, status: action === 'approve' ? 'approved' : 'rejected' }
-                  : investment
-              );
-              return { ...user, investments: updatedInvestments };
-            }
-            return user;
-          });
-        });
+        setPendingWithdrawals((prev) =>
+          prev.map((user) => ({
+            ...user,
+            investments: user.investments.map((inv) =>
+              inv._id === investmentId ? { ...inv, status: action === 'approve' ? 'approved' : 'rejected' } : inv
+            ),
+          }))
+        );
       }
     } catch (error) {
-      console.error('Error processing withdrawal:', error);
-      setMessage('Error processing withdrawal');
+      console.error(`Error processing withdrawal (${action}):`, error);
+      setMessage(`Error processing withdrawal (${action})`);
     }
   };
   
@@ -74,7 +66,7 @@ function AdminDepositApproval() {
       <SideBard />
       <div className="flex-1 p-8">
         <header className="flex justify-between items-center bg-white shadow px-6 py-4 mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Admin Deposit Approval</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Admin Withdrawal Management</h2>
         </header>
 
         <div className="space-y-8">
@@ -89,8 +81,11 @@ function AdminDepositApproval() {
                   <div key={user.userId} className="bg-white p-4 rounded-lg shadow-md">
                     <h4 className="text-lg font-bold text-gray-700">{user.username}</h4>
                     <div className="mt-2">
-                      {user.investments.map((investment, index) => (
-                        <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
+                      {user.investments.map((investment) => (
+                        <div
+                          key={investment._id}
+                          className="flex justify-between items-center py-2 border-b last:border-b-0"
+                        >
                           <div>
                             <p className="text-sm text-gray-600">
                               Amount: <span className="font-medium">{investment.amount}</span>
@@ -102,13 +97,13 @@ function AdminDepositApproval() {
                           <div className="flex space-x-2">
                             <button
                               className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600"
-                              onClick={() => handleApproval(user.userId, index, 'approve')}
+                              onClick={() => handleApproval(investment._id, 'approve')}
                             >
                               <FaCheckCircle />
                             </button>
                             <button
                               className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-                              onClick={() => handleApproval(user.userId, index, 'reject')}
+                              onClick={() => handleApproval(investment._id, 'reject')}
                             >
                               <FaTimesCircle />
                             </button>
@@ -143,7 +138,11 @@ function AdminDepositApproval() {
 
           {/* Success/Error Message */}
           {message && (
-            <div className="mt-4 p-4 bg-green-100 border border-green-300 rounded-lg text-green-700">
+            <div
+              className={`mt-4 p-4 rounded-lg ${
+                message.includes('Error') ? 'bg-red-100 border border-red-300 text-red-700' : 'bg-green-100 border border-green-300 text-green-700'
+              }`}
+            >
               {message}
             </div>
           )}

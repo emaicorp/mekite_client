@@ -14,7 +14,7 @@ const AdminFundUser = () => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
-          "https://mekite-crypto.onrender.com/api/all-users"
+          "https://mekite-btc.onrender.com/api/all-users"
         );
         setUsers(response.data.users);
       } catch (error) {
@@ -33,7 +33,7 @@ const AdminFundUser = () => {
 
     try {
       const response = await axios.put(
-        "https://mekite-crypto.onrender.com/api/update-balance",
+        "https://mekite-btc.onrender.com/api/update-balance",
         {
           walletAddress: selectedUser,
           currency,

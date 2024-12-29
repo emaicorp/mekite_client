@@ -26,7 +26,7 @@ const FundAccount = () => {
 
     try {
       const response = await axios.post(
-        "https://mekite-crypto.onrender.com/api/users/fund",
+        "https://mekite-btc.onrender.com/api/users/fund",
         formData
       ); // Replace with your backend URL
       setMessage(response.data.message);

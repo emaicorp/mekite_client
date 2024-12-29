@@ -26,7 +26,7 @@ const UserHistory = () => {
 
     try {
       const response = await fetch(
-        `https://mekite-crypto.onrender.com/api/users/user/history/${username}`
+        `https://mekite-btc.onrender.com/api/users/user/history/${username}`
       );
       const data = await response.json();
 

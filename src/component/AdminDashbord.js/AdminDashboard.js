@@ -13,7 +13,7 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("https://mekite-crypto.onrender.com/api/all-users");
+        const response = await axios.get("https://mekite-btc.onrender.com/api/all-users");
         setUsers(response.data.users);
         setLoading(false);
       } catch (err) {
