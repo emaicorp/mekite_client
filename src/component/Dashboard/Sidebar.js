@@ -76,6 +76,18 @@ function Sidebar() {
             <div className="flex flex-col space-y-6 px-6 mt-12">
               {navLinks}
             </div>
+
+            {userDetails && (
+              <div className="hidden md:flex items-center space-x-4">
+                <CgProfile
+                  src={userDetails.profileImage || 'default-avatar.jpg'}
+                  alt="User"
+                  className="w-8 h-8 rounded-full"
+                />
+                <span className="font-semibold text-white">{userDetails.username}</span>
+                <span className="text-sm text-gray-300">{userDetails.email}</span>
+              </div>
+            )}
           </div>
         </nav>
       </header>

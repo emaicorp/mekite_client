@@ -173,7 +173,7 @@ function InvestForm({ onSuccess }) {
       if (response.ok) {
         onSuccess({ selectedPackage, paymentMethod, amount, details: selectedPlan.details });
         setPlanDetails(selectedPlan); // Set the plan details for summary
-        setMessage("Investment successful!");
+        setMessage("The deposit has been saved. it will become active when the administration checks statistics.!");
       } else {
         setMessage(data.message || "An error occurred.");
       }
@@ -217,7 +217,7 @@ function InvestForm({ onSuccess }) {
         >
           <option value="">-- Select a payment method --</option>
           <option value="bitcoin">bitcoin</option>
-          <option value="ethereum">ethereumPendingthereum</option>
+          <option value="ethereum">ethereum</option>
           <option value="usdt">usdt</option>
         </select>
       </div>

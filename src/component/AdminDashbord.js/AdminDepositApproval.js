@@ -5,37 +5,25 @@ import SideBard from './SideBard';
 
 function AdminDepositApproval() {
   const [pendingWithdrawals, setPendingWithdrawals] = useState([]);
-  const [users, setUsers] = useState([]);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const fetchPendingWithdrawals = async () => {
-      try {
-        const response = await axios.get('https://mekite-btc.onrender.com/api/admin/withdrawals/pending');
-        if (response.data.pendingWithdrawals) {
-          setPendingWithdrawals(response.data.pendingWithdrawals);
-        }
-      } catch (error) {
-        console.error('Error fetching pending withdrawals:', error);
-        setMessage('Error fetching pending withdrawals');
-      }
-    };
-
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('https://mekite-btc.onrender.com/api/all-users');
-        if (response.data.users) {
-          setUsers(response.data.users);
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-        setMessage('Error fetching users');
-      }
-    };
-
     fetchPendingWithdrawals();
-    fetchUsers();
   }, []);
+
+  const fetchPendingWithdrawals = async () => {
+    try {
+      const response = await axios.get('https://mekite-btc.onrender.com/api/admin/withdrawals/pending');
+      if (response.data.pendingWithdrawals) {
+        setPendingWithdrawals(response.data.pendingWithdrawals);
+      } else {
+        setPendingWithdrawals([]);
+      }
+    } catch (error) {
+      console.error('Error fetching pending withdrawals:', error);
+      setMessage('Error fetching pending withdrawals. Please try again later.');
+    }
+  };
 
   const handleApproval = async (investmentId, action) => {
     try {
@@ -43,23 +31,42 @@ function AdminDepositApproval() {
         `https://mekite-btc.onrender.com/api/admin/withdrawals/${action}`,
         { investmentId }
       );
+
       if (response.data.message) {
         setMessage(response.data.message);
+
+        // Remove the processed investment from the state
         setPendingWithdrawals((prev) =>
-          prev.map((user) => ({
-            ...user,
-            investments: user.investments.map((inv) =>
-              inv._id === investmentId ? { ...inv, status: action === 'approve' ? 'approved' : 'rejected' } : inv
-            ),
-          }))
+          prev.map((user) => {
+            const updatedInvestments = user.investments.filter(
+              (investment) => investment._id !== investmentId
+            );
+            return { ...user, investments: updatedInvestments };
+          }).filter((user) => user.investments.length > 0)
         );
       }
     } catch (error) {
-      console.error(`Error processing withdrawal (${action}):`, error);
-      setMessage(`Error processing withdrawal (${action})`);
+      console.error('Error processing withdrawal:', error);
+      setMessage(
+        `Error processing withdrawal: ${error.response?.data?.message || 'Unknown error'}`
+      );
     }
   };
-  
+
+  const getTimeRemaining = (expiresAt) => {
+    const now = new Date();
+    const expirationTime = new Date(expiresAt);
+    const timeRemaining = expirationTime - now;
+
+    if (timeRemaining <= 0) return 'Complete';
+
+    const seconds = Math.floor((timeRemaining / 1000) % 60);
+    const minutes = Math.floor((timeRemaining / 1000 / 60) % 60);
+    const hours = Math.floor((timeRemaining / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  };
 
   return (
     <div className="flex bg-gray-100 min-h-screen">
@@ -70,7 +77,6 @@ function AdminDepositApproval() {
         </header>
 
         <div className="space-y-8">
-          {/* Pending Withdrawals */}
           <section>
             <h3 className="text-xl font-semibold text-gray-700 mb-4">Pending Withdrawals</h3>
             {pendingWithdrawals.length === 0 ? (
@@ -93,20 +99,31 @@ function AdminDepositApproval() {
                             <p className="text-sm text-gray-600">
                               Payment Method: <span className="font-medium">{investment.paymentMethod}</span>
                             </p>
+                            <p className="text-sm text-gray-600">
+                              Time Remaining: <span className="font-medium">{getTimeRemaining(investment.expiresAt)}</span>
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Package: <span className="font-medium">{investment.selectedPackage}</span>
+                            </p>
+                            {getTimeRemaining(investment.expiresAt) === 'Complete' && (
+                              <span className="text-green-600 font-semibold">Complete</span>
+                            )}
                           </div>
                           <div className="flex space-x-2">
-                            <button
-                              className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600"
-                              onClick={() => handleApproval(investment._id, 'approve')}
-                            >
-                              <FaCheckCircle />
-                            </button>
-                            <button
-                              className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-                              onClick={() => handleApproval(investment._id, 'reject')}
-                            >
-                              <FaTimesCircle />
-                            </button>
+                            <>
+                              <button
+                                className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600"
+                                onClick={() => handleApproval(investment._id, 'approve')}
+                              >
+                                <FaCheckCircle />
+                              </button>
+                              <button
+                                className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                                onClick={() => handleApproval(investment._id, 'reject')}
+                              >
+                                <FaTimesCircle />
+                              </button>
+                            </>
                           </div>
                         </div>
                       ))}
@@ -117,30 +134,12 @@ function AdminDepositApproval() {
             )}
           </section>
 
-          {/* All Users */}
-          <section>
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">All Users</h3>
-            {users.length === 0 ? (
-              <p className="text-gray-600">No users found.</p>
-            ) : (
-              <div className="bg-white p-4 rounded-lg shadow-md">
-                <ul className="divide-y divide-gray-200">
-                  {users.map((user) => (
-                    <li key={user._id} className="py-2">
-                      <p className="text-sm font-medium text-gray-800">{user.username}</p>
-                      <p className="text-sm text-gray-600">{user.email}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </section>
-
-          {/* Success/Error Message */}
           {message && (
             <div
               className={`mt-4 p-4 rounded-lg ${
-                message.includes('Error') ? 'bg-red-100 border border-red-300 text-red-700' : 'bg-green-100 border border-green-300 text-green-700'
+                message.includes('Error')
+                  ? 'bg-red-100 border border-red-300 text-red-700'
+                  : 'bg-green-100 border border-green-300 text-green-700'
               }`}
             >
               {message}

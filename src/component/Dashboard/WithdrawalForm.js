@@ -48,37 +48,43 @@ function WithdrawalForm() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     // Get user details and auth token
-    const { token, userId } = getUserDetails();
-    
-    if (!userId) {
-      setMessage("User not logged in. Please log in again.");
-      return;
+    const userDetails = getUserDetails();
+    if (!userDetails) {
+        setMessage("User not logged in. Please log in again.");
+        return;
     }
-  
+
+    const { token, userId } = userDetails;
+
     // Validate the amount
     if (!withdrawalAmount || isNaN(withdrawalAmount) || withdrawalAmount <= 0) {
-      setMessage("Please enter a valid amount.");
-      return;
+        setMessage("Please enter a valid amount.");
+        return;
     }
-  
+
     try {
-      const response = await axios.post("https://mekite-btc.onrender.com/api/withdraw", {
-        userId,
-        currency: selectedCurrency,
-        amount: withdrawalAmount,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Include the auth token in the request header
-        },
-      });
-  
-      setMessage(response.data.message);
+        const response = await axios.post(
+            "https://mekite-btc.onrender.com/api/withdraw",
+            {
+                userId,
+                currency: selectedCurrency,
+                amount: withdrawalAmount,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        setMessage(response.data.message);
     } catch (error) {
-      setMessage(`Error: ${error.response ? error.response.data.message : "An error occurred"}`);
+        setMessage(`Error: ${error.response ? error.response.data.message : "An error occurred"}`);
     }
-  };
+};
+
 
   return (
     <>

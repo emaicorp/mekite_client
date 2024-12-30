@@ -76,7 +76,7 @@ function Profile() {
 
     try {
       const response = await axios.put(
-        'https://mekite-crypto.onrender.com/api/profile/update',
+        'https://mekite-btc.onrender.com/api/profile/update',
         formData,
         {
           headers: {

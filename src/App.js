@@ -388,7 +388,7 @@ const PageWrapper = ({ component: Component, loading, setLoading, networkStatus 
     <div className="relative">
       {loading ? (
         <div className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50 z-50">
-          <div className="animate-spin text-yellow-400 text-4xl">💰</div>
+          <div className="animate-spin hidden text-yellow-400 text-4xl">💰</div>
         </div>
       ) : (
         <Component />
