@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaBitcoin } from "react-icons/fa6";
-import { FaEthereum, FaWallet } from "react-icons/fa";
+import { FaEthereum } from "react-icons/fa";
+import { FaDollarSign, FaCheckCircle, FaHourglassHalf, FaExclamationCircle } from 'react-icons/fa';
 import { FaOctopusDeploy } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Sidebar from "./Sidebar";
@@ -90,13 +91,32 @@ function WithdrawalForm() {
     <>
       <Sidebar />
       <section className="p-6">
-        <div className="flex items-center space-x-6">
-          <FaWallet className="text-3xl text-black" />
-          <div classname="flex item-center space-x-6">
-            <p className="text-sm text-gray-600">Available Balance</p>
-            <p className="text-2xl font-semibold">{`$${userDetails.availableBalance}`}</p>
-          </div>
-        </div>
+      <div className="flex flex-col space-y-4 bg-white p-6 rounded-lg shadow-lg">
+  {/* Available Balance */}
+  <div className="flex items-center justify-between">
+    <div className="flex items-center space-x-4">
+      <FaDollarSign className="text-4xl text-green-500" />
+      <div className="flex flex-col">
+        <p className="text-sm text-gray-600">Available Balance</p>
+        <p className="text-2xl font-bold text-gray-800">{`$${userDetails.availableBalance}`}</p>
+      </div>
+    </div>
+    <FaCheckCircle className="text-3xl text-green-500" />
+  </div>
+
+  {/* Pending Balance */}
+  <div className="flex items-center justify-between">
+    <div className="flex items-center space-x-4">
+      <FaHourglassHalf className="text-4xl text-yellow-500" />
+      <div className="flex flex-col">
+        <p className="text-sm text-gray-600">Pending Balance</p>
+        <p className="text-2xl font-bold text-red-600">{`$${userDetails.pendingBalance}`}</p>
+      </div>
+    </div>
+    <FaExclamationCircle className="text-3xl text-yellow-500" />
+  </div>
+</div>
+
 
         <table className="table-auto w-full border-collapse border border-gray-200 shadow-lg">
           <thead>
@@ -114,7 +134,7 @@ function WithdrawalForm() {
                 Bitcoin
               </td>
               <td className="border border-gray-300 px-4 py-2">{bitcoinAvailable}</td>
-              <td className="border border-gray-300 px-4 py-2">{bitcoinPending}</td>
+              <td className="border border-gray-300 italic text-red-600 px-4 py-2">{bitcoinPending}</td>
               <td className="border border-gray-300 px-4 py-2 text-gray-500 italic">
                 <Link to="/profile">not set</Link>
               </td>
@@ -125,7 +145,7 @@ function WithdrawalForm() {
                 Ethereum
               </td>
               <td className="border border-gray-300 px-4 py-2">{ethereumAvailable}</td>
-              <td className="border border-gray-300 px-4 py-2">{ethereumPending}</td>
+              <td className="border border-gray-300 italic text-red-600 px-4 py-2">{ethereumPending}</td>
               <td className="border border-gray-300 px-4 py-2 text-gray-500 italic">
                 <Link to="/profile">not set</Link>
               </td>
@@ -136,7 +156,7 @@ function WithdrawalForm() {
                 USDT
               </td>
               <td className="border border-gray-300 px-4 py-2">{usdtAvailable}</td>
-              <td className="border border-gray-300 px-4 py-2">{usdtPending}</td>
+              <td className="border border-gray-300 text-red-600 italic px-4 py-2">{usdtPending}</td>
               <td className="border border-gray-300 px-4 py-2 text-gray-500 italic">
                 <Link to="/profile">not set</Link>
               </td>
