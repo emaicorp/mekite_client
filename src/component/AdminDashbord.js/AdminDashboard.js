@@ -42,7 +42,7 @@ function AdminDashboard() {
       <SideBard />
       <div className="p-5">
         <h1 className="text-center text-2xl font-bold mb-4">All Users</h1>
-        <Carousel responsive={responsive} infinite autoPlay autoPlaySpeed={3000}>
+        <Carousel responsive={responsive} infinite autoPlay autoPlaySpeed={10000}>
           {users.map((user, index) => (
             <div
               key={index}
