@@ -47,28 +47,28 @@ function FundTotalEarning() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Test API Endpoints</h1>
+    <div className="p-6 max-w-4xl mx-auto bg-white shadow-md rounded-lg">
+      <h1 className="text-2xl font-semibold text-center mb-6">Test API Endpoints</h1>
 
       {/* Fetch All Users */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Fetch All Users</h2>
+        <h2 className="text-lg font-semibold mb-4">Fetch All Users</h2>
         <button
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
           onClick={fetchAllUsers}
         >
           Get All Users
         </button>
         {users.length > 0 && (
-          <ul className="mt-4">
+          <ul className="mt-4 space-y-4">
             {users.map((user, index) => (
-              <li key={index} className="border p-2 rounded mb-2 flex items-center justify-between">
-                <div>
-                  <p><strong>Username:</strong> {user.username}</p>
-                  <p><strong>Wallet:</strong> {user.walletAddress}</p>
+              <li key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 transition duration-200">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-800"><strong>Username:</strong> {user.username}</p>
+                  <p className="text-sm text-gray-600"><strong>Wallet:</strong> {user.walletAddress}</p>
                 </div>
                 <button
-                  className="ml-4 text-blue-500 hover:text-blue-700"
+                  className="text-blue-500 hover:text-blue-700 text-sm font-medium"
                   onClick={() => copyToClipboard(user.walletAddress)}
                 >
                   Copy
@@ -81,32 +81,34 @@ function FundTotalEarning() {
 
       {/* Fund Total Earnings */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Fund Total Earnings</h2>
-        <input
-          type="text"
-          placeholder="Wallet Address"
-          className="border p-2 rounded mb-2 w-full"
-          value={walletAddress}
-          onChange={(e) => setWalletAddress(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Amount"
-          className="border p-2 rounded mb-2 w-full"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-        <button
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-          onClick={fundTotalEarnings}
-        >
-          Fund Total Earnings
-        </button>
+        <h2 className="text-lg font-semibold mb-4">Fund Total Earnings</h2>
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Wallet Address"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={walletAddress}
+            onChange={(e) => setWalletAddress(e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="Amount"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <button
+            className="w-full px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
+            onClick={fundTotalEarnings}
+          >
+            Fund Total Earnings
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
-      {message && <p className="text-green-600">{message}</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {message && <p className="text-green-600 text-center mt-4">{message}</p>}
+      {error && <p className="text-red-600 text-center mt-4">{error}</p>}
     </div>
   );
 }

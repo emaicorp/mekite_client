@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { FaCopy } from 'react-icons/fa'; // Import a copy icon from react-icons
+import { FaCopy } from 'react-icons/fa'; // Copy icon
 import FundTotalEarning from './FundTotalEarning';
 import DeductActive from './DeductActive';
 
@@ -11,7 +11,6 @@ function Bonuses() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // Base URL for your API
   const baseURL = 'https://mekite-btc.onrender.com/api'; // Replace with your API's base URL
 
   // Fetch all users
@@ -50,29 +49,32 @@ function Bonuses() {
   };
 
   return (
-    <>
-        <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Test API Endpoints</h1>
+    <div className="container mx-auto p-6 bg-white rounded shadow-md">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">Bonuses Management</h1>
 
       {/* Fetch All Users */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Fetch All Users</h2>
+        <h2 className="text-xl font-semibold text-gray-700 mb-4">Fetch All Users</h2>
         <button
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
           onClick={fetchAllUsers}
         >
           Get All Users
         </button>
+
         {users.length > 0 && (
-          <ul className="mt-4">
+          <ul className="mt-4 space-y-4">
             {users.map((user, index) => (
-              <li key={index} className="border p-2 rounded mb-2 flex items-center justify-between">
+              <li
+                key={index}
+                className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm"
+              >
                 <div>
-                  <p><strong>Username:</strong> {user.username}</p>
-                  <p><strong>Wallet:</strong> {user.walletAddress}</p>
+                  <p className="font-medium">Username: {user.username}</p>
+                  <p className="text-gray-600">Wallet: {user.walletAddress}</p>
                 </div>
                 <button
-                  className="ml-4 text-blue-500 hover:text-blue-700"
+                  className="ml-4 text-blue-500 hover:text-blue-700 transition duration-150"
                   onClick={() => copyToClipboard(user.walletAddress)}
                 >
                   <FaCopy />
@@ -85,37 +87,39 @@ function Bonuses() {
 
       {/* Fund Active Deposit */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Fund Active Deposit</h2>
-        <input
-          type="text"
-          placeholder="Wallet Address"
-          className="border p-2 rounded mb-2 w-full"
-          value={walletAddress}
-          onChange={(e) => setWalletAddress(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Amount"
-          className="border p-2 rounded mb-2 w-full"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-        <button
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-          onClick={fundActiveDeposit}
-        >
-          Fund Active Deposit
-        </button>
+        <h2 className="text-xl font-semibold text-gray-700 mb-4">Fund Active Deposit</h2>
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Wallet Address"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={walletAddress}
+            onChange={(e) => setWalletAddress(e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="Amount"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <button
+            className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+            onClick={fundActiveDeposit}
+          >
+            Fund Active Deposit
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
-      {message && <p className="text-green-600">{message}</p>}
-      {error && <p className="text-red-600">{error}</p>}
-    </div>
+      {message && <p className="text-green-500">{message}</p>}
+      {error && <p className="text-red-500">{error}</p>}
 
-    <FundTotalEarning />
-    <DeductActive />
-    </>
+      {/* Additional Components */}
+      <FundTotalEarning />
+      <DeductActive />
+    </div>
   );
 }
 
