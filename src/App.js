@@ -23,6 +23,7 @@ import Logout from "./component/Dashboard/Logout";
 import AdminDepositApproval from "./component/AdminDashbord.js/AdminDepositApproval";
 import ReferralLink from "./component/Dashboard/ReferralLink";
 import ApproveWithdrawal from "./component/AdminDashbord.js/ApproveWithdrawal";
+import Bonuses from "./component/AdminDashbord.js/Bonuses";
 
 // Mocked API endpoint for countries and languages
 // const COUNTRY_API = "";
@@ -351,6 +352,18 @@ const App = () => {
           element={
             <PageWrapper
             component={ApproveWithdrawal}
+            loading={loading}
+            setLoading={setLoading}
+            networkStatus={networkStatus}
+            />
+          }
+        />
+
+<Route 
+          path="/bonus"
+          element={
+            <PageWrapper
+            component={Bonuses}
             loading={loading}
             setLoading={setLoading}
             networkStatus={networkStatus}

@@ -42,6 +42,12 @@ const Sidebar = () => {
             Approve Deposit
           </Link>
           <Link
+            to="/bonus"
+            className="text-gray-300 font-bold uppercase hover:text-white"
+          >
+            Bonuses
+          </Link>
+          <Link
             to="/admin-login"
             className="text-gray-300 font-bold uppercase hover:text-white"
           >
@@ -107,6 +113,13 @@ const Sidebar = () => {
             className="block text-gray-300 font-bold uppercase hover:text-white"
           >
             Approve Deposit
+          </Link>
+          <Link
+            to="/bonus"
+            onClick={toggleSidebar}
+            className="block text-gray-300 font-bold uppercase hover:text-white"
+          >
+            Bonuses
           </Link>
           <Link
             to="/admin-login"
