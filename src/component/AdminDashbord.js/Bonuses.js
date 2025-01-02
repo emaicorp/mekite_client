@@ -3,6 +3,8 @@ import axios from 'axios';
 import { FaCopy } from 'react-icons/fa'; // Copy icon
 import FundTotalEarning from './FundTotalEarning';
 import DeductActive from './DeductActive';
+import SideBard from "./SideBard";
+
 
 function Bonuses() {
   const [users, setUsers] = useState([]);
@@ -49,7 +51,10 @@ function Bonuses() {
   };
 
   return (
-    <div className="container mx-auto p-6 bg-white rounded shadow-md">
+    <>
+          <SideBard />
+
+        <div className="container mx-auto p-6 bg-white rounded shadow-md">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Bonuses Management</h1>
 
       {/* Fetch All Users */}
@@ -120,6 +125,7 @@ function Bonuses() {
       <FundTotalEarning />
       <DeductActive />
     </div>
+    </>
   );
 }
 
