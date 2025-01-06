@@ -4,6 +4,7 @@ import Navbar from '../../nav/Navbar';
 
 function Register() {
   const navigate = useNavigate();
+  const [upline, setUpline] = useState(null); // State for upline
   const [formData, setFormData] = useState({
     fullName: '',
     username: '',
@@ -30,7 +31,6 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting form with data:', formData); // Debug log
 
     try {
       const response = await fetch('https://mekite-btc.onrender.com/api/register', {
@@ -40,18 +40,18 @@ function Register() {
         },
         body: JSON.stringify(formData),
       });
-  
+
       const data = await response.json();
-      console.log('Response Data:', data); // Debug log
 
       if (response.ok) {
         setResponseMessage('Registration successful. Redirecting to login...');
-        setTimeout(() => navigate('/login'), 2000); // Adds a short delay for UX
+        setUpline(data.upline || 'N/A');
+        setTimeout(() => navigate('/login'), 2000);
       } else {
         setResponseMessage(data.message || 'Registration failed.');
       }
     } catch (error) {
-      console.error('Error:', error); // Debug log
+      console.error('Error:', error);
       setResponseMessage('An error occurred while registering. Please try again.');
     }
   };
@@ -175,6 +175,12 @@ function Register() {
           </form>
           {responseMessage && (
             <p className="mt-4 text-center text-sm text-green-400">{responseMessage}</p>
+          )}
+
+          {upline && (
+            <p className="mt-2 text-center text-sm text-white">
+              Your upline is: {upline}
+            </p>
           )}
         </div>
       </div>

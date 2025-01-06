@@ -1,50 +1,61 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 import SideBard from './SideBard';
 
-function AdminDepositApproval() {
+const AdminDepositApproval = () => {
   const [pendingWithdrawals, setPendingWithdrawals] = useState([]);
+  const [allInvestments, setAllInvestments] = useState([]);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     fetchPendingWithdrawals();
+    fetchAllInvestments();
   }, []);
 
   const fetchPendingWithdrawals = async () => {
     try {
-      const response = await axios.get('https://mekite-btc.onrender.com/api/admin/withdrawals/pending');
-      if (response.data.pendingWithdrawals) {
-        setPendingWithdrawals(response.data.pendingWithdrawals);
-      } else {
-        setPendingWithdrawals([]);
-      }
+      const response = await axios.get(
+        'https://mekite-btc.onrender.com/api/admin/withdrawals/pending'
+      );
+      setPendingWithdrawals(response.data.pendingWithdrawals || []);
     } catch (error) {
       console.error('Error fetching pending withdrawals:', error);
       setMessage('Error fetching pending withdrawals. Please try again later.');
     }
   };
 
-  const handleApproval = async (investmentId, action) => {
+  const fetchAllInvestments = async () => {
+    try {
+      const response = await axios.get(
+        'https://mekite-btc.onrender.com/api/user/investments'
+      );
+      setAllInvestments(response.data || []);
+    } catch (error) {
+      console.error('Error fetching all investments:', error);
+      setMessage('Error fetching all investments. Please try again later.');
+    }
+  };
+
+  const handleApproval = async (investmentId, userId, action) => {
     try {
       const response = await axios.patch(
         `https://mekite-btc.onrender.com/api/admin/withdrawals/${action}`,
-        { investmentId }
+        { investmentId, userId }
       );
+      setMessage(response.data.message);
 
-      if (response.data.message) {
-        setMessage(response.data.message);
-
-        // Remove the processed investment from the state
-        setPendingWithdrawals((prev) =>
-          prev.map((user) => {
-            const updatedInvestments = user.investments.filter(
-              (investment) => investment._id !== investmentId
-            );
-            return { ...user, investments: updatedInvestments };
-          }).filter((user) => user.investments.length > 0)
-        );
-      }
+      // Remove processed investment from pending withdrawals list
+      setPendingWithdrawals(prev =>
+        prev
+          .map(user => ({
+            ...user,
+            investments: user.investments.filter(
+              investment => investment._id !== investmentId
+            ),
+          }))
+          .filter(user => user.investments.length > 0)
+      );
     } catch (error) {
       console.error('Error processing withdrawal:', error);
       setMessage(
@@ -53,7 +64,7 @@ function AdminDepositApproval() {
     }
   };
 
-  const getTimeRemaining = (expiresAt) => {
+  const getTimeRemaining = expiresAt => {
     const now = new Date();
     const expirationTime = new Date(expiresAt);
     const timeRemaining = expirationTime - now;
@@ -69,86 +80,108 @@ function AdminDepositApproval() {
   };
 
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <>
       <SideBard />
-      <div className="flex-1 p-8">
-        <header className="flex justify-between items-center bg-white shadow px-6 py-4 mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Admin Withdrawal Management</h2>
-        </header>
+      <div className="p-8 bg-gray-100 min-h-screen">
+        <div className="max-w-7xl mx-auto bg-white p-6 shadow-xl rounded-lg">
+          <h1 className="text-3xl font-semibold text-gray-800 mb-6">Admin Deposit Approval</h1>
+          {message && <p className="text-red-500 mb-4">{message}</p>}
 
-        <div className="space-y-8">
-          <section>
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">Pending Withdrawals</h3>
+          {/* Pending Withdrawals Section */}
+          <section className="mb-12">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Pending Withdrawals</h2>
             {pendingWithdrawals.length === 0 ? (
-              <p className="text-gray-600">No pending withdrawals.</p>
+              <p className="text-gray-600">No pending withdrawals at the moment.</p>
             ) : (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {pendingWithdrawals.map((user) => (
-                  <div key={user.userId} className="bg-white p-4 rounded-lg shadow-md">
-                    <h4 className="text-lg font-bold text-gray-700">{user.username}</h4>
-                    <div className="mt-2">
-                      {user.investments.map((investment) => (
-                        <div
-                          key={investment._id}
-                          className="flex justify-between items-center py-2 border-b last:border-b-0"
+              pendingWithdrawals.map(user => (
+                <div key={user.userId} className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
+                  <h3 className="text-xl font-semibold text-gray-800">{user.username}</h3>
+                  {user.investments.map(investment => (
+                    <div
+                      key={investment._id}
+                      className="border-t pt-4 mt-4"
+                    >
+                      <p className="text-gray-600">
+                        <span className="font-semibold">Package:</span> {investment.selectedPackage}
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-semibold">Amount:</span> ${investment.amount}
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-semibold">Payment Method:</span> {investment.paymentMethod}
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-semibold">Status:</span> {investment.status}
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-semibold">Expires At:</span> {getTimeRemaining(investment.expiresAt)}
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-semibold">Created At:</span> {new Date(investment.createdAt).toLocaleString()}
+                      </p>
+                      <div className="flex mt-4 space-x-4">
+                        <button
+                          onClick={() => handleApproval(investment._id, user.userId, 'approve')}
+                          className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300"
                         >
-                          <div>
-                            <p className="text-sm text-gray-600">
-                              Amount: <span className="font-medium">{investment.amount}</span>
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              Payment Method: <span className="font-medium">{investment.paymentMethod}</span>
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              Time Remaining: <span className="font-medium">{getTimeRemaining(investment.expiresAt)}</span>
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              Package: <span className="font-medium">{investment.selectedPackage}</span>
-                            </p>
-                            {getTimeRemaining(investment.expiresAt) === 'Complete' && (
-                              <span className="text-green-600 font-semibold">Complete</span>
-                            )}
-                          </div>
-                          <div className="flex space-x-2">
-                            <>
-                              <button
-                                className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600"
-                                onClick={() => handleApproval(investment._id, 'approve')}
-                              >
-                                <FaCheckCircle />
-                              </button>
-                              <button
-                                className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-                                onClick={() => handleApproval(investment._id, 'reject')}
-                              >
-                                <FaTimesCircle />
-                              </button>
-                            </>
-                          </div>
-                        </div>
-                      ))}
+                          <FaCheck className="mr-2" />
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleApproval(investment._id, user.userId, 'reject')}
+                          className="flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300"
+                        >
+                          <FaTimes className="mr-2" />
+                          Reject
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ))
             )}
           </section>
 
-          {message && (
-            <div
-              className={`mt-4 p-4 rounded-lg ${
-                message.includes('Error')
-                  ? 'bg-red-100 border border-red-300 text-red-700'
-                  : 'bg-green-100 border border-green-300 text-green-700'
-              }`}
-            >
-              {message}
-            </div>
-          )}
+          {/* All Investments Section */}
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">All Investments</h2>
+            {allInvestments.length === 0 ? (
+              <p className="text-gray-600">No investments found.</p>
+            ) : (
+              allInvestments.map(investment => (
+                <div
+                  key={investment._id}
+                  className="bg-gray-50 p-6 rounded-lg shadow-md mb-6"
+                >
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Package:</span> {investment.selectedPackage}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Amount:</span> ${investment.amount}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Status:</span> {investment.status}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Created At:</span> {new Date(investment.createdAt).toLocaleString()}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Payment Method:</span> {investment.paymentMethod}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Expires At:</span> {new Date(investment.expiresAt).toLocaleString()}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Profit Added:</span> {investment.isProfitAdded ? 'Yes' : 'No'}
+                  </p>
+                </div>
+              ))
+            )}
+          </section>
         </div>
       </div>
-    </div>
+    </>
   );
-}
+};
 
 export default AdminDepositApproval;
