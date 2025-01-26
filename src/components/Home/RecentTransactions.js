@@ -109,7 +109,7 @@ function RecentTransactions() {
 
   return (
     <div
-      className={`fixed bottom-4 left-4 p-4 rounded-lg shadow-2xl transition-all duration-500 ease-in-out w-80 ${
+      className={`fixed bottom-4 left-4 p-4 rounded-lg shadow-2xl transition-all duration-500 ease-in-out w-80 z-40 ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
       }`}
     >
