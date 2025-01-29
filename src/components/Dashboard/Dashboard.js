@@ -60,29 +60,25 @@ function Dashboard() {
 
           {/* User Info Modal */}
           {showUserInfo && (
-            <div className="mb-8">
-              <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
-                <div className="relative bg-[#1a2234] rounded-2xl p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row items-start gap-4">
-                    <div className="p-3 bg-indigo-500/10 rounded-xl">
-                      <FaUserCog className="text-xl sm:text-2xl text-indigo-500" />
+            <div className="mb-8 bg-[#1a2234] rounded-2xl p-6 border border-indigo-500/20 backdrop-blur-xl">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-indigo-500/10 rounded-xl">
+                  <FaUserCog className="text-2xl text-indigo-500" />
+                </div>
+                <div className="space-y-3">
+                  <h2 className="text-xl font-medium text-white">Account Details</h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-gray-400">Full Name</p>
+                      <p className="text-white">{userDetails.fullName}</p>
                     </div>
-                    <div className="space-y-4 w-full">
-                      <h2 className="text-lg sm:text-xl font-medium text-white">Account Details</h2>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-gray-400 text-sm">Full Name</p>
-                          <p className="text-white text-sm sm:text-base break-words">{userDetails.fullName}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400 text-sm">Email</p>
-                          <p className="text-white text-sm sm:text-base break-words">{userDetails.email}</p>
-                        </div>
-                        <div className="col-span-1 sm:col-span-2">
-                          <p className="text-gray-400 text-sm">Referral Link</p>
-                          <p className="text-indigo-400 text-xs sm:text-sm break-all">{userDetails.referralLink}</p>
-                        </div>
-                      </div>
+                    <div>
+                      <p className="text-gray-400">Email</p>
+                      <p className="text-white">{userDetails.email}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-gray-400">Referral Link</p>
+                      <p className="text-indigo-400 text-sm">{userDetails.referralLink}</p>
                     </div>
                   </div>
                 </div>
@@ -148,7 +144,7 @@ function Dashboard() {
           </div>
 
           {/* Crypto Dashboard */}
-          <div className="bg-[#1a2234] rounded-2xl p-6 border border-gray-800 mb-8">
+          <div className="bg-[#1a2234] rounded-2xl md:p-6 p-2 border border-gray-800 mb-8">
             <div className="mb-6">
               <h2 className="text-xl font-medium text-white">Market Overview</h2>
               <p className="text-gray-400">Live cryptocurrency prices and trends</p>
