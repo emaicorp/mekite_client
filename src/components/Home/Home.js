@@ -17,7 +17,7 @@ import Footer from './Footer';
 
 function Home() {
   return (
-    <div className="bg-gradient-to-b from-gray-900 via-gray-800 to-black min-h-screen">
+    <div className="bg-gradient-to-b w-full overflow-hidden from-gray-900 via-gray-800 to-black min-h-screen">
       <Navbar />
       <HeroSection />
       <div className="container mx-auto px-4 py-16 flex flex-col lg:flex-row gap-8">
