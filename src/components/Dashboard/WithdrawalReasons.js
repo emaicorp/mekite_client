@@ -1,4 +1,5 @@
 import React from 'react';
+import { IoWalletOutline, IoTimeOutline, IoSettingsOutline, IoFlashOutline, IoTrendingUpOutline } from 'react-icons/io5';
 
 const WithdrawalReasons = () => {
   const detailedReasons = [
@@ -6,31 +7,31 @@ const WithdrawalReasons = () => {
       title: "Access Your Funds Anytime",
       description:
         "Your funds are always accessible to you. Whether you're saving for an emergency or making an investment, you can withdraw your money at your convenience.",
-      icon: "💳",
+      icon: IoWalletOutline,
     },
     {
       title: "Emergency Needs",
       description:
         "We understand that emergencies arise unexpectedly. Our quick withdrawal process ensures you can access funds whenever you need them.",
-      icon: "⏱️",
+      icon: IoTimeOutline,
     },
     {
       title: "Seamless Account Management",
       description:
         "Easily manage your funds with our intuitive platform. Withdraw money to transfer to another account or use it for payments.",
-      icon: "📂",
+      icon: IoSettingsOutline,
     },
     {
       title: "No Hidden Fees",
       description:
         "We provide a transparent withdrawal process with no hidden charges, ensuring you get the full amount you're entitled to.",
-      icon: "💡",
+      icon: IoFlashOutline,
     },
     {
       title: "Investment Opportunities",
       description:
         "Use your funds to seize investment opportunities without delays. Quick access to your money helps you achieve your financial goals.",
-      icon: "📈",
+      icon: IoTrendingUpOutline,
     },
   ];
 
@@ -44,39 +45,56 @@ const WithdrawalReasons = () => {
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen p-6">
-      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
-        Reasons for Withdrawal
-      </h1>
-
-      {/* Detailed Reasons Section */}
-      <div className="text-center text-gray-600 mb-8">
-        <p>
-          Our company ensures a hassle-free and secure withdrawal process for all users. Here are some key benefits:
+    <div className="mt-8 sm:mt-12">
+      <div className="mb-8">
+        <h2 className="text-lg sm:text-xl font-medium text-white mb-2">
+          Withdrawal Benefits
+        </h2>
+        <p className="text-gray-400 text-sm sm:text-base">
+          Our platform ensures a secure and efficient withdrawal process for all users
         </p>
       </div>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+
+      {/* Detailed Reasons Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
         {detailedReasons.map((reason, index) => (
-          <div
-            key={index}
-            className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-all"
-          >
-            <div className="text-4xl text-blue-500 mb-4">{reason.icon}</div>
-            <h2 className="text-xl font-semibold text-gray-800">{reason.title}</h2>
-            <p className="text-gray-600 mt-2">{reason.description}</p>
+          <div key={index} className="relative">
+            <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
+              <div className="relative bg-[#1a2234] rounded-2xl p-4 sm:p-6 h-full">
+                <div className="p-3 bg-indigo-500/10 rounded-xl w-fit mb-4">
+                  <reason.icon className="text-xl sm:text-2xl text-indigo-500" />
+                </div>
+                <h3 className="text-white font-medium text-lg mb-2">{reason.title}</h3>
+                <p className="text-gray-400 text-sm sm:text-base">{reason.description}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Summarized Reasons Section */}
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Additional Reasons</h2>
-      <ul className="bg-white p-6 rounded-lg shadow-md list-disc list-inside">
-        {summarizedReasons.map((reason, index) => (
-          <li key={index} className="text-gray-700 text-lg mb-2">
-            {reason}
-          </li>
-        ))}
-      </ul>
+      {/* Additional Reasons Section */}
+      <div className="relative">
+        <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
+          <div className="relative bg-[#1a2234] rounded-2xl p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-medium text-white mb-4">
+              Additional Withdrawal Reasons
+            </h2>
+            <ul className="space-y-3">
+              {summarizedReasons.map((reason, index) => (
+                <li 
+                  key={index} 
+                  className="flex items-start gap-3 text-gray-400 text-sm sm:text-base"
+                >
+                  <div className="p-1 bg-indigo-500/10 rounded-full mt-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
+                  </div>
+                  {reason}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
