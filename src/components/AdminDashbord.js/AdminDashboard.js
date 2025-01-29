@@ -1,14 +1,44 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
-import SideBard from "./SideBard";
-import DeleteUser from "./DeleteUser";
+import Sidebar from "./SideBard";
+import { motion } from "framer-motion";
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from 'recharts';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import { RiUserLine, RiMoneyDollarCircleLine, RiExchangeDollarLine } from 'react-icons/ri';
+import UserTable from "./UserTable";
+import RecentActivities from "./RecentActivities";
+import './AdminDashboard.css';
+
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    totalDeposits: 0,
+    totalWithdrawals: 0,
+  });
+
+  // Mock data for the chart - replace with real data
+  const [chartData] = useState([
+    { name: 'Jan', deposits: 4000, withdrawals: 2400 },
+    { name: 'Feb', deposits: 3000, withdrawals: 1398 },
+    { name: 'Mar', deposits: 2000, withdrawals: 9800 },
+    { name: 'Apr', deposits: 2780, withdrawals: 3908 },
+    { name: 'May', deposits: 1890, withdrawals: 4800 },
+    { name: 'Jun', deposits: 2390, withdrawals: 3800 },
+  ]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -17,9 +47,25 @@ function AdminDashboard() {
           "https://mekite-btc.onrender.com/api/all-users"
         );
         setUsers(response.data.users);
+        
+        const activeUsers = response.data.users.filter(user => user.isOnline).length;
+        const totalDeposits = response.data.users.reduce((acc, user) => 
+          acc + user.investments.reduce((sum, inv) => sum + inv.amount, 0), 0
+        );
+        const totalWithdrawals = response.data.users.reduce((acc, user) => 
+          acc + user.totalWithdrawals, 0
+        );
+
+        setStats({
+          totalUsers: response.data.users.length,
+          activeUsers,
+          totalDeposits,
+          totalWithdrawals,
+        });
+
         setLoading(false);
       } catch (err) {
-        setError("Failed to fetch users. Please try again later.");
+        setError("Failed to fetch users");
         setLoading(false);
       }
     };
@@ -27,91 +73,134 @@ function AdminDashboard() {
     fetchUsers();
   }, []);
 
-  const responsive = {
-    superLargeDesktop: { breakpoint: { max: 4000, min: 1920 }, items: 5 },
-    desktop: { breakpoint: { max: 1920, min: 1024 }, items: 3 },
-    tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
-    mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
-  };
+  if (loading) {
+    return (
+      <div className="flex h-screen bg-[#111827]">
+        <Sidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
 
-  if (loading) return <div className="text-center p-5">Loading...</div>;
-  if (error) return <div className="text-center p-5 text-red-500">{error}</div>;
+  if (error) {
+    return (
+      <div className="flex h-screen bg-[#111827]">
+        <Sidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center p-5 text-red-500">{error}</div>
+        </div>
+      </div>
+    );
+  }
+
+  const activeUsersPercentage = (stats.activeUsers / stats.totalUsers) * 100;
 
   return (
-    <>
-      <SideBard />
-      <div className="p-5">
-        <h1 className="text-center text-2xl font-bold mb-4">All Users</h1>
-        <Carousel responsive={responsive} infinite autoPlay autoPlaySpeed={10000}>
-          {users.map((user, index) => (
-            <div
-              key={index}
-              className="p-4 border rounded shadow-md bg-white text-center"
-            >
-              <h2 className="font-semibold text-lg">{user.fullName}</h2>
-              <p className="text-gray-600">Username: {user.username}</p>
-              <p className="text-gray-600">Email: {user.email}</p>
-              <p className="text-gray-600">Role: {user.role}</p>
-              <p className="text-gray-600">
-                Last Seen: {new Date(user.lastSeen).toLocaleString()}
-              </p>
-              <p
-                className={`text-sm ${
-                  user.isOnline ? "text-green-500" : "text-red-500"
-                }`}
-              >
-                {user.isOnline ? "Online" : "Offline"}
-              </p>
-              <details className="mt-2">
-                <summary className="cursor-pointer text-blue-600">
-                  View Details
-                </summary>
-                <div className="mt-2 text-left text-sm">
-                  <p><strong>Bitcoin Wallet:</strong> {user.bitcoinWallet}</p>
-                  <p><strong>Ethereum Wallet:</strong> {user.ethereumWallet}</p>
-                  <p><strong>USDT Wallet:</strong> {user.usdtWallet}</p>
-                  <p><strong>Referral Link:</strong> {user.referralLink}</p>
-                  <p><strong>Total Earnings:</strong> ${user.totalEarnings}</p>
-                  <p><strong>Total Withdrawals:</strong> ${user.totalWithdrawals}</p>
-                  <p><strong>Bitcoin Available:</strong> ${user.bitcoinAvailable}</p>
-                  <p><strong>Bitcoin Pending:</strong> ${user.bitcoinPending}</p>
-                  <p><strong>Ethereum Available:</strong> ${user.ethereumAvailable}</p>
-                  <p><strong>Ethereum Pending:</strong> ${user.ethereumPending}</p>
-                  <p><strong>USDT Available:</strong> ${user.usdtAvailable}</p>
-                  <p><strong>USDT Pending:</strong> ${user.usdtPending}</p>
-                  <p><strong>Location:</strong> {user.location?.country}, {user.location?.city}</p>
-                  <p><strong>Investments:</strong></p>
-                  <ul className="list-disc pl-5">
-                    {user.investments.map((investment, i) => (
-                      <li key={i}>
-                        {investment.selectedPackage} - ${investment.amount} ({investment.status})
-                      </li>
-                    ))}
-                  </ul>
-                  <p><strong>Upline:</strong> {user.upline}</p>
-                  <p><strong>Email Verified:</strong> {user.emailVerified ? "Yes" : "No"}</p>
-                  <p><strong>Account Status:</strong></p>
-                  <ul>
-                    <li><strong>Disabled:</strong> {user.isDisabled ? "Yes" : "No"}</li>
-                    <li><strong>Suspended:</strong> {user.isSuspended ? "Yes" : "No"}</li>
-                  </ul>
-                  <p><strong>Referrals:</strong></p>
-                  <ul className="list-disc pl-5">
-                    {user.referrals.map((referral, i) => (
-                      <li key={i}>
-                        {referral.referredBy} - {referral.status} (${referral.commission})
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </details>
+    <div className="min-h-screen bg-[#111827]">
+      <Sidebar />
+      
+      <div className="w-full md:pl-72 pt-16 md:pt-0">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="p-4 md:p-8 space-y-6"
+        >
+          {/* Top Stats Row */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* Active Users Progress */}
+            <div className="bg-[#1a2234] p-6 rounded-2xl">
+              <div className="w-32 h-32 mx-auto mb-4">
+                <CircularProgressbar
+                  value={activeUsersPercentage}
+                  text={`${Math.round(activeUsersPercentage)}%`}
+                  styles={buildStyles({
+                    pathColor: `rgba(129, 140, 248)`,
+                    textColor: '#fff',
+                    trailColor: '#1f2943',
+                  })}
+                />
+              </div>
+              <p className="text-center text-gray-400">Active Users</p>
+              <p className="text-center text-white font-bold">{stats.activeUsers} / {stats.totalUsers}</p>
             </div>
-          ))}
-        </Carousel>
-      </div>
 
-      <DeleteUser />
-    </>
+            {/* Other Stats */}
+            {[
+              { title: "Total Users", value: stats.totalUsers, icon: RiUserLine },
+              { title: "Total Deposits", value: `$${stats.totalDeposits.toLocaleString()}`, icon: RiMoneyDollarCircleLine },
+              { title: "Total Withdrawals", value: `$${stats.totalWithdrawals.toLocaleString()}`, icon: RiExchangeDollarLine }
+            ].map((stat, index) => (
+              <div key={index} className="bg-[#1a2234] p-6 rounded-2xl">
+                <div className="flex items-center justify-between mb-4">
+                  <stat.icon className="text-2xl text-indigo-400" />
+                </div>
+                <p className="text-gray-400">{stat.title}</p>
+                <p className="text-2xl font-bold text-white">{stat.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Chart Section */}
+          <div className="bg-[#1a2234] p-6 rounded-2xl">
+            <h2 className="text-xl font-semibold text-white mb-6">Transaction Overview</h2>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="deposits" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="withdrawals" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#EC4899" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#EC4899" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1f2943" />
+                  <XAxis dataKey="name" stroke="#6B7280" />
+                  <YAxis stroke="#6B7280" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1a2234',
+                      border: 'none',
+                      borderRadius: '8px',
+                      color: '#fff'
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="deposits"
+                    stroke="#8B5CF6"
+                    fillOpacity={1}
+                    fill="url(#deposits)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="withdrawals"
+                    stroke="#EC4899"
+                    fillOpacity={1}
+                    fill="url(#withdrawals)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Bottom Grid */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div className="xl:col-span-2">
+              <UserTable users={users} />
+            </div>
+            <div className="xl:col-span-1">
+              <RecentActivities users={users} />
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
   );
 }
 
