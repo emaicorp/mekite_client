@@ -1,77 +1,107 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import LanguageSelector from '../LanguageSelector';
 
 function Footer() {
  
 
   return (
-    <>
-      <footer className="bg-gray-900 text-white py-8">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-          {/* Quick Links */}
+    <footer className="bg-black text-white py-16">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          {/* Logo Section */}
+          <div className="space-y-6">
+            <Link to="/" className="block">
+              <img 
+                src="/logo.png" 
+                alt="Bitfluxcapital" 
+                className="h-16 w-16"
+              />
+            </Link>
+            <div className="mt-6">
+              <LanguageSelector 
+                buttonStyle="p-2 bg-gray-800 text-white rounded" 
+                selectStyle="bg-gray-800 text-white rounded px-3 py-1 outline-none focus:ring-2 focus:ring-[#00df9a]"
+              />
+            </div>
+            <p className="text-sm text-gray-400">
+              Copyright ©2024 All rights reserved | Bitfluxcapital
+            </p>
+          </div>
+
+          {/* Company Section */}
           <div>
-            <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
-            <ul>
+            <h3 className="text-[#00df9a] font-bold mb-6 uppercase">Company</h3>
+            <ul className="space-y-4">
               <li>
-                <Link to="/" className="hover:underline">Buy Crypto</Link>
+                <Link to="/about" className="text-gray-300 hover:text-[#00df9a]">
+                  About Us
+                </Link>
               </li>
               <li>
-                <Link to="/" className="hover:underline">Sell Crypto</Link>
+                <Link to="/features" className="text-gray-300 hover:text-[#00df9a]">
+                  Features
+                </Link>
               </li>
               <li>
-                <Link to="/" className="hover:underline">Swap</Link>
+                <Link to="/faq" className="text-gray-300 hover:text-[#00df9a]">
+                  FAQ
+                </Link>
               </li>
               <li>
-                <Link to="/" className="hover:underline">Coin Market</Link>
-              </li>
-              <li>
-                <Link to="/" className="hover:underline">Earn</Link>
-              </li>
-              <li>
-                <Link to="/" className="hover:underline">Blog</Link>
-              </li>
-              <li>
-                <Link to="/" className="hover:underline">Pricing</Link>
-              </li>
-              <li>
-                <Link to="/" className="hover:underline">Contact Us</Link>
+                <Link to="/team" className="text-gray-300 hover:text-[#00df9a]">
+                  Team
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Legal Section */}
           <div>
-            <h3 className="text-xl font-semibold mb-4">Newsletter</h3>
-            <input
-              type="email"
-              placeholder="Enter Your Email..."
-              className="w-full p-3 rounded-lg bg-gray-800 text-white placeholder-gray-400"
-            />
-            <button className="mt-3 bg-yellow-400 text-gray-800 py-2 px-4 rounded-lg w-full hover:bg-yellow-500 transition">
-              Subscribe
-            </button>
+            <h3 className="text-[#00df9a] font-bold mb-6 uppercase">Legal</h3>
+            <ul className="space-y-4">
+              <li>
+                <Link to="/buy-crypto" className="text-gray-300 hover:text-[#00df9a]">
+                  Buy Crypto Here
+                </Link>
+              </li>
+              <li>
+                <Link to="/certificate" className="text-gray-300 hover:text-[#00df9a]">
+                  Certificate
+                </Link>
+              </li>
+              <li>
+                <Link to="/whitepaper" className="text-gray-300 hover:text-[#00df9a]">
+                  Whitepaper
+                </Link>
+              </li>
+            </ul>
           </div>
 
-          {/* Follow Us */}
+          {/* Contact Section */}
           <div>
-            <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
-            <p className="text-sm">
-              Welcome to Bitfluxcapital, your gateway to the world of Web3 trading! Our
-              user-friendly platform empowers you to explore a wide range of
-              popular cryptocurrencies.
-            </p>
+            <h3 className="text-[#00df9a] font-bold mb-6 uppercase">Contact Us</h3>
+            <ul className="space-y-4">
+              <li className="text-gray-300">
+                <span className="font-semibold">Email:</span><br />
+                <a 
+                  href="mailto:admin@bitfluxcapital.com" 
+                  className="hover:text-[#00df9a]"
+                >
+                  admin@bitfluxcapital.com
+                </a>
+              </li>
+              <li className="text-gray-300">
+                <span className="font-semibold">Address:</span><br />
+                4651 Westport Dr<br />
+                Mechanicsburg, PA,<br />
+                17055-4843 United States
+              </li>
+            </ul>
           </div>
-        </div>
-
-        {/* Copyright */}
-        <div className="mt-8 text-center text-sm text-gray-400">
-          <p>Copyright @ 2011 Bitfluxcapital | Designed By Professionals</p>
         </div>
       </div>
-
     </footer>
-    </>
   );
 }
 

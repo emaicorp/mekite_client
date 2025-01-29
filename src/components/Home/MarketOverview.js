@@ -14,7 +14,7 @@ function MarketOverview() {
       "isTransparent": true,
       "showSymbolLogo": true,
       "showFloatingTooltip": false,
-      "width": "400",
+      "width": "100%",
       "height": "660",
       "plotLineColorGrowing": "rgba(41, 98, 255, 1)",
       "plotLineColorFalling": "rgba(41, 98, 255, 1)",
@@ -65,8 +65,8 @@ function MarketOverview() {
   }, []);
 
   return (
-    <div className="tradingview-widget-container" id="tradingview-market-overview">
-      <div className="tradingview-widget-container__widget"></div>
+    <div className="tradingview-widget-container w-full h-full" id="tradingview-market-overview">
+      <div className="tradingview-widget-container__widget w-full h-full"></div>
     </div>
   );
 }

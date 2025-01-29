@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
-import { FaClipboard } from 'react-icons/fa'; // Importing a clipboard icon
+import { IoWalletOutline } from "react-icons/io5";
+import { FaBitcoin, FaEthereum, FaClipboard } from "react-icons/fa";
+import { SiTether } from "react-icons/si";
 
 const plans = [
   {
@@ -12,6 +14,7 @@ const plans = [
       REFERRAL: "10%",
     },
     features: ["All payment systems", "Customer Support", "Automated Withdraw", "Daily Withdrawals"],
+    gradient: "from-blue-500 to-indigo-500"
   },
   {
     name: "Premium Plan",
@@ -22,6 +25,7 @@ const plans = [
       REFERRAL: "10%",
     },
     features: ["All payment systems", "Customer Support", "Automated Withdraw", "Daily Withdrawals"],
+    gradient: "from-indigo-500 to-purple-500"
   },
   {
     name: "Professional Plan",
@@ -32,347 +36,221 @@ const plans = [
       REFERRAL: "10%",
     },
     features: ["All payment systems", "Customer Support", "Automated Withdraw", "Daily Withdrawals"],
+    gradient: "from-purple-500 to-pink-500"
   },
 ];
 
 function Deposit() {
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [investmentDetails, setInvestmentDetails] = useState(null);
-
-  const handlePlanSelection = (plan) => setSelectedPlan(plan);
-
-  const closePlanDetails = () => setSelectedPlan(null);
-
-  const handleInvestmentSuccess = (details) => {
-    setInvestmentDetails(details);
-  };
-
-  return (
-    <>
-      <Sidebar />
-      <section className="bg-gray-100 p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {plans.map((plan, index) => (
-            <PlanCard key={index} plan={plan} onClick={() => handlePlanSelection(plan)} />
-          ))}
-        </div>
-
-        {selectedPlan && (
-          <PlanDetailsModal plan={selectedPlan} onClose={closePlanDetails} />
-        )}
-
-        <InvestForm onSuccess={handleInvestmentSuccess} />
-        {investmentDetails && <InvestmentSummary details={investmentDetails} />}
-      </section>
-    </>
-  );
-}
-
-function PlanCard({ plan, onClick }) {
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <header className="border-b pb-4">
-        <h2 className="font-bold text-purple-700">{plan.name}</h2>
-        <p className="font-bold text-green-600">{plan.rate}</p>
-      </header>
-      <PlanDetails details={plan.details} />
-      <PlanFeatures features={plan.features} />
-      <button
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-        onClick={onClick}
-      >
-        View Details
-      </button>
-    </div>
-  );
-}
-
-function PlanDetails({ details }) {
-  return (
-    <div className="mt-4">
-      <h3 className="text-lg font-semibold">Plan Details</h3>
-      <p><strong>Minimum:</strong> {details.INVESTMENT}</p>
-      <p><strong>Referral:</strong> {details.REFERRAL}</p>
-      <p><strong>Duration:</strong> {details.duration}</p>
-    </div>
-  );
-}
-
-function PlanFeatures({ features }) {
-  return (
-    <div className="mt-4">
-      <h3 className="text-lg font-semibold">Features</h3>
-      <ul className="list-disc pl-6">
-        {features.map((feature, index) => (
-          <li key={index}>{feature}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function PlanDetailsModal({ plan, onClose }) {
-  return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-md w-full">
-        <header className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">{plan.name}</h2>
-          <button onClick={onClose} className="text-red-500 font-bold">
-            X
-          </button>
-        </header>
-        <PlanDetails details={plan.details} />
-        <PlanFeatures features={plan.features} />
-      </div>
-    </div>
-  );
-}
-
-function InvestForm({ onSuccess }) {
-  const [userId, setUserId] = useState("");
-  const [selectedPackage, setSelectedPackage] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [amount, setAmount] = useState("");
+  const [formData, setFormData] = useState({
+    package: "",
+    paymentMethod: "",
+    amount: "",
+  });
   const [message, setMessage] = useState("");
-  const [planDetails, setPlanDetails] = useState(null); // Store details of the selected plan
+  const [planDetails, setPlanDetails] = useState(null);
 
-  // Define the investment plans
-  const investmentPlans = {
-    "Starter Plan": plans[0],
-    "Premium Plan": plans[1],
-    "Professional Plan": plans[2]
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  // Define supported payment methods
-  const supportedPaymentMethods = ["bitcoin", "ethereum", "usdt"];
-
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("userDetails"));
-    if (storedUser) setUserId(storedUser.id);
-  }, []);
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-  
-    if (!selectedPackage || !paymentMethod || !amount) {
+    if (!formData.package || !formData.paymentMethod || !formData.amount) {
       setMessage("Please fill in all required fields.");
       return;
     }
-  
-    const selectedPlan = investmentPlans[selectedPackage]; // Get selected plan details
-  
-    if (!selectedPlan) {
-      setMessage("Selected package is invalid.");
-      return;
-    }
-  
-    // Validation for amount according to the selected plan
-    if (amount < selectedPlan.min || amount > selectedPlan.max) {
-      setMessage(`Amount should be between $${selectedPlan.min} and $${selectedPlan.max}`);
-      return;
-    }
-  
-    // Check if payment method is supported
-    if (!supportedPaymentMethods.includes(paymentMethod.toLowerCase())) {
-      setMessage("Invalid payment method.");
-      return;
-    }
-  
-    try {
-      const response = await fetch("https://mekite-btc.onrender.com/api/invest", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json", 
-          "user-id": userId 
-        },
-        body: JSON.stringify({ userId, selectedPackage, paymentMethod, amount }),
-      });
-  
-      const data = await response.json();
-      if (response.ok) {
-        onSuccess({ selectedPackage, paymentMethod, amount, details: selectedPlan });
-        setPlanDetails(selectedPlan); // Set the plan details for summary
-        setMessage("The deposit has been saved. It will become active once the administration checks the statistics.");
-      } else {
-        setMessage(data.message || "An error occurred.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setMessage("Server error. Try again later.");
-    }
+    
+    const selectedPlan = plans.find(plan => plan.name === formData.package);
+    setPlanDetails(selectedPlan);
   };
-  
 
   const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      setMessage('Wallet address copied!');
-    });
+    navigator.clipboard.writeText(text);
+    setMessage('Wallet address copied!');
+    setTimeout(() => setMessage(''), 3000);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4">Invest Form</h1>
-      {message && <p className="text-red-500">{message}</p>}
-      <div>
-        <label className="block font-semibold mb-2">Select Package</label>
-        <select
-          value={selectedPackage}
-          onChange={(e) => setSelectedPackage(e.target.value)}
-          className="w-full border rounded p-2"
-        >
-          <option value="">-- Select a package --</option>
-          {plans.map((plan, index) => (
-            <option key={index} value={plan.name}>
-              {plan.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label className="block font-semibold mb-2">Payment Method</label>
-        <select
-          value={paymentMethod}
-          onChange={(e) => setPaymentMethod(e.target.value)}
-          className="w-full border rounded p-2"
-        >
-          <option value="">-- Select a payment method --</option>
-          <option value="bitcoin">bitcoin</option>
-          <option value="ethereum">ethereum</option>
-          <option value="usdt">usdt</option>
-        </select>
-      </div>
-      <div>
-        <label className="block font-semibold mb-2">Investment Amount</label>
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="w-full border rounded p-2"
-        />
-      </div>
-      <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-700">
-        Invest Now
-      </button>
-
-      {planDetails && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex justify-center items-center">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[90vh] flex flex-col">
-            {/* Header */}
-            <div className="border-b p-4 text-center bg-gray-100">
-              <h2 className="text-2xl font-bold text-gray-800">Investment Summary</h2>
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[#111827]">
+      <Sidebar />
+      <div className="flex-1 overflow-x-hidden">
+        <div className="mt-6 sm:mt-10 p-4 sm:p-8">
+          {/* Header Section */}
+          <div className="flex items-center justify-between mb-8 sm:mb-12">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-indigo-500/10 rounded-xl">
+                <IoWalletOutline className="text-xl sm:text-2xl text-indigo-500" />
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">Investment</p>
+                <h1 className="text-white text-lg sm:text-xl font-medium">Deposit Funds</h1>
+              </div>
             </div>
+          </div>
 
-            {/* Scrollable Content */}
-            <div className="p-6 overflow-auto flex-1">
-              {/* Package Details */}
-              <div className="border p-4 rounded-lg bg-gray-50 mb-4">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Package Details</h3>
-                <table className="w-full text-left">
-                  <tbody>
-                    <tr>
-                      <td className="font-medium text-gray-600">Package:</td>
-                      <td>{planDetails.name}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-medium text-gray-600">Amount:</td>
-                      <td>${amount}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-medium text-gray-600">Payment Method:</td>
-                      <td>{paymentMethod}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-medium text-gray-600">Rate:</td>
-                      <td>{planDetails.rate}</td>
-                    </tr>
-                  </tbody>
-                </table>
+          {/* Investment Plans */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+            {plans.map((plan, index) => (
+              <div key={index} className="relative">
+                <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
+                  <div className="relative bg-[#1a2234] rounded-2xl p-4 sm:p-6">
+                    <div className="flex justify-between items-start mb-6">
+                      <h3 className="text-lg sm:text-xl font-semibold text-white">{plan.name}</h3>
+                      <div className={`p-2 sm:p-3 bg-gradient-to-r ${plan.gradient} rounded-xl bg-opacity-10`}>
+                        <span className="text-sm sm:text-base text-white font-bold">{plan.rate.split(" ")[0]}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-gray-400 text-sm">Investment Range</p>
+                        <p className="text-white text-sm sm:text-base">{plan.details.INVESTMENT}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400 text-sm">Duration</p>
+                        <p className="text-white text-sm sm:text-base">{plan.details.duration}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400 text-sm">Referral Bonus</p>
+                        <p className="text-white text-sm sm:text-base">{plan.details.REFERRAL}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
+            ))}
+          </div>
 
-              {/* Plan Breakdown */}
-              <div className="border p-4 rounded-lg bg-gray-50 mb-4">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Plan Breakdown</h3>
-                <table className="w-full text-left">
-                  <tbody>
-                    <tr>
-                      <td className="font-medium text-gray-600">Investment Range:</td>
-                      <td>{planDetails.details.INVESTMENT}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-medium text-gray-600">Duration:</td>
-                      <td>{planDetails.details.duration}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-medium text-gray-600">Referral:</td>
-                      <td>{planDetails.details.REFERRAL}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+          {/* Deposit Form */}
+          <div className="relative max-w-2xl mx-auto">
+            <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
+              <div className="relative bg-[#1a2234] rounded-2xl p-4 sm:p-8">
+                {message && (
+                  <div className="mb-6 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400 text-sm sm:text-base">
+                    {message}
+                  </div>
+                )}
 
-              {/* Features Section */}
-              <div className="border p-4 rounded-lg bg-gray-50 mb-4">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Features</h3>
-                <ul className="list-disc pl-6 text-gray-600">
-                  {planDetails.features.map((feature, index) => (
-                    <li key={index}>{feature}</li>
-                  ))}
-                </ul>
-              </div>
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                  <div>
+                    <label className="block text-gray-400 mb-2 text-sm sm:text-base">Select Package</label>
+                    <select
+                      name="package"
+                      value={formData.package}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="">-- Select a package --</option>
+                      {plans.map((plan, index) => (
+                        <option key={index} value={plan.name}>{plan.name}</option>
+                      ))}
+                    </select>
+                  </div>
 
-              {/* Wallet Section */}
-              <div className="border p-4 rounded-lg bg-gray-50">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Wallet Address</h3>
-                <div className="flex items-center">
-                  <input
-                    type="text"
-                    value="TS9rwoJP5CvB6efsprtWXJfngutq7Knhmq"
-                    readOnly
-                    className="border p-2 rounded w-full text-gray-700"
-                  />
+                  <div>
+                    <label className="block text-gray-400 mb-2 text-sm sm:text-base">Payment Method</label>
+                    <select
+                      name="paymentMethod"
+                      value={formData.paymentMethod}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="">-- Select payment method --</option>
+                      <option value="bitcoin">Bitcoin</option>
+                      <option value="ethereum">Ethereum</option>
+                      <option value="usdt">USDT</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-400 mb-2 text-sm sm:text-base">Amount</label>
+                    <input
+                      type="number"
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter amount"
+                    />
+                  </div>
+
                   <button
-                    type="button"
-                    onClick={() => copyToClipboard("TS9rwoJP5CvB6efsprtWXJfngutq7Knhmq")}
-                    className="ml-4 text-blue-500 hover:text-blue-700"
+                    type="submit"
+                    className="w-full py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-xl hover:opacity-90 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
                   >
-                    <FaClipboard size={20} />
+                    Proceed
                   </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          {/* Investment Summary Modal */}
+          {planDetails && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div className="relative w-full max-w-2xl">
+                <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
+                  <div className="relative bg-[#1a2234] rounded-2xl p-4 sm:p-8">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white mb-6">Investment Summary</h2>
+                    
+                    <div className="space-y-6">
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-gray-400 text-sm">Selected Package</p>
+                          <p className="text-white text-lg">{formData.package}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Amount</p>
+                          <p className="text-white text-lg">${formData.amount}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Payment Method</p>
+                          <p className="text-white text-lg">{formData.paymentMethod}</p>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-gray-800 pt-6">
+                        <p className="text-gray-400 text-sm mb-2">Wallet Address</p>
+                        <div className="flex items-center gap-4 bg-gray-900/50 p-4 rounded-xl">
+                          <p className="text-white font-mono flex-grow break-all">
+                            TS9rwoJP5CvB6efsprtWXJfngutq7Knhmq
+                          </p>
+                          <button
+                            onClick={() => copyToClipboard("TS9rwoJP5CvB6efsprtWXJfngutq7Knhmq")}
+                            className="flex-shrink-0 p-3 bg-indigo-500/10 hover:bg-indigo-500/20 rounded-xl transition-all duration-300"
+                          >
+                            <FaClipboard className="text-indigo-500" size={20} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end gap-4">
+                        <button
+                          onClick={() => setPlanDetails(null)}
+                          className="px-4 sm:px-6 py-2 bg-gray-800 text-white rounded-xl hover:bg-gray-700 transition-all text-sm sm:text-base"
+                        >
+                          Close
+                        </button>
+                        <button
+                          onClick={() => setPlanDetails(null)}
+                          className="px-4 sm:px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:opacity-90 transition-all text-sm sm:text-base"
+                        >
+                          Confirm
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Footer Buttons */}
-            <div className="border-t p-4 flex justify-center bg-gray-100">
-              <button
-                type="button"
-                onClick={() => setPlanDetails(null)}
-                className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700 mx-2"
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                onClick={() => setPlanDetails(null)}
-                className="bg-blue-500 text-white  hidden py-2 px-4 rounded hover:bg-blue-700 mx-2"
-              >
-                Invest Again
-              </button>
-            </div>
-          </div>
+          )}
         </div>
-      )}
-    </form>
-  );
-}
-
-
-function InvestmentSummary({ details }) {
-  return (
-    <div className="mt-6 p-4 bg-gray-100 rounded shadow">
-      <h2 className="text-xl font-bold">Investment Summary</h2>
-      <p><strong>Package:</strong> {details.selectedPackage}</p>
-      <p><strong>Amount:</strong> ${details.amount}</p>
-      <p><strong>Payment Method:</strong> {details.paymentMethod}</p>
+      </div>
     </div>
   );
 }

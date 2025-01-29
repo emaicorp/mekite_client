@@ -15,107 +15,131 @@ function Login() {
     setError('');
 
     if (!username || !password) {
-        setError('Both username and password are required');
-        setLoading(false);
-        return;
+      setError('Both username and password are required');
+      setLoading(false);
+      return;
     }
 
     try {
-        const response = await axios.post('https://mekite-btc.onrender.com/api/login', { username, password });
+      const response = await axios.post('https://mekite-btc.onrender.com/api/login', { username, password });
 
-        if (response.data.token) {
-            localStorage.setItem('authToken', response.data.token);
-            localStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
-        }
-
-        // Redirect based on user role
+      if (response.data.token) {
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
+        
         if (response.data.userDetails.role === 'admin') {
-            navigate('/admin-dashboard'); // Navigate to admin dashboard
+          navigate('/admin-dashboard');
         } else {
-            navigate('/dashboard'); // Navigate to user dashboard
+          navigate('/dashboard');
         }
+      }
     } catch (err) {
-        console.error('Error during login:', err);
-        setError('Invalid credentials, please try again');
+      console.error('Error during login:', err);
+      setError('Invalid credentials, please try again');
     }
     setLoading(false);
-};
+  };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-900">
-      <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold text-center text-gray-900 mb-6">Login to Your Account</h2>
-
-        {/* Error Message */}
-        {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your username"
-            />
+    <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="max-w-md w-full mx-4">
+        {/* Card Container */}
+        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg p-8">
+          {/* Logo or Title */}
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold  text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Welcome Back</h2>
+            <p className="text-gray-400 mt-2">Please sign in to your account</p>
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your password"
-            />
-          </div>
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500 rounded-lg">
+              <p className="text-red-500 text-sm">{error}</p>
+            </div>
+          )}
 
-          <div className="flex justify-between items-center mb-6">
-            <label className="inline-flex items-center text-sm text-gray-700">
-              <input type="checkbox" className="mr-2" />
-              Remember me
-            </label>
-            <a href="/forgot-password" className="text-sm text-blue-500 hover:underline">
-              Forgot password?
-            </a>
-          </div>
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Username Field */}
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+                Username
+              </label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500"
+                placeholder="Enter your username"
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="w-full py-2 bg-blue-600 text-white rounded-md font-medium shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={loading}
-          >
-            {loading ? 'Logging in...' : 'Log In'}
-          </button>
-        </form>
+            {/* Password Field */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500"
+                placeholder="Enter your password"
+              />
+            </div>
 
-        <div className="text-center mt-6">
-          <p>
-            Create a new account?{' '}
+            {/* Remember Me & Forgot Password */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 border border-gray-700 rounded bg-gray-800/50 text-purple-600 focus:ring-purple-500"
+                />
+                <span className="ml-2 text-sm text-gray-400">Remember me</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => navigate('/forgot-password')}
+                className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all"
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            {/* Submit Button */}
             <button
-              onClick={() => navigate('/register')} // Navigate to register page
-              className="text-blue-500 hover:text-blue-400"
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Register
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Signing in...
+                </span>
+              ) : (
+                'Sign In'
+              )}
             </button>
-          </p>
-          <p>
-            Or{' '}
-            <button
-              onClick={() => navigate('/')} // Navigate to home page
-              className="text-blue-500 hover:text-blue-400"
-            >
-              Go Back to Home
-            </button>
-          </p>
+
+            {/* Register Link */}
+            <div className="text-center mt-6">
+              <p className="text-gray-400">
+                Don't have an account?{' '}
+                <button
+                  onClick={() => navigate('/register')}
+                  className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all"
+                >
+                  Create account
+                </button>
+              </p>
+            </div>
+          </form>
         </div>
       </div>
     </div>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../../nav/Navbar';
+  import Navbar from '../layout/Navbar';
 
 function Register() {
   const navigate = useNavigate();
-  const [upline, setUpline] = useState(null); // State for upline
+  const [upline, setUpline] = useState(null);
   const [formData, setFormData] = useState({
     fullName: '',
     username: '',
@@ -58,130 +58,148 @@ function Register() {
 
   return (
     <>
-    <Navbar />
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="bg-gray-800 text-white shadow-lg rounded-lg w-full max-w-lg p-8">
-          <h2 className="text-3xl font-bold mb-6 text-center">Register</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Full Name</label>
-              <input
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Username</label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Password</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Recovery Question</label>
-              <select
-                name="recoveryQuestion"
-                value={formData.recoveryQuestion}
-                onChange={handleChange}
-                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
+      {/* <Navbar /> */}
+
+      <div className="min-h-screen bg-black py-16 ">
+        <h4 className="text-transparent bg-clip-text hover:from-blue-600 hover:to-purple-600 transition-all bg-gradient-to-r from-blue-500 to-purple-500 px-4 cursor-pointer text-2xl font-bold underline w-fit" onClick={() => navigate('/')}>BitfluxCapital</h4>
+        <div className="max-w-2xl mx-auto px-4 mt-10">
+          <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg p-8">
+            <h2 className="text-3xl font-bold text-white text-center mb-8">Create Account</h2>
+            
+            {responseMessage && (
+              <div className={`mb-6 p-4 rounded-lg ${
+                responseMessage.includes('successful') 
+                  ? 'bg-green-500/10 border border-green-500 text-green-500'
+                  : 'bg-red-500/10 border border-red-500 text-red-500'
+              }`}>
+                <p className="text-sm">{responseMessage}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500"
+                  required
+                  placeholder="Enter your full name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500"
+                  required
+                  placeholder="Choose a username"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500"
+                  required
+                  placeholder="Create a strong password"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500"
+                  required
+                  placeholder="Enter your email"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Recovery Question</label>
+                <select
+                  name="recoveryQuestion"
+                  value={formData.recoveryQuestion}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500"
+                  required
+                >
+                  <option value="" disabled>Select a question</option>
+                  <option value="What is your favorite color?">What is your favorite color?</option>
+                  <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                  <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                  {/* Add more security questions as needed */}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Recovery Answer</label>
+                <input
+                  type="text"
+                  name="recoveryAnswer"
+                  value={formData.recoveryAnswer}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500"
+                  required
+                  placeholder="Enter your answer"
+                />
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="agreedToTerms"
+                  checked={formData.agreedToTerms}
+                  onChange={handleChange}
+                  className="w-4 h-4 border border-gray-700 rounded bg-gray-800/50 text-purple-600 focus:ring-purple-500"
+                  required
+                />
+                <label className="ml-2 text-sm text-gray-300">
+                  I agree to the Terms and Conditions
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
               >
-                <option value="" disabled>Select a question</option>
-                <option value="What is your favorite color?">What is your favorite color?</option>
-                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
-                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
-                <option value="What is the name of your favorite teacher?">What is the name of your favorite teacher?</option>
-                <option value="What is the name of the street you grew up on?">What is the name of the street you grew up on?</option>
-<option value="What was your childhood nickname?">What was your childhood nickname?</option>
-<option value="What is the name of your first school?">What is the name of your first school?</option>
-<option value="What is the title of your favorite book?">What is the title of your favorite book?</option>
-<option value="What is your favorite food?">What is your favorite food?</option>
-<option value="What city were you born in?">What city were you born in?</option>
-<option value="What was the make and model of your first car?">What was the make and model of your first car?</option>
-<option value="What is the name of your favorite childhood friend?">What is the name of your favorite childhood friend?</option>
-<option value="What was the name of the first company you worked for?">What was the name of the first company you worked for?</option>
-<option value="What is the name of your favorite sports team?">What is the name of your favorite sports team?</option>
-<option value="What is the name of your favorite vacation destination?">What is the name of your favorite vacation destination?</option>
-<option value="Who is your favorite musician or band?">Who is your favorite musician or band?</option>
-<option value="What is the first concert you attended?">What is the first concert you attended?</option>
-<option value="What is your father's middle name?">What is your father's middle name?</option>
-<option value="What is your oldest sibling's middle name?">What is your oldest sibling's middle name?</option>
-<option value="What is the name of the first person you kissed?">What is the name of the first person you kissed?</option>
-<option value="What was the first movie you saw in a theater?">What was the first movie you saw in a theater?</option>
-<option value="What was your dream job as a child?">What was your dream job as a child?</option>
-<option value="What is your favorite holiday tradition?">What is your favorite holiday tradition?</option>
-<option value="What is the name of your first love?">What is the name of your first love?</option>
+                Create Account
+              </button>
 
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Recovery Answer</label>
-              <input
-                type="text"
-                name="recoveryAnswer"
-                value={formData.recoveryAnswer}
-                onChange={handleChange}
-                className="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                name="agreedToTerms"
-                checked={formData.agreedToTerms}
-                onChange={handleChange}
-                className="w-5 h-5 bg-gray-700 text-blue-500 border-gray-600 rounded focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              <label className="ml-2 text-sm">I agree to the Terms and Conditions</label>
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 rounded-lg transition duration-200"
-            >
-              Register
-            </button>
-          </form>
-          {responseMessage && (
-            <p className="mt-4 text-center text-sm text-green-400">{responseMessage}</p>
-          )}
+              <div className="text-center mt-6">
+                <p className="text-gray-400">
+                  Already have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => navigate('/login')}
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all"
+                  >
+                    Sign in
+                  </button>
+                </p>
+              </div>
+            </form>
 
-          {upline && (
-            <p className="mt-2 text-center text-sm text-white">
-              Your upline is: {upline}
-            </p>
-          )}
+            {upline && (
+              <p className="mt-4 text-center text-sm text-gray-400">
+                Your upline is: <span className="text-purple-500">{upline}</span>
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </>

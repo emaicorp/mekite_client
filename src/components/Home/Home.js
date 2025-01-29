@@ -11,7 +11,9 @@ import CallToAction from './CallToAction';
 import Sponsors from './Sponsors';
 import Receive from './Receive';
 import CryptoTicker from './CryptoTicker';
+import RecentTransactions from './RecentTransactions';
 // import MarketOverview from './MarketOverview';
+import Footer from './Footer';
 
 function Home() {
   return (
@@ -26,6 +28,7 @@ function Home() {
           </div>
         </div>
       
+      {/* <MarketOverview /> */}
       </div>
       <AboutSection />
       <Features />
@@ -34,8 +37,10 @@ function Home() {
       <Stats />
       <Receive />
       <Testimonials />
+      <RecentTransactions />
       <Sponsors />
       <CallToAction />
+      <Footer />
     </div>
   );
 }

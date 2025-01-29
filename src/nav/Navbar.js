@@ -25,7 +25,7 @@ const Navbar = () => {
           {/* Logo Section */}
           <div className="flex items-center font-bold space-x-2">
             {/* Icon + Company Name */}
-            <IoLogoBitcoin size={30} className="text-yellow-500 text-white" />
+            <IoLogoBitcoin size={30} className="text-yellow-500 " />
             <h1 className="text-1xl">
               Bit<span className="text-yellow-500 italic">flux</span>capital
             </h1>
@@ -113,13 +113,13 @@ const Navbar = () => {
           <div className="flex flex-col space-y-2 p-4">
             <NavLink
               to="/plan"
-              className="text-white text-lg hover:bg-gray-600 font-bold uppercase hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg transition duration-300 ease-in-out"
+              className="text-white text-lg  font-bold uppercase hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg transition duration-300 ease-in-out"
             >
               Pricing Plan
             </NavLink>
             <NavLink
               to="/terms"
-              className="text-white text-lg font-bold uppercase hover:bg-gray-600 hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg transition duration-300 ease-in-out"
+              className="text-white text-lg font-bold uppercase hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg transition duration-300 ease-in-out"
             >
               Terms & Conditions
             </NavLink>

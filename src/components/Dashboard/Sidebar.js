@@ -1,11 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { FaBars, FaTimes } from 'react-icons/fa';
-import { Link, NavLink } from 'react-router-dom';
-import { CgProfile } from "react-icons/cg";
+import { Link, NavLink, useLocation } from 'react-router-dom';
+import { 
+  RiDashboardLine, 
+  RiUserLine, 
+  RiTeamLine,
+  RiWalletLine,
+  RiExchangeDollarLine,
+  RiLogoutBoxLine,
+  RiMenuFoldLine,
+  RiMenuUnfoldLine
+} from 'react-icons/ri';
 
 function Sidebar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
+  const location = useLocation();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const storedUserDetails = JSON.parse(localStorage.getItem('userDetails'));
@@ -14,84 +33,134 @@ function Sidebar() {
     }
   }, []);
 
-  const handleMenuToggle = () => {
-    setMenuOpen(!menuOpen);
-  };
-
-  const navLinks = (
-    <>
-      <NavLink to="/dashboard" className="hover:text-gray-300 capitalize">Dashboard</NavLink>
-      <NavLink to="/profile" className="hover:text-gray-300 capitalize">Profile</NavLink>
-      <NavLink to="/referral" className="hover:text-gray-300 capitalize">Referral Panel</NavLink>
-      <NavLink to="/transactions" className="hover:text-gray-300 capitalize">Withdrawal</NavLink>
-      <NavLink to="/deposit" className="hover:text-gray-300 capitalize">Deposit</NavLink>
-      <Link to="/logout" className="text-gray-300 hover:text-white">Logout</Link>
-    </>
-  );
+  const navItems = [
+    { path: '/dashboard', name: 'Dashboard', icon: RiDashboardLine },
+    { path: '/profile', name: 'Profile', icon: RiUserLine },
+    { path: '/referral', name: 'Referral Panel', icon: RiTeamLine },
+    { path: '/transactions', name: 'Withdrawal', icon: RiWalletLine },
+    { path: '/deposit', name: 'Deposit', icon: RiExchangeDollarLine },
+  ];
 
   return (
-    <>
-      <header className="bg-black text-white shadow-md sticky top-0 z-50">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+    <aside className="relative flex-shrink-0">
+      <div 
+        className={`
+          fixed top-0 left-0 h-full
+          ${isCollapsed ? 'w-24' : 'w-72'}
+          ${isScrolled ? 'top-0' : 'top-[3.7rem]'}
+          w-24 md:w-72
+          bg-[#1a2234] border-r border-gray-800 
+          transition-all duration-300 ease-in-out
+          flex flex-col
+        `}
+      >
+        {/* Toggle Button - Moved outside main content */}
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="absolute -right-3 top-8 z-50 bg-indigo-500 p-2 rounded-full text-white hover:bg-indigo-600 transition-colors shadow-lg"
+        >
+          {isCollapsed ? <RiMenuUnfoldLine /> : <RiMenuFoldLine />}
+        </button>
 
-            {/* Desktop Menu */}
-            <div className="hidden md:flex space-x-8">
-              {navLinks}
+        {/* Logo Section */}
+        <div className="p-6 flex-shrink-0">
+          <Link to="/" className="flex items-center gap-3">
+            <div className={`
+              min-w-[2.5rem] h-10 
+              bg-gradient-to-r from-indigo-500 to-purple-500 
+              rounded-xl flex items-center justify-center
+              transition-all duration-300
+              ${isCollapsed ? 'w-10' : 'w-10'}
+            `}>
+              <span className="text-white font-bold text-xl">B</span>
             </div>
+            <span className={`
+              text-white font-semibold text-xl 
+              transition-all duration-300
+              ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100 w-auto'}
+              overflow-hidden whitespace-nowrap
+            `}>
+              BitFlux
+            </span>
+          </Link>
+        </div>
 
-            {/* User Info */}
-            {userDetails && (
-              <div className="hidden md:flex items-center space-x-4">
-                <CgProfile
-                  src={userDetails.profileImage || 'default-avatar.jpg'}
-                  alt="User"
-                  className="w-8 h-8 rounded-full"
-                />
-                <span className="font-semibold text-white">{userDetails.username}</span>
-                <span className="text-sm text-gray-300">{userDetails.email}</span>
-              </div>
-            )}
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
-              <button onClick={handleMenuToggle} className="text-white">
-                {menuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Sliding Menu */}
-          <div
-            className={`fixed inset-0 bg-black text-white z-40 transform transition-transform duration-300 ${
-              menuOpen ? 'translate-x-0' : '-translate-x-full'
-            }`}
-          >
-            <div className="flex justify-between items-center p-4">
-              
-              <button onClick={handleMenuToggle} className="text-white">
-                <FaTimes size={30} />
-              </button>
-            </div>
-            <div className="flex flex-col space-y-6 px-6 mt-12">
-              {navLinks}
-            </div>
-
-            {userDetails && (
-              <div className="hidden md:flex items-center space-x-4">
-                <CgProfile
-                  src={userDetails.profileImage || 'default-avatar.jpg'}
-                  alt="User"
-                  className="w-8 h-8 rounded-full"
-                />
-                <span className="font-semibold text-white">{userDetails.username}</span>
-                <span className="text-sm text-gray-300">{userDetails.email}</span>
-              </div>
-            )}
-          </div>
+        {/* Navigation - Made scrollable */}
+        <nav className="flex-grow px-4  h-fit overflow-y-auto scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-indigo-500">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) => `
+                flex items-center gap-3 px-4 py-3 rounded-xl mb-2 
+                transition-all duration-300
+                
+                ${isActive 
+                  ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-400 border border-indigo-500/20' 
+                  : 'text-gray-400 hover:bg-indigo-500/5'
+                }
+              `}
+            >
+              <item.icon className={`text-xl flex-shrink-0 ${
+                location.pathname === item.path ? 'text-indigo-400' : 'text-gray-400'
+              }`} />
+              <span className={`
+                transition-all duration-300
+                ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100 w-auto'}
+                overflow-hidden whitespace-nowrap
+              `}>
+                {item.name}
+              </span>
+            </NavLink>
+          ))}
         </nav>
-      </header>
-    </>
+
+        {/* User Profile Section - Fixed at bottom */}
+        {userDetails && (
+          <div className="flex-grow p-4  border-gray-800 border-t">
+            <div className="p-4 rounded-xl bg-gradient-to-r from-indigo-500/5 to-purple-500/5 border border-indigo-500/20">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                  <RiUserLine className="text-white" />
+                </div>
+                <div className={`
+                  overflow-hidden transition-all duration-300
+                  ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}
+                `}>
+                  <h4 className="text-white text-sm font-medium truncate">
+                    {userDetails.username}
+                  </h4>
+                  <p className="text-gray-400 text-xs truncate">
+                    {userDetails.email}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Logout Button */}
+            <Link
+              to="/logout"
+              className={`
+                 flex items-center gap-3 px-4 py-3 rounded-xl 
+                text-red-400 hover:bg-red-500/5 transition-all
+                ${isCollapsed ? 'justify-center' : ''}
+              `}
+            >
+              <RiLogoutBoxLine className="text-xl flex-shrink-0" />
+              <span className={`
+                transition-all duration-300
+                ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100 w-auto'}
+                overflow-hidden whitespace-nowrap
+              `}>
+                Logout
+              </span>
+            </Link>
+          </div>
+        )}
+      </div>
+      {/* Spacer div to maintain layout */}
+      <div className={`flex-shrink-0 ${isCollapsed ? 'w-24' : 'w-72'}`} />
+    </aside>
   );
 }
 

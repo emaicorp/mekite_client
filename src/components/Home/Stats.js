@@ -2,7 +2,7 @@ import React from 'react';
 import CountUp from 'react-countup';
 import { motion } from 'framer-motion';
 // import HeroSection from './HeroSection';
-import RecentTransactions from './RecentTransactions';
+// import RecentTransactions from './RecentTransactions';
 
 const stats = [
   {
@@ -81,7 +81,7 @@ const Stats = () => {
         </div>
       </div>
     </section>
-    <RecentTransactions />
+    {/* <RecentTransactions /> */}
     {/* <HeroSection /> */}
     </>
   );

@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { getUserDetails } from '../Dashboard/localStorageUtils';
+import { IoPersonOutline } from "react-icons/io5";
+import { FaBitcoin, FaEthereum } from 'react-icons/fa';
+import { SiTether } from "react-icons/si";
 import Sidebar from './Sidebar';
+import LoadingSpinner from "../common/LoadingSpinner"
 
 function Profile() {
   const [userActivity, setUserActivity] = useState(null);
@@ -20,7 +24,6 @@ function Profile() {
   useEffect(() => {
     const fetchUserActivity = async () => {
       const userDetails = getUserDetails();
-
       if (!userDetails) {
         setError('User is not logged in');
         return;
@@ -86,100 +89,127 @@ function Profile() {
         }
       );
 
-      // Update local storage and user activity
       localStorage.setItem('userWallets', JSON.stringify(formData));
       setUserActivity((prevActivity) => ({
         ...prevActivity,
         ...response.data.userDetails,
       }));
 
-      setSuccess('Profile updated successfully and saved permanently.');
+      setSuccess('Profile updated successfully');
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       console.error('Error updating profile:', err);
       setError('Unable to update profile. Please try again later.');
+      setTimeout(() => setError(''), 3000);
     }
   };
 
-  if (error) {
-    return <div className="text-red-500 text-center mt-4">{error}</div>;
-  }
-
   if (!userActivity) {
-    return <div className="text-center mt-4">Loading user activity...</div>;
+    return (
+      <LoadingSpinner/>
+    );
   }
 
   return (
-    <>
-    <Sidebar />
-      <div className="max-w-3xl mx-auto p-6 bg-gray-100 shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold text-blue-600 mb-4">User Profile</h2>
+    <div className="flex min-h-screen bg-[#111827]">
+      <Sidebar />
+      
+      <div className="flex-1 overflow-x-hidden">
+        <div className="mt-10 p-8">
+          <div className="flex items-center justify-between mb-12">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-indigo-500/10 rounded-xl">
+                <IoPersonOutline className="text-2xl text-indigo-500" />
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">Account</p>
+                <h1 className="text-white text-xl font-medium">Profile Settings</h1>
+              </div>
+            </div>
+          </div>
 
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h3 className="text-lg font-bold text-gray-700 mb-2">Activity Details</h3>
-        <p><span className="font-semibold">Username:</span> {userActivity.username || 'N/A'}</p>
-        <p><span className="font-semibold">Email:</span> {userActivity.email || 'N/A'}</p>
-        <p><span className="font-semibold">Last Seen:</span> {userActivity.lastSeen ? new Date(userActivity.lastSeen).toLocaleString() : 'N/A'}</p>
+          <div className="relative max-w-2xl mx-auto">
+            <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
+              <div className="relative bg-[#1a2234] rounded-2xl p-8">
+                {success && (
+                  <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400">
+                    {success}
+                  </div>
+                )}
+
+                {error && (
+                  <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400">
+                    {error}
+                  </div>
+                )}
+
+                <form onSubmit={handleFormSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-gray-400 mb-2">Username</label>
+                    <input
+                      type="text"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <label className="block text-gray-400 mb-2 flex items-center gap-2">
+                      <FaBitcoin className="text-[#F7931A]" />
+                      Bitcoin Wallet
+                    </label>
+                    <input
+                      type="text"
+                      name="bitcoinWallet"
+                      value={formData.bitcoinWallet}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <label className="block text-gray-400 mb-2 flex items-center gap-2">
+                      <FaEthereum className="text-[#627EEA]" />
+                      Ethereum Wallet
+                    </label>
+                    <input
+                      type="text"
+                      name="ethereumWallet"
+                      value={formData.ethereumWallet}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <label className="block text-gray-400 mb-2 flex items-center gap-2">
+                      <SiTether className="text-[#26A17B]" />
+                      USDT Wallet
+                    </label>
+                    <input
+                      type="text"
+                      name="usdtWallet"
+                      value={formData.usdtWallet}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-xl hover:opacity-90 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    Update Profile
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <form onSubmit={handleFormSubmit} className="mt-6 bg-white p-4 rounded-lg shadow-md">
-        <h3 className="text-lg font-bold text-gray-700 mb-4">Update Wallets</h3>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Bitcoin Wallet</label>
-          <input
-            type="text"
-            name="bitcoinWallet"
-            value={formData.bitcoinWallet}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Ethereum Wallet</label>
-          <input
-            type="text"
-            name="ethereumWallet"
-            value={formData.ethereumWallet}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">USDT Wallet</label>
-          <input
-            type="text"
-            name="usdtWallet"
-            value={formData.usdtWallet}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
-        >
-          Update Profile
-        </button>
-      </form>
-
-      {success && <div className="text-green-600 mt-4 text-center">{success}</div>}
-      {error && <div className="text-red-600 mt-4 text-center">{error}</div>}
     </div>
-    </>
   );
 }
 
