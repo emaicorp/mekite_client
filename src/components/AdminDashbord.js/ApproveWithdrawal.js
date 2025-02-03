@@ -1,42 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import SideBard from './SideBard';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  RiCheckLine, 
+  RiCloseLine, 
+  RiMoneyDollarCircleLine,
+  RiCoinFill,
+  RiCoinLine,
+  RiExchangeDollarLine
+} from 'react-icons/ri';
+import Sidebar from './SideBard';
 
 const ApproveWithdrawal = () => {
   const [pendingWithdrawals, setPendingWithdrawals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState('');
 
-  // Fetch pending withdrawals when the component is mounted
   useEffect(() => {
-    const fetchPendingWithdrawals = async () => {
-      try {
-        const response = await axios.get(
-          'https://mekite-btc.onrender.com/api/admin/currency-pendings'
-        );
-        setPendingWithdrawals(response.data.users || []);
-      } catch (error) {
-        setError('Error fetching pending withdrawals');
-        console.error('Fetch Error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchPendingWithdrawals();
   }, []);
 
+  const fetchPendingWithdrawals = async () => {
+    try {
+      const response = await axios.get(
+        'https://mekite-btc.onrender.com/api/admin/currency-pendings'
+      );
+      setPendingWithdrawals(response.data.users || []);
+      setLoading(false);
+    } catch (error) {
+      setError('Error fetching pending withdrawals');
+      console.error('Fetch Error:', error);
+      setLoading(false);
+    }
+  };
+
   const handleAction = async (userId, currency, action) => {
     try {
-      const endpoint =
-        action === 'approve'
-          ? `https://mekite-btc.onrender.com/api/admin/approve-currency/${userId}`
-          : `https://mekite-btc.onrender.com/api/admin/reject-currency/${userId}`;
-      const payload = { currency }; // You can include more details if necessary
-      const response = await axios.post(endpoint, payload);
+      const endpoint = action === 'approve'
+        ? `https://mekite-btc.onrender.com/api/admin/approve-currency/${userId}`
+        : `https://mekite-btc.onrender.com/api/admin/reject-currency/${userId}`;
+      
+      const response = await axios.post(endpoint, { currency });
+      setMessage(response.data.message);
 
-      alert(response.data.message);
-      // Refresh the pending withdrawals list
       setPendingWithdrawals((prev) =>
         prev.map((user) =>
           user.userId === userId
@@ -45,110 +52,187 @@ const ApproveWithdrawal = () => {
                 [`${currency}Pending`]: action === 'approve' ? 0 : user[`${currency}Pending`],
               }
             : user
+        ).filter(user => 
+          user.bitcoinPending > 0 || 
+          user.ethereumPending > 0 || 
+          user.usdtPending > 0
         )
       );
     } catch (error) {
       console.error('Action Error:', error);
-      alert(error.response?.data?.message || 'Error performing action');
+      setMessage(error.response?.data?.message || 'Error performing action');
     }
   };
 
-  return (
-    <>
-      <SideBard />
-      <div className="container mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6 text-center">Pending Withdrawals</h1>
-        {loading ? (
-          <p className="text-center">Loading...</p>
-        ) : error ? (
-          <p className="text-center text-red-500">{error}</p>
-        ) : pendingWithdrawals.length === 0 ? (
-          <p className="text-center">No pending withdrawals found.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {pendingWithdrawals.map((user) => (
-              <div
-                key={user.userId}
-                className="bg-white shadow-md rounded-lg p-6 border border-gray-200"
-              >
-                <h2 className="text-xl font-semibold mb-2">{user.fullName}</h2>
-                <p className="text-gray-600 mb-2">User ID: {user.userId}</p>
+  const getCurrencyIcon = (currency) => {
+    switch(currency) {
+      case 'bitcoin':
+        return <RiCoinFill className="text-yellow-500" />;
+      case 'ethereum':
+        return <RiCoinLine className="text-blue-500" />;
+      case 'usdt':
+        return <RiExchangeDollarLine className="text-green-500" />;
+      default:
+        return <RiMoneyDollarCircleLine className="text-gray-500" />;
+    }
+  };
 
-                <div className="mb-4">
-                  {user.bitcoinPending > 0 && (
-                    <p className="text-gray-700">
-                      Bitcoin Pending: <span className="font-bold">{user.bitcoinPending}</span>
-                    </p>
-                  )}
-                  {user.ethereumPending > 0 && (
-                    <p className="text-gray-700">
-                      Ethereum Pending: <span className="font-bold">{user.ethereumPending}</span>
-                    </p>
-                  )}
-                  {user.usdtPending > 0 && (
-                    <p className="text-gray-700">
-                      USDT Pending: <span className="font-bold">{user.usdtPending}</span>
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  {user.bitcoinPending > 0 && (
-                    <div className="flex justify-between">
-                      <button
-                        className="bg-green-500 text-white py-1 px-4 rounded hover:bg-green-600"
-                        onClick={() => handleAction(user.userId, 'bitcoin', 'approve')}
-                      >
-                        Approve Bitcoin
-                      </button>
-                      <button
-                        className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600"
-                        onClick={() => handleAction(user.userId, 'bitcoin', 'reject')}
-                      >
-                        Reject Bitcoin
-                      </button>
-                    </div>
-                  )}
-                  {user.ethereumPending > 0 && (
-                    <div className="flex justify-between">
-                      <button
-                        className="bg-green-500 text-white py-1 px-4 rounded hover:bg-green-600"
-                        onClick={() => handleAction(user.userId, 'ethereum', 'approve')}
-                      >
-                        Approve Ethereum
-                      </button>
-                      <button
-                        className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600"
-                        onClick={() => handleAction(user.userId, 'ethereum', 'reject')}
-                      >
-                        Reject Ethereum
-                      </button>
-                    </div>
-                  )}
-                  {user.usdtPending > 0 && (
-                    <div className="flex justify-between">
-                      <button
-                        className="bg-green-500 text-white py-1 px-4 rounded hover:bg-green-600"
-                        onClick={() => handleAction(user.userId, 'usdt', 'approve')}
-                      >
-                        Approve USDT
-                      </button>
-                      <button
-                        className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600"
-                        onClick={() => handleAction(user.userId, 'usdt', 'reject')}
-                      >
-                        Reject USDT
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#111827]">
+        <Sidebar />
+        <div className="w-full md:pl-72 pt-16 md:pt-0">
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
-        )}
+        </div>
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#111827]">
+      <Sidebar />
+      <div className="w-full md:pl-72 pt-16 md:pt-0">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="p-4 md:p-8 space-y-6"
+        >
+          {/* Header */}
+          <div className="relative p-6 rounded-2xl overflow-hidden bg-[#1a2234]">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-10"></div>
+            <div className="relative">
+              <h1 className="text-3xl font-bold text-white mb-2">Pending Withdrawals</h1>
+              <p className="text-gray-400">Manage and approve user withdrawal requests</p>
+            </div>
+          </div>
+
+          {/* Message Alert */}
+          <AnimatePresence>
+            {message && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="relative p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400"
+              >
+                {message}
+                <button
+                  onClick={() => setMessage('')}
+                  className="absolute top-4 right-4 p-1 hover:bg-indigo-500/20 rounded-lg transition-all"
+                >
+                  <RiCloseLine className="text-xl" />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Withdrawals Table */}
+          <div className="bg-[#1a2234] rounded-2xl overflow-hidden">
+            <div className="p-6">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-800">
+                      <th className="text-left py-4 px-4 text-gray-400 font-medium">User</th>
+                      <th className="text-left py-4 px-4 text-gray-400 font-medium">Currency</th>
+                      <th className="text-left py-4 px-4 text-gray-400 font-medium">Amount</th>
+                      <th className="text-right py-4 px-4 text-gray-400 font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-800">
+                    {pendingWithdrawals.map((user) => (
+                      <React.Fragment key={user.userId}>
+                        {user.bitcoinPending > 0 && (
+                          <TableRow
+                            user={user}
+                            currency="bitcoin"
+                            amount={user.bitcoinPending}
+                            onAction={handleAction}
+                            getCurrencyIcon={getCurrencyIcon}
+                          />
+                        )}
+                        {user.ethereumPending > 0 && (
+                          <TableRow
+                            user={user}
+                            currency="ethereum"
+                            amount={user.ethereumPending}
+                            onAction={handleAction}
+                            getCurrencyIcon={getCurrencyIcon}
+                          />
+                        )}
+                        {user.usdtPending > 0 && (
+                          <TableRow
+                            user={user}
+                            currency="usdt"
+                            amount={user.usdtPending}
+                            onAction={handleAction}
+                            getCurrencyIcon={getCurrencyIcon}
+                          />
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+
+                {pendingWithdrawals.length === 0 && (
+                  <div className="text-center py-8">
+                    <RiMoneyDollarCircleLine className="text-4xl text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-400">No pending withdrawals found.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
   );
 };
+
+const TableRow = ({ user, currency, amount, onAction, getCurrencyIcon }) => (
+  <tr className="hover:bg-[#111827] transition-colors">
+    <td className="py-4 px-4">
+      <div className="flex items-center space-x-3">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center">
+          <span className="text-white font-medium">{user.fullName[0]}</span>
+        </div>
+        <div>
+          <p className="text-white font-medium">{user.fullName}</p>
+          <p className="text-sm text-gray-400">ID: {user.userId}</p>
+        </div>
+      </div>
+    </td>
+    <td className="py-4 px-4">
+      <div className="flex items-center space-x-2">
+        {getCurrencyIcon(currency)}
+        <span className="text-white capitalize">{currency}</span>
+      </div>
+    </td>
+    <td className="py-4 px-4">
+      <span className="text-white font-medium">{amount}</span>
+    </td>
+    <td className="py-4 px-4">
+      <div className="flex items-center justify-end space-x-2">
+        <button
+          onClick={() => onAction(user.userId, currency, 'approve')}
+          className="px-4 py-2 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500/20 transition-all flex items-center space-x-2"
+        >
+          <RiCheckLine />
+          <span>Approve</span>
+        </button>
+        <button
+          onClick={() => onAction(user.userId, currency, 'reject')}
+          className="px-4 py-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-all flex items-center space-x-2"
+        >
+          <RiCloseLine />
+          <span>Reject</span>
+        </button>
+      </div>
+    </td>
+  </tr>
+);
 
 export default ApproveWithdrawal;

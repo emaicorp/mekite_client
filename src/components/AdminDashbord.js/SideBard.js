@@ -10,7 +10,8 @@ import {
   RiGiftLine,
   RiSettings4Line,
   RiLogoutBoxRLine,
-  RiArrowRightSLine
+  RiArrowRightSLine,
+  RiStackLine
 } from "react-icons/ri";
 // Add this at the top of your file with other imports
 
@@ -54,6 +55,11 @@ const Sidebar = () => {
       path: "/bonus",
       name: "Bonuses",
       icon: RiGiftLine
+    },
+    {
+      path: "/investment-plans",
+      name: "Investment Plans",
+      icon: RiStackLine
     },
     {
       path: "/admin-login",
@@ -109,7 +115,7 @@ const Sidebar = () => {
       </nav>
 
       {/* Logout Button */}
-      <div className="p-4 border-t border-gray-800">
+      <div className=" flex-0 p-4 border-t border-gray-800">
         <Link
           to="/logout"
           onClick={() => setIsSidebarOpen(false)}
