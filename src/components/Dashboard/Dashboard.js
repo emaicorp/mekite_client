@@ -117,7 +117,7 @@ function Dashboard() {
             {[
               {
                 title: "Available Balance",
-                value: userDetails.availableBalance,
+                value: userDetails.totalEarnings + userDetails.activeDeposit,
                 icon: FaWallet,
                 color: "from-blue-500 to-indigo-500",
                 bgLight: "from-blue-500/5 to-indigo-500/5"
@@ -154,7 +154,7 @@ function Dashboard() {
                     <div>
                       <p className="text-gray-400 mb-1">{stat.title}</p>
                       <h3 className="text-2xl font-semibold text-white">
-                        ${stat.value}
+                        ${typeof stat.value === 'number' ? stat.value.toFixed(3) : stat.value}
                       </h3>
                     </div>
                     <div className={`p-3 bg-gradient-to-r ${stat.bgLight} rounded-xl`}>

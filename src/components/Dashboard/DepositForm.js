@@ -91,15 +91,16 @@ const DepositForm = ({ plan, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative w-full max-w-2xl"
+        className="relative w-full max-w-2xl my-8"
       >
         <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
-          <div className="relative bg-[#1a2234] rounded-2xl p-6">
+          <div className="relative bg-[#1a2234] rounded-2xl p-6 max-h-[85vh] overflow-y-auto 
+            scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-purple-500 hover:scrollbar-thumb-purple-400">
             <button
               onClick={onClose}
               className="absolute right-4 top-4 p-2 text-gray-400 hover:text-white transition-colors"
@@ -112,7 +113,7 @@ const DepositForm = ({ plan, onClose }) => {
               <p className="text-gray-400">Selected Plan: {plan.name}</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-gray-400 mb-2">Amount (${plan.minAmount} - ${plan.maxAmount})</label>
                 <input
@@ -153,7 +154,7 @@ const DepositForm = ({ plan, onClose }) => {
                   <div className="flex justify-center mb-4">
                     <QRCodeSVG 
                       value={selectedWallet.address}
-                      size={200}
+                      size={160}
                       bgColor="#111827"
                       fgColor="#fff"
                       level="L"
@@ -179,7 +180,7 @@ const DepositForm = ({ plan, onClose }) => {
                 <p className="text-red-400 text-sm">{error}</p>
               )}
 
-              <div className="flex justify-end gap-4">
+              <div className="flex justify-end gap-4 sticky bottom-0 pt-4 bg-[#1a2234]">
                 <button
                   type="button"
                   onClick={onClose}
