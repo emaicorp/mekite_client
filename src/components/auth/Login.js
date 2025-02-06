@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,16 +22,16 @@ function Login() {
     }
 
     try {
-      const response = await axios.post('https://mekite-btc.onrender.com/api/login', { username, password });
-
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}auth/login`, { username, password });
+      console.log(response)
       if (response.data.token) {
         localStorage.setItem('authToken', response.data.token);
-        localStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
+        localStorage.setItem('userDetails', JSON.stringify(response.data.user));
         
-        if (response.data.userDetails.role === 'admin') {
+        if (response.data.user.role === 'admin') {
           navigate('/admin-dashboard');
         } else {
-          navigate('/dashboard');
+          handleLoginSuccess();
         }
       }
     } catch (err) {
@@ -38,6 +39,21 @@ function Login() {
       setError('Invalid credentials, please try again');
     }
     setLoading(false);
+  };
+
+  const handleLoginSuccess = () => {
+    // If there was a saved destination, go there
+    if (location.state?.from) {
+      navigate(location.state.from, {
+        state: {
+          planId: location.state.planId,
+          planName: location.state.planName
+        }
+      });
+    } else {
+      // Default redirect
+      navigate('/dashboard');
+    }
   };
 
   return (

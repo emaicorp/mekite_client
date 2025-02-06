@@ -3,6 +3,7 @@ import Sidebar from "./Sidebar";
 import { IoWalletOutline } from "react-icons/io5";
 import { FaBitcoin, FaEthereum, FaClipboard } from "react-icons/fa";
 import { SiTether } from "react-icons/si";
+import Investment from "./Investment";
 
 const plans = [
   {
@@ -94,7 +95,7 @@ function Deposit() {
           </div>
 
           {/* Investment Plans */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
             {plans.map((plan, index) => (
               <div key={index} className="relative">
                 <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
@@ -124,72 +125,10 @@ function Deposit() {
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
+          <Investment />
 
-          {/* Deposit Form */}
-          <div className="relative max-w-2xl mx-auto">
-            <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
-              <div className="relative bg-[#1a2234] rounded-2xl p-4 sm:p-8">
-                {message && (
-                  <div className="mb-6 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400 text-sm sm:text-base">
-                    {message}
-                  </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                  <div>
-                    <label className="block text-gray-400 mb-2 text-sm sm:text-base">Select Package</label>
-                    <select
-                      name="package"
-                      value={formData.package}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="">-- Select a package --</option>
-                      {plans.map((plan, index) => (
-                        <option key={index} value={plan.name}>{plan.name}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-400 mb-2 text-sm sm:text-base">Payment Method</label>
-                    <select
-                      name="paymentMethod"
-                      value={formData.paymentMethod}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="">-- Select payment method --</option>
-                      <option value="bitcoin">Bitcoin</option>
-                      <option value="ethereum">Ethereum</option>
-                      <option value="usdt">USDT</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-400 mb-2 text-sm sm:text-base">Amount</label>
-                    <input
-                      type="number"
-                      name="amount"
-                      value={formData.amount}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="Enter amount"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-xl hover:opacity-90 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
-                  >
-                    Proceed
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-
+      
           {/* Investment Summary Modal */}
           {planDetails && (
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">

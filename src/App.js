@@ -6,6 +6,7 @@ import { useNetwork } from './hooks/useNetwork';
 import { useCountries } from './hooks/useCountries';
 import Header from './components/layout/Header';
 import AppRoutes from './routes/AppRoutes';
+import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -20,18 +21,21 @@ const App = () => {
   };
 
   return (
-    <Router>
-      <Header
-        countries={countries}
-        selectedLanguage={selectedLanguage}
-        onLanguageChange={handleLanguageChange}
-      />
-      <AppRoutes
-        loading={loading}
-        setLoading={setLoading}
-        networkStatus={networkStatus}
-      />
-    </Router>
+    <>
+      <Toaster position="top-right" />
+      <Router>
+        <Header
+          countries={countries}
+          selectedLanguage={selectedLanguage}
+          onLanguageChange={handleLanguageChange}
+        />
+        <AppRoutes
+          loading={loading}
+          setLoading={setLoading}
+          networkStatus={networkStatus}
+        />
+      </Router>
+    </>
   );
 };
 

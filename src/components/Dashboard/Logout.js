@@ -7,7 +7,8 @@ const Logout = () => {
 
   const handleLogout = () => {
     // Clear user data from local storage or any other storage
-    localStorage.removeItem('userToken');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userDetails');
     // Redirect to login page
     navigate('/login');
   };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-  import Navbar from '../layout/Navbar';
+  // import Navbar from '../layout/Navbar';
 
 function Register() {
   const navigate = useNavigate();
@@ -33,15 +33,16 @@ function Register() {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://mekite-btc.onrender.com/api/register', {
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
       });
-
+      console.log(response)
       const data = await response.json();
+      
 
       if (response.ok) {
         setResponseMessage('Registration successful. Redirecting to login...');

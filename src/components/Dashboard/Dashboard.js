@@ -6,24 +6,50 @@ import { RiUserLine } from "react-icons/ri";
 import Sidebar from './Sidebar';
 // import CryptoDash from './CryptoDash';
 import MarketOverview from '../Home/MarketOverview';
+import useUserData from '../../hooks/useUserData';
 
 function Dashboard() {
-  const [userDetails, setUserDetails] = useState(null);
+  const { userDetails, loading, error } = useUserData();
   const [showUserInfo, setShowUserInfo] = useState(false);
 
-  useEffect(() => {
-    const storedUserDetails = JSON.parse(localStorage.getItem('userDetails'));
-    if (storedUserDetails) {
-      setUserDetails(storedUserDetails);
-    }
-  }, []);
-
-  if (!userDetails) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-[#111827]">
         <div className="w-16 h-16 relative">
           <div className="w-16 h-16 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
           <div className="w-12 h-12 absolute top-2 left-2 rounded-full border-4 border-purple-500 border-t-transparent animate-spin-slow"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-[#111827]">
+        <div className="text-center text-white">
+          <p className="text-xl mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.href = '/login'}
+            className="px-4 py-2 bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-all"
+          >
+            Return to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userDetails) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-[#111827]">
+        <div className="text-center text-white">
+          <p className="text-xl mb-4">No user data found</p>
+          <button 
+            onClick={() => window.location.href = '/login'}
+            className="px-4 py-2 bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-all"
+          >
+            Login Again
+          </button>
         </div>
       </div>
     );

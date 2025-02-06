@@ -7,23 +7,29 @@ import {
   RiMoneyDollarCircleLine,
   RiPercentLine,
   RiTimeLine,
-  RiEditLine,
-  RiDeleteBinLine
+  RiDeleteBinLine,
+  RiCheckLine,
+  RiEditLine
 } from 'react-icons/ri';
+import toast from 'react-hot-toast';
+import api from '../../utils/axios';
 import Sidebar from './SideBard';
 
 const ManageInvestmentPlans = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    minimumAmount: '',
-    maximumAmount: '',
-    returnPercentage: '',
+    minAmount: '',
+    maxAmount: '',
+    dailyProfit: '',
     duration: '',
-    description: ''
+    description: '',
+    features: [''],
+    status: 'active'
   });
 
   useEffect(() => {
@@ -32,14 +38,62 @@ const ManageInvestmentPlans = () => {
 
   const fetchPlans = async () => {
     try {
-      const response = await axios.get('https://mekite-btc.onrender.com/api/investment-plans');
-      setPlans(response.data.plans || []);
+      const response = await api.get('investment-plans');
+      if (response.data.success) {
+        setPlans(response.data.data || []);
+      }
       setLoading(false);
     } catch (error) {
-      setMessage('Error fetching investment plans');
+      toast.error('Error fetching investment plans');
       console.error('Fetch Error:', error);
       setLoading(false);
     }
+  };
+
+  const handleEdit = (plan) => {
+    setFormData({
+      name: plan.name,
+      minAmount: plan.minAmount,
+      maxAmount: plan.maxAmount,
+      dailyProfit: plan.dailyProfit,
+      duration: plan.duration,
+      description: plan.description,
+      features: [...plan.features, ''], // Add empty feature for potential new ones
+      status: plan.status
+    });
+    setEditingId(plan._id);
+    setIsEditing(true);
+    setShowForm(true);
+  };
+
+  const handleAddFeature = () => {
+    setFormData({
+      ...formData,
+      features: [...formData.features, '']
+    });
+  };
+
+  const handleRemoveFeature = (index) => {
+    setFormData({
+      ...formData,
+      features: formData.features.filter((_, i) => i !== index)
+    });
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      minAmount: '',
+      maxAmount: '',
+      dailyProfit: '',
+      duration: '',
+      description: '',
+      features: [''],
+      status: 'active'
+    });
+    setIsEditing(false);
+    setEditingId(null);
+    setShowForm(false);
   };
 
   const handleSubmit = async (e) => {
@@ -47,24 +101,39 @@ const ManageInvestmentPlans = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        'https://mekite-btc.onrender.com/api/admin/add-investment-plan',
-        formData
-      );
+      const cleanedFeatures = formData.features.filter(feature => feature.trim() !== '');
       
-      setMessage('Investment plan added successfully!');
-      setPlans([...plans, response.data.plan]);
-      setShowForm(false);
-      setFormData({
-        name: '',
-        minimumAmount: '',
-        maximumAmount: '',
-        returnPercentage: '',
-        duration: '',
-        description: ''
-      });
+      const payload = {
+        name: formData.name,
+        minAmount: Number(formData.minAmount),
+        maxAmount: Number(formData.maxAmount),
+        dailyProfit: Number(formData.dailyProfit),
+        duration: Number(formData.duration),
+        description: formData.description,
+        features: cleanedFeatures,
+        status: formData.status
+      };
+
+      let response;
+      if (isEditing) {
+        response = await api.put(`investment-plans/${editingId}`, payload);
+        if (response.data.success) {
+          setPlans(plans.map(plan => 
+            plan._id === editingId ? response.data.data : plan
+          ));
+          toast.success('Investment plan updated successfully!');
+        }
+      } else {
+        response = await api.post('investment-plans', payload);
+        if (response.data.success) {
+          setPlans([...plans, response.data.data]);
+          toast.success('Investment plan added successfully!');
+        }
+      }
+      resetForm();
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Error adding investment plan');
+      toast.error(error.response?.data?.message || `Error ${isEditing ? 'updating' : 'adding'} investment plan`);
+      console.error('Plan Operation Error:', error);
     } finally {
       setLoading(false);
     }
@@ -74,11 +143,11 @@ const ManageInvestmentPlans = () => {
     if (!window.confirm('Are you sure you want to delete this plan?')) return;
 
     try {
-      await axios.delete(`https://mekite-btc.onrender.com/api/admin/investment-plan/${planId}`);
+      await api.delete(`investment-plans/${planId}`);
       setPlans(plans.filter(plan => plan._id !== planId));
-      setMessage('Plan deleted successfully');
+      toast.success('Plan deleted successfully');
     } catch (error) {
-      setMessage('Error deleting plan');
+      toast.error('Error deleting plan');
     }
   };
 
@@ -123,27 +192,7 @@ const ManageInvestmentPlans = () => {
             </div>
           </div>
 
-          {/* Message Alert */}
-          <AnimatePresence>
-            {message && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="relative p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400"
-              >
-                {message}
-                <button
-                  onClick={() => setMessage('')}
-                  className="absolute top-4 right-4 p-1 hover:bg-indigo-500/20 rounded-lg transition-all"
-                >
-                  <RiCloseLine className="text-xl" />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Add Plan Form */}
+          {/* Form Modal */}
           <AnimatePresence>
             {showForm && (
               <motion.div
@@ -153,6 +202,9 @@ const ManageInvestmentPlans = () => {
                 className="relative p-[1px] rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500"
               >
                 <div className="bg-[#1a2234] rounded-2xl p-6">
+                  <h2 className="text-xl font-semibold text-white mb-6">
+                    {isEditing ? 'Edit Investment Plan' : 'Add New Investment Plan'}
+                  </h2>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
@@ -169,8 +221,8 @@ const ManageInvestmentPlans = () => {
                         <label className="block text-gray-400 mb-2">Minimum Amount</label>
                         <input
                           type="number"
-                          value={formData.minimumAmount}
-                          onChange={(e) => setFormData({...formData, minimumAmount: e.target.value})}
+                          value={formData.minAmount}
+                          onChange={(e) => setFormData({...formData, minAmount: e.target.value})}
                           className="w-full bg-[#111827] text-white px-4 py-3 rounded-xl border border-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
                           required
                         />
@@ -179,18 +231,18 @@ const ManageInvestmentPlans = () => {
                         <label className="block text-gray-400 mb-2">Maximum Amount</label>
                         <input
                           type="number"
-                          value={formData.maximumAmount}
-                          onChange={(e) => setFormData({...formData, maximumAmount: e.target.value})}
+                          value={formData.maxAmount}
+                          onChange={(e) => setFormData({...formData, maxAmount: e.target.value})}
                           className="w-full bg-[#111827] text-white px-4 py-3 rounded-xl border border-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
                           required
                         />
                       </div>
                       <div>
-                        <label className="block text-gray-400 mb-2">Return Percentage</label>
+                        <label className="block text-gray-400 mb-2">Daily Profit (%)</label>
                         <input
                           type="number"
-                          value={formData.returnPercentage}
-                          onChange={(e) => setFormData({...formData, returnPercentage: e.target.value})}
+                          value={formData.dailyProfit}
+                          onChange={(e) => setFormData({...formData, dailyProfit: e.target.value})}
                           className="w-full bg-[#111827] text-white px-4 py-3 rounded-xl border border-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
                           required
                         />
@@ -215,12 +267,58 @@ const ManageInvestmentPlans = () => {
                           required
                         />
                       </div>
+                      <div>
+                        <label className="block text-gray-400 mb-2">Status</label>
+                        <select
+                          value={formData.status}
+                          onChange={(e) => setFormData({...formData, status: e.target.value})}
+                          className="w-full bg-[#111827] text-white px-4 py-3 rounded-xl border border-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                        >
+                          <option value="active">Active</option>
+                          <option value="inactive">Inactive</option>
+                        </select>
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-gray-400 mb-2">Features</label>
+                        <div className="space-y-3">
+                          {formData.features.map((feature, index) => (
+                            <div key={index} className="flex gap-2">
+                              <input
+                                type="text"
+                                value={feature}
+                                onChange={(e) => {
+                                  const newFeatures = [...formData.features];
+                                  newFeatures[index] = e.target.value;
+                                  setFormData({...formData, features: newFeatures});
+                                }}
+                                placeholder={`Feature ${index + 1}`}
+                                className="flex-1 bg-[#111827] text-white px-4 py-3 rounded-xl border border-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveFeature(index)}
+                                className="p-3 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all"
+                              >
+                                <RiCloseLine />
+                              </button>
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={handleAddFeature}
+                            className="w-full py-2 px-4 border border-dashed border-gray-700 rounded-xl text-gray-400 hover:border-indigo-500 hover:text-indigo-500 transition-all flex items-center justify-center gap-2"
+                          >
+                            <RiAddLine />
+                            <span>Add Feature</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="flex justify-end space-x-4">
                       <button
                         type="button"
-                        onClick={() => setShowForm(false)}
+                        onClick={resetForm}
                         className="px-6 py-3 bg-gray-500/10 text-gray-400 rounded-xl hover:bg-gray-500/20 transition-all"
                       >
                         Cancel
@@ -230,7 +328,7 @@ const ManageInvestmentPlans = () => {
                         disabled={loading}
                         className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all disabled:opacity-50"
                       >
-                        {loading ? 'Adding...' : 'Add Plan'}
+                        {loading ? (isEditing ? 'Updating...' : 'Adding...') : (isEditing ? 'Update Plan' : 'Add Plan')}
                       </button>
                     </div>
                   </form>
@@ -253,6 +351,12 @@ const ManageInvestmentPlans = () => {
                     <h3 className="text-xl font-semibold text-white">{plan.name}</h3>
                     <div className="flex space-x-2">
                       <button
+                        onClick={() => handleEdit(plan)}
+                        className="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg hover:bg-indigo-500/20 transition-all"
+                      >
+                        <RiEditLine />
+                      </button>
+                      <button
                         onClick={() => handleDelete(plan._id)}
                         className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-all"
                       >
@@ -264,21 +368,38 @@ const ManageInvestmentPlans = () => {
                   <div className="space-y-4">
                     <div className="flex items-center space-x-2 text-gray-400">
                       <RiMoneyDollarCircleLine />
-                      <span>Min: ${plan.minimumAmount}</span>
+                      <span>Min: ${plan.minAmount}</span>
                     </div>
                     <div className="flex items-center space-x-2 text-gray-400">
                       <RiMoneyDollarCircleLine />
-                      <span>Max: ${plan.maximumAmount}</span>
+                      <span>Max: ${plan.maxAmount}</span>
                     </div>
                     <div className="flex items-center space-x-2 text-gray-400">
                       <RiPercentLine />
-                      <span>Return: {plan.returnPercentage}%</span>
+                      <span>Daily Profit: {plan.dailyProfit}%</span>
                     </div>
                     <div className="flex items-center space-x-2 text-gray-400">
                       <RiTimeLine />
                       <span>Duration: {plan.duration} days</span>
                     </div>
-                    <p className="text-gray-400 text-sm">{plan.description}</p>
+                    
+                    {plan.features && plan.features.length > 0 && (
+                      <div className="pt-4 border-t border-gray-800">
+                        <p className="text-gray-400 mb-2">Features:</p>
+                        <ul className="space-y-2">
+                          {plan.features.map((feature, index) => (
+                            <li key={index} className="flex items-center space-x-2 text-gray-400">
+                              <RiCheckLine className="text-green-400" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    <div className="pt-4 border-t border-gray-800">
+                      <p className="text-gray-400 text-sm">{plan.description}</p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
