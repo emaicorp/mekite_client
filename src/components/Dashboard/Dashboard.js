@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaWallet, FaArrowDown, FaCoins, FaUserCog } from 'react-icons/fa';
 import { PiHandDepositFill } from "react-icons/pi";
 import { IoGridOutline } from "react-icons/io5";
@@ -54,6 +54,7 @@ function Dashboard() {
       </div>
     );
   }
+  const referralLink = `https://bitfluxcapital.online/register?ref=${userDetails.username}`
 
   return (
     <div className="flex min-h-screen bg-[#111827]">
@@ -104,7 +105,7 @@ function Dashboard() {
                     </div>
                     <div className="col-span-2">
                       <p className="text-gray-400">Referral Link</p>
-                      <p className="text-indigo-400 text-sm">{userDetails.referralLink}</p>
+                      <p className="text-indigo-400 text-sm">{referralLink}</p>
                     </div>
                   </div>
                 </div>

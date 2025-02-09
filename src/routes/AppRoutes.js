@@ -26,7 +26,7 @@ import ReferralLink from '../components/Dashboard/ReferralLink';
 import ApproveWithdrawal from '../components/AdminDashbord.js/ApproveWithdrawal';
 import Bonuses from '../components/AdminDashbord.js/Bonuses';
 import ManageInvestmentPlans from '../components/AdminDashbord.js/ManageInvestmentPlans';
-
+import Wallets from '../components/AdminDashbord.js/wallets';
 const AppRoutes = ({ loading, setLoading, networkStatus }) => {
   const wrapComponent = (Component) => (
     <PageWrapper
@@ -63,6 +63,7 @@ const AppRoutes = ({ loading, setLoading, networkStatus }) => {
       <Route path="/approve" element={wrapComponent(ApproveWithdrawal)} />
       <Route path="/bonus" element={wrapComponent(Bonuses)} />
       <Route path="/investment-plans" element={wrapComponent(ManageInvestmentPlans)} />
+      <Route path="/wallets" element={wrapComponent(Wallets)} />
     </Routes>
   );
 };

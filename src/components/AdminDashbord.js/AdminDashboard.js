@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import Sidebar from "./SideBard";
 import { motion } from "framer-motion";
 import { 
@@ -13,89 +13,100 @@ import {
 } from 'recharts';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { RiUserLine, RiMoneyDollarCircleLine, RiExchangeDollarLine } from 'react-icons/ri';
+import { RiUserLine, RiMoneyDollarCircleLine, RiExchangeDollarLine, RiShieldUserLine, RiWallet3Line, RiDeleteBinLine, RiEditLine, RiCloseLine } from 'react-icons/ri';
 import UserTable from "./UserTable";
 import RecentActivities from "./RecentActivities";
 import './AdminDashboard.css';
+import useAdminUsers from '../../hooks/useAdminUsers';
+import LoadingSpinner from '../common/LoadingSpinner';
+import StatsCard from '../common/StatsCard';
+import api from '../../utils/axios';
+import toast from 'react-hot-toast';
+
 
 
 function AdminDashboard() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeUsers: 0,
-    totalDeposits: 0,
-    totalWithdrawals: 0,
+  const { users, loading, error, setUsers } = useAdminUsers('/admin/users');
+  const [editingUser, setEditingUser] = useState(null);
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    role: 'user',
+    status: 'active',
+    password: ''
   });
 
-  // Mock data for the chart - replace with real data
-  const [chartData] = useState([
-    { name: 'Jan', deposits: 4000, withdrawals: 2400 },
-    { name: 'Feb', deposits: 3000, withdrawals: 1398 },
-    { name: 'Mar', deposits: 2000, withdrawals: 9800 },
-    { name: 'Apr', deposits: 2780, withdrawals: 3908 },
-    { name: 'May', deposits: 1890, withdrawals: 4800 },
-    { name: 'Jun', deposits: 2390, withdrawals: 3800 },
-  ]);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get(
-          "https://mekite-btc.onrender.com/api/all-users"
-        );
-        setUsers(response.data.users);
-        
-        const activeUsers = response.data.users.filter(user => user.isOnline).length;
-        const totalDeposits = response.data.users.reduce((acc, user) => 
-          acc + user.investments.reduce((sum, inv) => sum + inv.amount, 0), 0
-        );
-        const totalWithdrawals = response.data.users.reduce((acc, user) => 
-          acc + user.totalWithdrawals, 0
-        );
-
-        setStats({
-          totalUsers: response.data.users.length,
-          activeUsers,
-          totalDeposits,
-          totalWithdrawals,
-        });
-
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to fetch users");
-        setLoading(false);
+   // Mock data for the chart - replace with real data
+   const chartData = React.useMemo(() => {
+    const monthlyData = users.reduce((acc, user) => {
+      const month = new Date(user.lastSeen).toLocaleString('default', { month: 'short' });
+      if (!acc[month]) {
+        acc[month] = { deposits: 0, withdrawals: 0 };
       }
-    };
+      acc[month].deposits += user.activeDeposit;
+      acc[month].withdrawals += user.totalWithdrawals;
+      return acc;
+    }, {});
 
-    fetchUsers();
-  }, []);
+    return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map(month => ({
+      name: month,
+      deposits: monthlyData[month]?.deposits || 0,
+      withdrawals: monthlyData[month]?.withdrawals || 0
+    }));
+  }, [users]);
+  if (loading) return <LoadingSpinner />;
+  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
-  if (loading) {
-    return (
-      <div className="flex h-screen bg-[#111827]">
-        <Sidebar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      </div>
-    );
-  }
+  const stats = {
+    totalUsers: users.length,
+    activeUsers: users.filter(u => u.isOnline).length,
+    totalDeposits: users.reduce((acc, user) => acc + user.activeDeposit, 0),
+    admins: users.filter(u => u.role === 'admin').length
+  };
 
-  if (error) {
-    return (
-      <div className="flex h-screen bg-[#111827]">
-        <Sidebar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center p-5 text-red-500">{error}</div>
-        </div>
-      </div>
-    );
-  }
 
-  const activeUsersPercentage = (stats.activeUsers / stats.totalUsers) * 100;
+  const handleDeleteUser = async (userId) => {
+    try {
+      await api.delete(`/admin/users/${userId}`);
+      setUsers(users.filter(user => user._id !== userId));
+      toast.success('User Successfully Deleted')
+    } catch (error) {
+      toast.error('Error Deleting user')
+      console.error('Delete error:', error);
+    }
+  };
+
+  const handleEditUser = (user) => {
+    setEditingUser(user);
+    setFormData({
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      password:user.password
+    });
+  };
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    try {
+      console.log(formData)
+      const response = await api.patch(`/admin/users/${editingUser._id}`, formData);
+      
+      if (response.data.success) {
+        setUsers(users.map(user => 
+          user._id === editingUser._id ? { ...user, ...formData } : user
+        ));
+        setEditingUser(null);
+        toast.success('User updated successfully');
+      }
+    } catch (error) {
+      toast.error('Error updating user');
+      console.error('Update error:', error);
+    }
+  };
+
+  // const activeUsersPercentage = (stats.activeUsers / stats.totalUsers) * 100;
 
   return (
     <div className="min-h-screen bg-[#111827]">
@@ -110,37 +121,30 @@ function AdminDashboard() {
         >
           {/* Top Stats Row */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Active Users Progress */}
-            <div className="bg-[#1a2234] p-6 rounded-2xl">
-              <div className="w-32 h-32 mx-auto mb-4">
-                <CircularProgressbar
-                  value={activeUsersPercentage}
-                  text={`${Math.round(activeUsersPercentage)}%`}
-                  styles={buildStyles({
-                    pathColor: `rgba(129, 140, 248)`,
-                    textColor: '#fff',
-                    trailColor: '#1f2943',
-                  })}
-                />
-              </div>
-              <p className="text-center text-gray-400">Active Users</p>
-              <p className="text-center text-white font-bold">{stats.activeUsers} / {stats.totalUsers}</p>
-            </div>
-
-            {/* Other Stats */}
-            {[
-              { title: "Total Users", value: stats.totalUsers, icon: RiUserLine },
-              { title: "Total Deposits", value: `$${stats.totalDeposits.toLocaleString()}`, icon: RiMoneyDollarCircleLine },
-              { title: "Total Withdrawals", value: `$${stats.totalWithdrawals.toLocaleString()}`, icon: RiExchangeDollarLine }
-            ].map((stat, index) => (
-              <div key={index} className="bg-[#1a2234] p-6 rounded-2xl">
-                <div className="flex items-center justify-between mb-4">
-                  <stat.icon className="text-2xl text-indigo-400" />
-                </div>
-                <p className="text-gray-400">{stat.title}</p>
-                <p className="text-2xl font-bold text-white">{stat.value}</p>
-              </div>
-            ))}
+            <StatsCard
+              icon={RiUserLine}
+              title="Total Users"
+              value={stats.totalUsers}
+              color="indigo"
+            />
+            <StatsCard
+              icon={RiUserLine}
+              title="Active Users"
+              value={stats.activeUsers}
+              color="green"
+            />
+            <StatsCard
+              icon={RiWallet3Line}
+              title="Total Deposits"
+              value={`$${stats.totalDeposits.toLocaleString()}`}
+              color="purple"
+            />
+            <StatsCard
+              icon={RiShieldUserLine}
+              title="Administrators"
+              value={stats.admins}
+              color="blue"
+            />
           </div>
 
           {/* Chart Section */}
@@ -189,6 +193,80 @@ function AdminDashboard() {
             </div>
           </div>
 
+          {/* Users Table */}
+          <div className="bg-[#1a2234] rounded-2xl p-6">
+            <h2 className="text-xl font-semibold text-white mb-6">User Management</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-900/50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-gray-400">Username</th>
+                    <th className="px-6 py-3 text-left text-gray-400">Email</th>
+                    <th className="px-6 py-3 text-left text-gray-400">Password</th>
+                    <th className="px-6 py-3 text-left text-gray-400">Role</th>
+                    <th className="px-6 py-3 text-left text-gray-400">Status</th>
+                    <th className="px-6 py-3 text-left text-gray-400">Balance</th>
+                    <th className="px-6 py-3 text-left text-gray-400">Deposits</th>
+                    <th className="px-6 py-3 text-left text-gray-400">Last Seen</th>
+                    <th className="px-6 py-3 text-left text-gray-400">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800">
+                  {users.map(user => (
+                    <tr key={user._id} className="hover:bg-gray-900/20">
+                      <td className="px-6 py-4 text-white">{user.username}</td>
+                      <td className="px-6 py-4 text-gray-300">{user.email}</td>
+                      <td className="px-6 py-4 text-gray-300">{user.password}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          user.role === 'admin' 
+                            ? 'bg-indigo-500/20 text-indigo-400' 
+                            : 'bg-gray-500/20 text-gray-400'
+                        }`}>
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          user.status === 'active'
+                            ? 'bg-green-500/20 text-green-400'
+                            : 'bg-red-500/20 text-red-400'
+                        }`}>
+                          {user.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-300">
+                        ${user.availableBalance.toFixed(2)}
+                      </td>
+                      <td className="px-6 py-4 text-gray-300">
+                        ${user.activeDeposit.toFixed(2)}
+                      </td>
+                      <td className="px-6 py-4 text-gray-400 text-sm">
+                        {new Date(user.lastSeen).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-3">
+                          <button 
+                            onClick={() => handleEditUser(user)}
+                            className="p-2 text-indigo-400 hover:bg-indigo-500/20 rounded-lg"
+                          >
+                            <RiEditLine className="text-lg" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(user._id)}
+                            className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg"
+                          >
+                            <RiDeleteBinLine className="text-lg" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           {/* Bottom Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
             <div className="xl:col-span-2">
@@ -200,6 +278,100 @@ function AdminDashboard() {
           </div>
         </motion.div>
       </div>
+
+      {editingUser && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <motion.div
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            className="bg-[#1a2234] rounded-2xl p-6 w-full max-w-md relative"
+          >
+            <button
+              onClick={() => setEditingUser(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <RiCloseLine className="text-2xl" />
+            </button>
+
+            <h2 className="text-xl font-semibold text-white mb-6">Edit User</h2>
+            
+            <form onSubmit={handleUpdateUser} className="space-y-4">
+              <div>
+                <label className="block text-gray-400 mb-2">Username</label>
+                <input
+                  type="text"
+                  value={formData.username}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-400 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-400 mb-2">Password</label>
+                <input
+                  type="text"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-400 mb-2">Role</label>
+                <select
+                  value={formData.role}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white"
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-gray-400 mb-2">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white"
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="suspended">Suspended</option>
+                </select>
+              </div>
+
+              <div className="flex gap-4 pt-6">
+                <button
+                  type="submit"
+                  className="flex-1 py-3 px-4 bg-indigo-500 text-white rounded-xl hover:opacity-90"
+                >
+                  Update User
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="flex-1 py-3 px-4 bg-gray-700 text-white rounded-xl hover:opacity-90"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

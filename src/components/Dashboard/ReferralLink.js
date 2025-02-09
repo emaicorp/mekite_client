@@ -2,20 +2,21 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { FaHandHoldingDollar } from "react-icons/fa6";
 import { FiCopy } from "react-icons/fi";
+import useUserData from '../../hooks/useUserData';
 
 function ReferralLink() {
-  const [userDetails, setUserDetails] = useState(null);
+  const [userDetail, setUserDetails] = useState(null);
+  const { userDetails, loading, error } = useUserData()
   const [copied, setCopied] = useState(false);
-
+  console.log("referrals user data",userDetails)
   useEffect(() => {
     const storedUserDetails = JSON.parse(localStorage.getItem("userDetails"));
     if (storedUserDetails) {
       setUserDetails(storedUserDetails);
     }
   }, []);
-
   const handleCopy = () => {
-    navigator.clipboard.writeText(userDetails.referralLink);
+    navigator.clipboard.writeText(referralLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -30,6 +31,7 @@ function ReferralLink() {
       </div>
     );
   }
+  const referralLink = `https://bitfluxcapital.online/register?ref=${userDetails.username}`
 
   return (
     <div className="flex min-h-screen bg-[#111827]">
@@ -61,7 +63,7 @@ function ReferralLink() {
                       Referral Commission
                     </p>
                     <p className="text-2xl sm:text-3xl font-bold text-white">
-                      ${userDetails.totalEarnings}
+                      ${userDetails.referralStats.totalCommission}
                     </p>
                   </div>
 
@@ -72,7 +74,7 @@ function ReferralLink() {
                     </p>
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-gray-900/50 p-4 rounded-xl">
                       <p className="text-white font-mono flex-grow break-all text-sm sm:text-base">
-                        {userDetails.referralLink}
+                        {referralLink}
                       </p>
                       <button
                         onClick={handleCopy}

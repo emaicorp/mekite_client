@@ -52,23 +52,23 @@ const Sidebar = () => {
       icon: RiSafeLine
     },
     {
-      path: "/bonus",
-      name: "Bonuses",
-      icon: RiGiftLine
-    },
-    {
       path: "/investment-plans",
       name: "Investment Plans",
       icon: RiStackLine
     },
-    {
-      path: "/admin-login",
-      name: "Management",
-      icon: RiSettings4Line
-    },
+    // {
+    //   path: "/admin-login",
+    //   name: "Management",
+    //   icon: RiSettings4Line
+    // },
     {
       path: "/approve",
       name: "Withdrawal",
+      icon: RiMoneyDollarCircleLine
+    },
+    {
+      path: "/wallets",
+      name: "Wallets",
       icon: RiMoneyDollarCircleLine
     }
   ];

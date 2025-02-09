@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
   // import Navbar from '../layout/Navbar';
-
+  import axios from 'axios';
+  import toast from 'react-hot-toast';
 function Register() {
   const navigate = useNavigate();
   const [upline, setUpline] = useState(null);
@@ -33,8 +34,7 @@ function Register() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL}auth/register`, {
-        method: 'POST',
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}auth/register`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -45,14 +45,18 @@ function Register() {
       
 
       if (response.ok) {
+        toast.success("Registration Successful")
         setResponseMessage('Registration successful. Redirecting to login...');
         setUpline(data.upline || 'N/A');
         setTimeout(() => navigate('/login'), 2000);
       } else {
+        toast.error("Registration Failed")
         setResponseMessage(data.message || 'Registration failed.');
       }
     } catch (error) {
       console.error('Error:', error);
+      toast.error("An error occurred while registering. Please try again.")
+
       setResponseMessage('An error occurred while registering. Please try again.');
     }
   };

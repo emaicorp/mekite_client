@@ -1,100 +1,81 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { getUserDetails } from '../Dashboard/localStorageUtils';
+import useUserData from '../../hooks/useUserData';
 import { IoPersonOutline } from "react-icons/io5";
-import { FaBitcoin, FaEthereum } from 'react-icons/fa';
-import { SiTether } from "react-icons/si";
 import Sidebar from './Sidebar';
 import LoadingSpinner from "../common/LoadingSpinner"
 
 function Profile() {
-  const [userActivity, setUserActivity] = useState(null);
-  const [formData, setFormData] = useState(() => {
-    const storedData = JSON.parse(localStorage.getItem('userWallets')) || {};
-    return {
-      bitcoinWallet: storedData.bitcoinWallet || '',
-      ethereumWallet: storedData.ethereumWallet || '',
-      usdtWallet: storedData.usdtWallet || '',
-      username: storedData.username || '',
-    };
+  const { userDetails, setUserData, loading } = useUserData();
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phoneNumber: '',
+    country: '',
+    walletAddresses: {
+      bitcoin: '',
+      ethereum: '',
+      usdt: '',
+    },
+    password: '',
+    recoveryQuestion: '',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    const fetchUserActivity = async () => {
-      const userDetails = getUserDetails();
-      if (!userDetails) {
-        setError('User is not logged in');
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          'https://mekite-btc.onrender.com/api/profile/activity',
-          {
-            headers: {
-              Authorization: `Bearer ${userDetails.token}`,
-              'user-id': userDetails.userId,
-            },
-          }
-        );
-
-        const activity = response.data.activity;
-        setUserActivity(activity);
-        setFormData((prevData) => ({
-          ...prevData,
-          bitcoinWallet: activity.bitcoinWallet || '',
-          ethereumWallet: activity.ethereumWallet || '',
-          usdtWallet: activity.usdtWallet || '',
-          username: activity.username || '',
-        }));
-      } catch (err) {
-        console.error('Error fetching user activity:', err);
-        setError('Unable to fetch user activity. Please try again later.');
-      }
-    };
-
-    fetchUserActivity();
-  }, []);
+    console.log("userData", userDetails)
+    if (userDetails) {
+      setFormData({
+        fullName: userDetails.fullName || '',
+        phoneNumber: userDetails.phoneNumber || '',
+        country: userDetails.country || '',
+        walletAddresses: {
+          bitcoin: userDetails.wallet?.bitcoin || '',
+          ethereum: userDetails.wallet?.ethereum || '',
+          usdt: userDetails.wallet?.usdt || '',
+        },
+        password: '', // Password should not be pre-filled for security reasons
+        recoveryQuestion: userDetails.recoveryQuestion || '',
+      });
+    }
+  }, [userDetails]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (name in formData.walletAddresses) {
+      setFormData((prevData) => ({
+        ...prevData,
+        walletAddresses: {
+          ...prevData.walletAddresses,
+          [name]: value,
+        },
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    const userDetails = getUserDetails();
-
-    if (!userDetails) {
-      setError('User is not logged in');
-      return;
-    }
 
     try {
       const response = await axios.put(
-        'https://mekite-btc.onrender.com/api/profile/update',
+        'profile/update',
         formData,
         {
           headers: {
             Authorization: `Bearer ${userDetails.token}`,
-            'user-id': userDetails.userId,
+            'user-id': userDetails._id,
           },
         }
       );
 
-      localStorage.setItem('userWallets', JSON.stringify(formData));
-      setUserActivity((prevActivity) => ({
-        ...prevActivity,
-        ...response.data.userDetails,
-      }));
-
+      setUserData(response.data.userDetails);
       setSuccess('Profile updated successfully');
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
@@ -104,10 +85,8 @@ function Profile() {
     }
   };
 
-  if (!userActivity) {
-    return (
-      <LoadingSpinner/>
-    );
+  if (loading) {
+    return <LoadingSpinner />;
   }
 
   return (
@@ -145,53 +124,36 @@ function Profile() {
 
                 <form onSubmit={handleFormSubmit} className="space-y-6">
                   <div>
-                    <label className="block text-gray-400 mb-2">Username</label>
+                    <label className="block text-gray-400 mb-2">Full Name</label>
                     <input
                       type="text"
-                      name="username"
-                      value={formData.username}
+                      name="fullName"
+                      value={formData.fullName}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
 
-                  <div className="relative">
-                    <label className="block text-gray-400 mb-2 flex items-center gap-2">
-                      <FaBitcoin className="text-[#F7931A]" />
-                      Bitcoin Wallet
-                    </label>
+
+                
+
+                  <div>
+                    <label className="block text-gray-400 mb-2">Password</label>
                     <input
-                      type="text"
-                      name="bitcoinWallet"
-                      value={formData.bitcoinWallet}
+                      type="password"
+                      name="password"
+                      value={formData.password}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
 
-                  <div className="relative">
-                    <label className="block text-gray-400 mb-2 flex items-center gap-2">
-                      <FaEthereum className="text-[#627EEA]" />
-                      Ethereum Wallet
-                    </label>
+                  <div>
+                    <label className="block text-gray-400 mb-2">Recovery Question</label>
                     <input
                       type="text"
-                      name="ethereumWallet"
-                      value={formData.ethereumWallet}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-
-                  <div className="relative">
-                    <label className="block text-gray-400 mb-2 flex items-center gap-2">
-                      <SiTether className="text-[#26A17B]" />
-                      USDT Wallet
-                    </label>
-                    <input
-                      type="text"
-                      name="usdtWallet"
-                      value={formData.usdtWallet}
+                      name="recoveryQuestion"
+                      value={formData.recoveryQuestion}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />

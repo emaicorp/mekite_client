@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import './config/i18n';
-import i18n from './config/i18n';
 import { useNetwork } from './hooks/useNetwork';
 import { useCountries } from './hooks/useCountries';
 import Header from './components/layout/Header';
 import AppRoutes from './routes/AppRoutes';
 import { Toaster } from 'react-hot-toast';
+import TawkToChat from './components/TawkToChat';
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -17,7 +16,6 @@ const App = () => {
 
   const handleLanguageChange = (language) => {
     setSelectedLanguage(language);
-    i18n.changeLanguage(language.toLowerCase());
   };
 
   return (
@@ -35,6 +33,7 @@ const App = () => {
           networkStatus={networkStatus}
         />
       </Router>
+      <TawkToChat />
     </>
   );
 };
