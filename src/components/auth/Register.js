@@ -42,10 +42,10 @@ function Register() {
         body: formData,
       });
       console.log(response)
-      const data = await response.json();
+      const data = await response;
       
 
-      if (response.ok) {
+      if (response.data.success) {
         toast.success("Registration Successful")
         setResponseMessage('Registration successful. Redirecting to login...');
         setUpline(data.upline || 'N/A');
