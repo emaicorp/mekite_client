@@ -34,11 +34,12 @@ function Register() {
     e.preventDefault();
 
     try {
+      console.log(formData)
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}auth/register`, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: formData,
       });
       console.log(response)
       const data = await response.json();
