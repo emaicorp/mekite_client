@@ -56,11 +56,11 @@ const Sidebar = () => {
       name: "Investment Plans",
       icon: RiStackLine
     },
-    // {
-    //   path: "/admin-login",
-    //   name: "Management",
-    //   icon: RiSettings4Line
-    // },
+    {
+      path: "/emails",
+      name: "Admin Emails",
+      icon: RiSettings4Line
+    },
     {
       path: "/approve",
       name: "Withdrawal",
