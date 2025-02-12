@@ -60,7 +60,7 @@ console.log("Deposite UserData" , userDetails)
     const isUsingBalance = selectedWallet === "balance";
 
     // Balance validation
-    if (isUsingBalance && amount > userDetails?.activeDeposit) {
+    if (isUsingBalance && amount > userDetails?.availableBalance) {
       setError("Insufficient balance in active deposit");
       toast.error("Insufficient balance in active deposit");
       return;
@@ -161,12 +161,12 @@ console.log("Deposite UserData" , userDetails)
                         ? "border-indigo-500 bg-indigo-500/10"
                         : "border-gray-800 hover:border-indigo-500/50"
                     } transition-all flex items-center gap-3`}
-                    disabled={userDetails?.activeDeposit < plan.minAmount}
+                    disabled={userDetails?.availableBalance < plan.minAmount}
                   >
                     <RiCoinFill className="text-purple-400" />
-                    <span className="text-white">Active Deposit</span>
+                    <span className="text-white text-sm">Available Balance</span>
                     <span className="text-sm text-gray-400 ml-auto">
-                      ${userDetails?.activeDeposit?.toFixed(2)} Available
+                      ${userDetails?.availableBalance?.toFixed(2)} Available
                     </span>
                   </button>
                   {wallets.map((wallet) => (
@@ -219,10 +219,10 @@ console.log("Deposite UserData" , userDetails)
                 <div className="p-4 rounded-xl bg-[#111827] border border-gray-800">
                   <div className="text-center text-purple-400 mb-4">
                     <RiCoinFill className="text-3xl mx-auto" />
-                    <p className="mt-2">Using Active Deposit Balance</p>
+                    <p className="mt-2">Using Available Balance</p>
                   </div>
                   <div className="text-center text-gray-300">
-                    Available: ${userDetails?.activeDeposit?.toFixed(2)}
+                    Available: ${userDetails?.availableBalance?.toFixed(2)}
                   </div>
                 </div>
               )}

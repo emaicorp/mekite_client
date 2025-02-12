@@ -118,7 +118,7 @@ function Dashboard() {
             {[
               {
                 title: "Available Balance",
-                value: userDetails.totalEarnings + userDetails.activeDeposit,
+                value: userDetails.availableBalance,
                 icon: FaWallet,
                 color: "from-blue-500 to-indigo-500",
                 bgLight: "from-blue-500/5 to-indigo-500/5"

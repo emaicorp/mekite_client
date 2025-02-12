@@ -7,9 +7,9 @@ import {
   RiCheckLine,
   RiCloseLine,
   RiDeleteBinLine,
-  RiCoinFill,
-  RiCoinLine,
-  RiExchangeDollarLine
+  RiCalendarLine,
+  RiWalletLine,
+  RiFileCopyLine
 } from 'react-icons/ri';
 import toast from 'react-hot-toast';
 import api from '../../utils/axios';
@@ -25,9 +25,9 @@ const AdminWithdrawals = () => {
 
   const fetchWithdrawals = async () => {
     try {
-      const response = await api.get('admin/currency-pendings');
+      const response = await api.get('/withdrawals/admin/all');
       if (response.data.success) {
-        setWithdrawals(response.data.users || []);
+        setWithdrawals(response.data.data || []);
       }
       setLoading(false);
     } catch (error) {
@@ -37,29 +37,20 @@ const AdminWithdrawals = () => {
     }
   };
 
-  const handleAction = async (userId, currency, action) => {
+  const handleAction = async (withdrawalId, action) => {
     try {
-      const endpoint = action === 'approve'
-        ? `/api/admin/approve-currency/${userId}`
-        : `/api/admin/reject-currency/${userId}`;
+      const endpoint = `withdrawals/admin/${withdrawalId}`;
       
-      const response = await api.post(endpoint, { currency });
+      const response = await api.patch(endpoint,{status:action});
       
       if (response.data.success) {
         toast.success(`Withdrawal ${action}ed successfully`);
         // Update local state
         setWithdrawals(prev =>
-          prev.map((user) =>
-            user.userId === userId
-              ? {
-                  ...user,
-                  [`${currency}Pending`]: action === 'approve' ? 0 : user[`${currency}Pending`],
-                }
-              : user
-          ).filter(user => 
-            user.bitcoinPending > 0 || 
-            user.ethereumPending > 0 || 
-            user.usdtPending > 0
+          prev.map(withdrawal =>
+            withdrawal._id === withdrawalId
+              ? { ...withdrawal, status: action === 'approve' ? 'approved' : 'rejected' }
+              : withdrawal
           )
         );
       }
@@ -69,33 +60,18 @@ const AdminWithdrawals = () => {
     }
   };
 
-  const handleDelete = async (userId, currency) => {
+  const handleDelete = async (withdrawalId) => {
     if (!window.confirm('Are you sure you want to delete this withdrawal request?')) {
       return;
     }
 
     try {
-      const response = await api.delete(`/api/admin/currency/${userId}`, {
-        data: { currency }
-      });
+      const response = await api.delete(`/withdrawals/admin/${withdrawalId}`);
       
       if (response.data.success) {
         toast.success('Withdrawal request deleted successfully');
         // Update local state
-        setWithdrawals(prev =>
-          prev.map((user) =>
-            user.userId === userId
-              ? {
-                  ...user,
-                  [`${currency}Pending`]: 0,
-                }
-              : user
-          ).filter(user => 
-            user.bitcoinPending > 0 || 
-            user.ethereumPending > 0 || 
-            user.usdtPending > 0
-          )
-        );
+        setWithdrawals(prev => prev.filter(withdrawal => withdrawal._id !== withdrawalId));
       }
     } catch (error) {
       toast.error('Error deleting withdrawal request');
@@ -103,17 +79,20 @@ const AdminWithdrawals = () => {
     }
   };
 
-  const getCurrencyIcon = (currency) => {
-    switch(currency) {
-      case 'bitcoin':
-        return <RiCoinFill className="text-yellow-500" />;
-      case 'ethereum':
-        return <RiCoinLine className="text-blue-500" />;
-      case 'usdt':
-        return <RiExchangeDollarLine className="text-green-500" />;
-      default:
-        return <RiMoneyDollarCircleLine className="text-gray-500" />;
-    }
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text)
+      .then(() => toast.success('Copied to clipboard!'))
+      .catch(() => toast.error('Failed to copy'));
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   if (loading) {
@@ -150,84 +129,122 @@ const AdminWithdrawals = () => {
 
           {/* Withdrawals Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {withdrawals.map((user) => (
-              <React.Fragment key={user.userId}>
-                {['bitcoin', 'ethereum', 'usdt'].map(currency => {
-                  const pendingAmount = user[`${currency}Pending`];
-                  if (pendingAmount <= 0) return null;
-
-                  return (
-                    <motion.div
-                      key={`${user.userId}-${currency}`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="relative p-[1px] rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500"
+            {withdrawals.map((withdrawal) => (
+              <motion.div
+                key={withdrawal._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative p-[1px] rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500"
+              >
+                <div className="bg-[#1a2234] rounded-2xl p-6">
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex items-center space-x-2">
+                      <RiMoneyDollarCircleLine className="text-indigo-400" />
+                      <h3 className="text-xl font-semibold text-white capitalize">
+                        {withdrawal.currency}
+                      </h3>
+                    </div>
+                    <button
+                      onClick={() => handleDelete(withdrawal._id)}
+                      className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-all"
                     >
-                      <div className="bg-[#1a2234] rounded-2xl p-6">
-                        <div className="flex justify-between items-start mb-6">
-                          <div className="flex items-center space-x-2">
-                            {getCurrencyIcon(currency)}
-                            <h3 className="text-xl font-semibold text-white capitalize">
-                              {currency}
-                            </h3>
-                          </div>
+                      <RiDeleteBinLine />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-3">
+                      <RiUserLine className="text-indigo-400" />
+                      <div>
+                        <p className="text-gray-400 text-sm">Username</p>
+                        <p className="text-white">{withdrawal.userId.username}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <RiMailLine className="text-indigo-400" />
+                      <div>
+                        <p className="text-gray-400 text-sm">Email</p>
+                        <p className="text-white">{withdrawal.userId.email}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <RiMoneyDollarCircleLine className="text-indigo-400" />
+                      <div className="flex-1">
+                        <p className="text-gray-400 text-sm">Amount</p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-white">${withdrawal.amount}</p>
                           <button
-                            onClick={() => handleDelete(user.userId, currency)}
-                            className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-all"
+                            onClick={() => handleCopy(withdrawal.amount.toString())}
+                            className="p-1.5 bg-indigo-500/10 text-indigo-400 rounded-lg hover:bg-indigo-500/20 transition-all"
+                            title="Copy amount"
                           >
-                            <RiDeleteBinLine />
+                            <RiFileCopyLine className="text-sm" />
                           </button>
                         </div>
+                      </div>
+                    </div>
 
-                        <div className="space-y-4">
-                          <div className="flex items-center space-x-3">
-                            <RiUserLine className="text-indigo-400" />
-                            <div>
-                              <p className="text-gray-400 text-sm">User</p>
-                              <p className="text-white">{user.fullName}</p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center space-x-3">
-                            <RiMailLine className="text-indigo-400" />
-                            <div>
-                              <p className="text-gray-400 text-sm">Email</p>
-                              <p className="text-white">{user.email}</p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center space-x-3">
-                            <RiMoneyDollarCircleLine className="text-indigo-400" />
-                            <div>
-                              <p className="text-gray-400 text-sm">Amount</p>
-                              <p className="text-white">{pendingAmount}</p>
-                            </div>
-                          </div>
-
-                          <div className="pt-4 border-t border-gray-800">
-                            <div className="flex space-x-3">
-                              <button
-                                onClick={() => handleAction(user.userId, currency, 'approve')}
-                                className="flex-1 py-2 px-4 bg-green-500/10 text-green-400 rounded-xl hover:bg-green-500/20 transition-all flex items-center justify-center space-x-2"
-                              >
-                                <RiCheckLine />
-                                <span>Approve</span>
-                              </button>
-                              <button
-                                onClick={() => handleAction(user.userId, currency, 'reject')}
-                                className="flex-1 py-2 px-4 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all flex items-center justify-center space-x-2"
-                              >
-                                <RiCloseLine />
-                                <span>Reject</span>
-                              </button>
-                            </div>
-                          </div>
+                    <div className="flex items-center space-x-3">
+                      <RiWalletLine className="text-indigo-400" />
+                      <div className="flex-1">
+                        <p className="text-gray-400 text-sm">Wallet</p>
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-white break-all">{withdrawal.walletAddress}</p>
+                          <button
+                            onClick={() => handleCopy(withdrawal.walletAddress)}
+                            className="p-1.5 bg-indigo-500/10 text-indigo-400 rounded-lg hover:bg-indigo-500/20 transition-all flex-shrink-0"
+                            title="Copy wallet address"
+                          >
+                            <RiFileCopyLine className="text-sm" />
+                          </button>
                         </div>
                       </div>
-                    </motion.div>
-                  );
-                })}
-              </React.Fragment>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <RiCalendarLine className="text-indigo-400" />
+                      <div>
+                        <p className="text-gray-400 text-sm">Date</p>
+                        <p className="text-white">{formatDate(withdrawal.createdAt)}</p>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-gray-800">
+                      <div className="flex space-x-3">
+                        {withdrawal.status === 'pending' && (
+                          <>
+                            <button
+                              onClick={() => handleAction(withdrawal._id, 'approved')}
+                              className="flex-1 py-2 px-4 bg-green-500/10 text-green-400 rounded-xl hover:bg-green-500/20 transition-all flex items-center justify-center space-x-2"
+                            >
+                              <RiCheckLine />
+                              <span>Approve</span>
+                            </button>
+                            <button
+                              onClick={() => handleAction(withdrawal._id, 'rejected')}
+                              className="flex-1 py-2 px-4 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all flex items-center justify-center space-x-2"
+                            >
+                              <RiCloseLine />
+                              <span>Reject</span>
+                            </button>
+                          </>
+                        )}
+                        {withdrawal.status !== 'pending' && (
+                          <div className={`flex-1 py-2 px-4 rounded-xl text-center ${
+                            withdrawal.status === 'approved' 
+                              ? 'bg-green-500/10 text-green-400' 
+                              : 'bg-red-500/10 text-red-400'
+                          }`}>
+                            Status: {withdrawal.status}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
             ))}
 
             {withdrawals.length === 0 && (

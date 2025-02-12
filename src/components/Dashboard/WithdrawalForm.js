@@ -1,27 +1,86 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FaBitcoin } from "react-icons/fa6";
 import { FaEthereum } from "react-icons/fa";
 import { IoWalletOutline } from "react-icons/io5";
 import { SiTether } from "react-icons/si";
-import { Link } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import WithdrawalReasons from "./WithdrawalReasons";
-import { getUserDetails } from './localStorageUtils';
-import axios from "axios";
+import  useUserData  from '../../hooks/useUserData';
+import api from "../../utils/axios";
+import toast from 'react-hot-toast';
 
 function WithdrawalForm() {
-  const [userDetails, setUserDetails] = useState(null);
+  const { userDetails } = useUserData();
   const [selectedCurrency, setSelectedCurrency] = useState("");
   const [withdrawalAmount, setWithdrawalAmount] = useState("");
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState(""); // "success" or "error"
+  const [messageType, setMessageType] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const storedUserDetails = JSON.parse(localStorage.getItem("userDetails"));
-    if (storedUserDetails) {
-      setUserDetails(storedUserDetails);
+  const handleCurrencySelect = (currency) => {
+    setSelectedCurrency(currency);
+    setWithdrawalAmount("");
+    setMessage("");
+  };
+
+  const getWalletAddress = (currency) => {
+    switch(currency) {
+      case 'bitcoin':
+        return userDetails.bitcoinWallet;
+      case 'ethereum':
+        return userDetails.ethereumWallet;
+      case 'usdt':
+        return userDetails.usdtWallet;
+      default:
+        return '';
     }
-  }, []);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setMessage("");
+    
+    try {
+      const amount = parseFloat(withdrawalAmount);
+      const availableBalance = userDetails.availableBalance;
+
+      if (!amount || isNaN(amount) || amount <= 0) {
+        throw new Error("Please enter a valid amount.");
+      }
+
+      if (amount > availableBalance) {
+        throw new Error(`Insufficient balance. Available: $${availableBalance}`);
+      }
+
+      const walletAddress = getWalletAddress(selectedCurrency);
+      if (!walletAddress) {
+        throw new Error(`Please add your ${selectedCurrency} wallet address in profile settings.`);
+      }
+
+      const response = await api.post('withdrawals/create', {
+        currency: selectedCurrency,
+        amount: amount,
+        walletAddress: walletAddress
+      });
+
+      setMessage(response.data.message);
+      setMessageType("success");
+      toast.success(response.data.message);
+      
+      // Reset form
+      setWithdrawalAmount("");
+      setSelectedCurrency("");
+
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      setMessage(errorMessage);
+      setMessageType("error");
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!userDetails) {
     return (
@@ -33,51 +92,6 @@ function WithdrawalForm() {
       </div>
     );
   }
-
-  const handleCurrencySelect = (currency) => {
-    setSelectedCurrency(currency);
-    setWithdrawalAmount("");
-    setMessage("");
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const userDetails = getUserDetails();
-    
-    if (!userDetails) {
-      setMessage("User not logged in. Please log in again.");
-      setMessageType("error");
-      return;
-    }
-
-    if (!withdrawalAmount || isNaN(withdrawalAmount) || withdrawalAmount <= 0) {
-      setMessage("Please enter a valid amount.");
-      setMessageType("error");
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        "https://mekite-btc.onrender.com/api/withdraw",
-        {
-          userId: userDetails.userId,
-          currency: selectedCurrency,
-          amount: withdrawalAmount,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userDetails.token}`,
-          },
-        }
-      );
-
-      setMessage(response.data.message);
-      setMessageType("success");
-    } catch (error) {
-      setMessage(error.response?.data?.message || "An error occurred");
-      setMessageType("error");
-    }
-  };
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-[#111827]">
@@ -97,36 +111,20 @@ function WithdrawalForm() {
             </div>
           </div>
 
-          {/* Balance Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8">
-            {/* Available Balance Card */}
+          {/* Balance Card */}
+          <div className="mb-8">
             <div className="relative">
               <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500">
                 <div className="relative bg-[#1a2234] rounded-2xl p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-gray-400 text-sm">Available Balance</p>
-                      <p className="text-xl sm:text-2xl font-bold text-white">${userDetails.availableBalance}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">
+                        ${userDetails.availableBalance}
+                      </p>
                     </div>
                     <div className="p-3 bg-green-500/10 rounded-xl">
                       <IoWalletOutline className="text-xl sm:text-2xl text-green-500" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Pending Balance Card */}
-            <div className="relative">
-              <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-yellow-500 to-orange-500">
-                <div className="relative bg-[#1a2234] rounded-2xl p-4 sm:p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-400 text-sm">Pending Balance</p>
-                      <p className="text-xl sm:text-2xl font-bold text-white">${userDetails.pendingBalance}</p>
-                    </div>
-                    <div className="p-3 bg-yellow-500/10 rounded-xl">
-                      <IoWalletOutline className="text-xl sm:text-2xl text-yellow-500" />
                     </div>
                   </div>
                 </div>
@@ -152,10 +150,11 @@ function WithdrawalForm() {
                       <FaBitcoin className="text-[#F7931A] text-xl sm:text-2xl" />
                       <div>
                         <p className="text-white text-sm sm:text-base">Bitcoin</p>
-                        <p className="text-gray-400 text-xs sm:text-sm">Available: {userDetails.bitcoinAvailable}</p>
+                        <p className="text-gray-400 text-xs sm:text-sm">
+                          Wallet: {userDetails.bitcoinWallet || 'Not set'}
+                        </p>
                       </div>
                     </div>
-                    <p className="text-red-400 text-xs sm:text-sm">Pending: {userDetails.bitcoinPending}</p>
                   </div>
 
                   {/* Ethereum Option */}
@@ -171,10 +170,11 @@ function WithdrawalForm() {
                       <FaEthereum className="text-[#627EEA] text-xl sm:text-2xl" />
                       <div>
                         <p className="text-white text-sm sm:text-base">Ethereum</p>
-                        <p className="text-gray-400 text-xs sm:text-sm">Available: {userDetails.ethereumAvailable}</p>
+                        <p className="text-gray-400 text-xs sm:text-sm">
+                          Wallet: {userDetails.ethereumWallet || 'Not set'}
+                        </p>
                       </div>
                     </div>
-                    <p className="text-red-400 text-xs sm:text-sm">Pending: {userDetails.ethereumPending}</p>
                   </div>
 
                   {/* USDT Option */}
@@ -190,10 +190,11 @@ function WithdrawalForm() {
                       <SiTether className="text-[#26A17B] text-xl sm:text-2xl" />
                       <div>
                         <p className="text-white text-sm sm:text-base">USDT</p>
-                        <p className="text-gray-400 text-xs sm:text-sm">Available: {userDetails.usdtAvailable}</p>
+                        <p className="text-gray-400 text-xs sm:text-sm">
+                          Wallet: {userDetails.usdtWallet || 'Not set'}
+                        </p>
                       </div>
                     </div>
-                    <p className="text-red-400 text-xs sm:text-sm">Pending: {userDetails.usdtPending}</p>
                   </div>
                 </div>
 
@@ -202,23 +203,36 @@ function WithdrawalForm() {
                   <form onSubmit={handleSubmit} className="mt-6 space-y-4 sm:space-y-6">
                     <div>
                       <label className="block text-gray-400 mb-2 text-sm sm:text-base">
-                        Withdrawal Amount ({selectedCurrency})
+                        Withdrawal Amount (USD)
                       </label>
                       <input
                         type="number"
                         value={withdrawalAmount}
                         onChange={(e) => setWithdrawalAmount(e.target.value)}
                         className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder={`Enter amount in ${selectedCurrency}`}
+                        placeholder="Enter amount in USD"
+                        min="0"
+                        step="any"
+                        required
                       />
+                      <p className="text-gray-400 text-xs mt-2">
+                        Available Balance: ${userDetails.availableBalance}
+                      </p>
                     </div>
 
                     <button
                       type="submit"
-                      className="w-full py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-xl hover:opacity-90 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                      disabled={isLoading || !getWalletAddress(selectedCurrency)}
+                      className="w-full py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-xl hover:opacity-90 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Submit Withdrawal
+                      {isLoading ? 'Processing...' : 'Submit Withdrawal'}
                     </button>
+
+                    {!getWalletAddress(selectedCurrency) && (
+                      <p className="text-red-400 text-sm text-center">
+                        Please add your {selectedCurrency} wallet address in profile settings before withdrawing.
+                      </p>
+                    )}
                   </form>
                 )}
 

@@ -27,7 +27,7 @@ const useUserData = () => {
     fetchUserData();
   }, []);
 
-  return { userDetails, loading, error };
+  return { userDetails, loading, setUserDetails, error };
 };
 
 export default useUserData;

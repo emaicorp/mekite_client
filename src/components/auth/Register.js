@@ -1,11 +1,24 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
   // import Navbar from '../layout/Navbar';
   import axios from 'axios';
   import toast from 'react-hot-toast';
 function Register() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [upline, setUpline] = useState(null);
+  
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const ref = params.get('ref');
+    if (ref) {
+      setFormData(prev => ({
+        ...prev,
+        referredBy: ref
+      }));
+    }
+  }, [location]);
+
   const [formData, setFormData] = useState({
     fullName: '',
     username: '',
@@ -21,6 +34,7 @@ function Register() {
   });
 
   const [responseMessage, setResponseMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -32,33 +46,48 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
 
+    setIsLoading(true);
     try {
-      console.log(formData)
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}auth/register`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: formData,
-      });
-      console.log(response)
-      const data = await response;
-      
+      // Add form validation
+      if (formData.password.length < 6) {
+        toast.error("Password must be at least 6 characters long");
+        return;
+      }
+
+      if (!formData.agreedToTerms) {
+        toast.error("You must agree to the Terms and Conditions");
+        return;
+      }
+      console.dir(formData, {depth: null});
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}/auth/register`, 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
 
       if (response.data.success) {
-        toast.success("Registration Successful")
+        toast.success("Registration Successful");
         setResponseMessage('Registration successful. Redirecting to login...');
-        setUpline(data.upline || 'N/A');
-        setTimeout(() => navigate('/login'), 2000);
+        console.dir(response.data, {depth: null});
+        setUpline(response.data.upline || 'N/A');
+        // setTimeout(() => navigate('/login'), 2000);
       } else {
-        toast.error("Registration Failed")
-        setResponseMessage(data.message || 'Registration failed.');
+        toast.error(response.data.message || "Registration Failed");
+        setResponseMessage(response.data.message || 'Registration failed.');
       }
     } catch (error) {
       console.error('Error:', error);
-      toast.error("An error occurred while registering. Please try again.")
-
-      setResponseMessage('An error occurred while registering. Please try again.');
+      const errorMessage = error.response?.data?.message || "An error occurred while registering. Please try again.";
+      toast.error(errorMessage);
+      setResponseMessage(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -181,9 +210,13 @@ function Register() {
 
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                disabled={isLoading}
+                className={`w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 
+                  ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:from-blue-700 hover:to-purple-700'} 
+                  text-white font-medium rounded-lg transition-all focus:outline-none focus:ring-2 
+                  focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900`}
               >
-                Create Account
+                {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>
 
               <div className="text-center mt-6">

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import useUserData from '../../hooks/useUserData';
 import { IoPersonOutline } from "react-icons/io5";
 import Sidebar from './Sidebar';
 import LoadingSpinner from "../common/LoadingSpinner"
+import api from '../../utils/axios';
+import toast from 'react-hot-toast';
+
 
 function Profile() {
-  const { userDetails, setUserData, loading } = useUserData();
+  const { userDetails, setUserDetails , loading } = useUserData();
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
@@ -18,24 +20,23 @@ function Profile() {
     },
     password: '',
     recoveryQuestion: '',
+    recoveryAnswer: '',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
+  const [isSaving, setIsSaving] = useState(false);
   useEffect(() => {
-    console.log("userData", userDetails)
     if (userDetails) {
       setFormData({
         fullName: userDetails.fullName || '',
-        phoneNumber: userDetails.phoneNumber || '',
-        country: userDetails.country || '',
         walletAddresses: {
-          bitcoin: userDetails.wallet?.bitcoin || '',
-          ethereum: userDetails.wallet?.ethereum || '',
-          usdt: userDetails.wallet?.usdt || '',
+          bitcoin: userDetails.bitcoinWallet || '',
+          ethereum: userDetails.ethereumWallet || '',
+          usdt: userDetails.usdtWallet || '',
         },
         password: '', // Password should not be pre-filled for security reasons
         recoveryQuestion: userDetails.recoveryQuestion || '',
+        recoveryAnswer: userDetails.recoveryAnswer || '',
       });
     }
   }, [userDetails]);
@@ -43,7 +44,7 @@ function Profile() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name in formData.walletAddresses) {
-      setFormData((prevData) => ({
+      setFormData(prevData => ({
         ...prevData,
         walletAddresses: {
           ...prevData.walletAddresses,
@@ -51,7 +52,7 @@ function Profile() {
         },
       }));
     } else {
-      setFormData((prevData) => ({
+      setFormData(prevData => ({
         ...prevData,
         [name]: value,
       }));
@@ -62,27 +63,19 @@ function Profile() {
     e.preventDefault();
     setError('');
     setSuccess('');
-
+    setIsSaving(true);
     try {
-      const response = await axios.put(
-        'profile/update',
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${userDetails.token}`,
-            'user-id': userDetails._id,
-          },
-        }
-      );
-
-      setUserData(response.data.userDetails);
-      setSuccess('Profile updated successfully');
+      const response = await api.patch(
+        'users/update-profile',
+        formData);
+      setUserDetails(response.data.data);
+      toast.success('Profile updated successfully');
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      console.error('Error updating profile:', err);
-      setError('Unable to update profile. Please try again later.');
+      toast.error('Unable to update profile. Please try again later.');
       setTimeout(() => setError(''), 3000);
     }
+    setIsSaving(false);
   };
 
   if (loading) {
@@ -134,8 +127,41 @@ function Profile() {
                     />
                   </div>
 
+                  <div>
+                    <label className="block text-gray-400 mb-2">Bitcoin Wallet Address</label>
+                    <input
+                      type="text"
+                      name="bitcoin"
+                      value={formData.walletAddresses.bitcoin}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter your Bitcoin wallet address"
+                    />
+                  </div>
 
-                
+                  <div>
+                    <label className="block text-gray-400 mb-2">Ethereum Wallet Address</label>
+                    <input
+                      type="text"
+                      name="ethereum"
+                      value={formData.walletAddresses.ethereum}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter your Ethereum wallet address"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-400 mb-2">USDT Wallet Address</label>
+                    <input
+                      type="text"
+                      name="usdt"
+                      value={formData.walletAddresses.usdt}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter your USDT wallet address"
+                    />
+                  </div>
 
                   <div>
                     <label className="block text-gray-400 mb-2">Password</label>
@@ -145,25 +171,40 @@ function Profile() {
                       value={formData.password}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter new password (leave empty to keep current)"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-400 mb-2">Recovery Question</label>
+                    <label className="block text-gray-400 mb-2">Security Question</label>
                     <input
                       type="text"
                       name="recoveryQuestion"
                       value={formData.recoveryQuestion}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter your security question"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-400 mb-2">Security Answer</label>
+                    <input
+                      type="text"
+                      name="recoveryAnswer"
+                      value={formData.recoveryAnswer}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter your security answer"
                     />
                   </div>
 
                   <button
                     type="submit"
                     className="w-full py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-xl hover:opacity-90 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    disabled={isSaving}
                   >
-                    Update Profile
+                    {isSaving ? 'Saving...' : 'Update Profile'}
                   </button>
                 </form>
               </div>
