@@ -28,6 +28,7 @@ import Bonuses from '../components/AdminDashbord.js/Bonuses';
 import ManageInvestmentPlans from '../components/AdminDashbord.js/ManageInvestmentPlans';
 import Wallets from '../components/AdminDashbord.js/wallets';
 import AdminEmails from '../components/AdminDashbord.js/AdminEmails';
+import Transactions from '../components/Dashboard/Transactions';
 const AppRoutes = ({ loading, setLoading, networkStatus }) => {
   const wrapComponent = (Component) => (
     <PageWrapper
@@ -55,7 +56,8 @@ const AppRoutes = ({ loading, setLoading, networkStatus }) => {
       <Route path="/admin-dashboard" element={wrapComponent(AdminDashboard)} />
       <Route path="/fund" element={wrapComponent(AdminFundUser)} />
       <Route path="/admin-login" element={wrapComponent(AdminLogin)} />
-      <Route path="/transactions" element={wrapComponent(WithdrawalForm)} />
+      <Route path="/withdrawal" element={wrapComponent(WithdrawalForm)} />
+      <Route path="/transactions" element={wrapComponent(Transactions)} />
       <Route path="/reset-password" element={wrapComponent(ResetPassword)} />
       <Route path="/forgot-password" element={wrapComponent(ForgotPassword)} />
       <Route path="/logout" element={wrapComponent(Logout)} />

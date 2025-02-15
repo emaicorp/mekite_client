@@ -17,8 +17,8 @@ const WithdrawalCard = ({ user, investment, onApprove, onReject, getTimeRemainin
             <RiUserLine className="text-2xl text-white" />
           </div>
           <div>
-            <h3 className="text-white font-semibold">{user.username}</h3>
-            <p className="text-gray-400 text-sm">ID: {user.userId}</p>
+            <h3 className="text-white font-semibold">{user?.username || 'N/A'}</h3>
+            <p className="text-gray-400 text-sm">ID: {user?.userId || 'N/A'}</p>
           </div>
         </div>
 

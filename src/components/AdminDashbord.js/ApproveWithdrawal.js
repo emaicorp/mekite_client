@@ -27,6 +27,7 @@ const AdminWithdrawals = () => {
     try {
       const response = await api.get('/withdrawals/admin/all');
       if (response.data.success) {
+        console.log(response)
         setWithdrawals(response.data.data || []);
       }
       setLoading(false);
@@ -157,7 +158,7 @@ const AdminWithdrawals = () => {
                       <RiUserLine className="text-indigo-400" />
                       <div>
                         <p className="text-gray-400 text-sm">Username</p>
-                        <p className="text-white">{withdrawal.userId.username}</p>
+                        <p className="text-white">{withdrawal.userId?.username || 'N/A'}</p>
                       </div>
                     </div>
 
@@ -165,7 +166,7 @@ const AdminWithdrawals = () => {
                       <RiMailLine className="text-indigo-400" />
                       <div>
                         <p className="text-gray-400 text-sm">Email</p>
-                        <p className="text-white">{withdrawal.userId.email}</p>
+                        <p className="text-white">{withdrawal.userId?.email || 'N/A'}</p>
                       </div>
                     </div>
 

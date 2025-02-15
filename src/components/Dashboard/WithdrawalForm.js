@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaBitcoin } from "react-icons/fa6";
 import { FaEthereum } from "react-icons/fa";
 import { IoWalletOutline } from "react-icons/io5";
@@ -8,6 +8,11 @@ import WithdrawalReasons from "./WithdrawalReasons";
 import  useUserData  from '../../hooks/useUserData';
 import api from "../../utils/axios";
 import toast from 'react-hot-toast';
+import { 
+  RiMoneyDollarCircleLine, 
+  RiDeleteBinLine,
+  RiFileCopyLine,
+} from 'react-icons/ri';
 
 function WithdrawalForm() {
   const { userDetails } = useUserData();
@@ -16,6 +21,8 @@ function WithdrawalForm() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [withdrawals, setWithdrawals] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
 
   const handleCurrencySelect = (currency) => {
     setSelectedCurrency(currency);
@@ -71,6 +78,7 @@ function WithdrawalForm() {
       // Reset form
       setWithdrawalAmount("");
       setSelectedCurrency("");
+      fetchWithdrawals();
 
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
@@ -79,6 +87,73 @@ function WithdrawalForm() {
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWithdrawals();
+  }, []);
+
+  const fetchWithdrawals = async () => {
+    try {
+      setLoadingHistory(true);
+      const response = await api.get('withdrawals/user');
+      
+      if (response.data.success) {
+        setWithdrawals(response.data.data);
+      }
+    } catch (error) {
+      toast.error('Error fetching withdrawals');
+      console.error('Fetch Error:', error);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const handleDeleteWithdrawal = async (withdrawalId) => {
+    if (!window.confirm('Are you sure you want to delete this withdrawal request?')) {
+      return;
+    }
+
+    try {
+      const response = await api.delete(`withdrawals/user/${withdrawalId}`);
+      
+      if (response.data.success) {
+        toast.success('Withdrawal request deleted successfully');
+        setWithdrawals(prev => prev.filter(w => w._id !== withdrawalId));
+      }
+    } catch (error) {
+      toast.error('Error deleting withdrawal request');
+      console.error('Delete Error:', error);
+    }
+  };
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text)
+      .then(() => toast.success('Copied to clipboard!'))
+      .catch(() => toast.error('Failed to copy'));
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return 'text-green-400 bg-green-400/10';
+      case 'pending':
+        return 'text-yellow-400 bg-yellow-400/10';
+      case 'rejected':
+        return 'text-red-400 bg-red-400/10';
+      default:
+        return 'text-gray-400 bg-gray-400/10';
     }
   };
 
@@ -249,8 +324,100 @@ function WithdrawalForm() {
             </div>
           </div>
 
-          {/* Withdrawal Reasons */}
-          <WithdrawalReasons />
+
+          {/* Add this after WithdrawalReasons */}
+          <div className="relative mb-8">
+            <div className="p-[1px] relative rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
+              <div className="relative bg-[#1a2234] rounded-2xl p-4 sm:p-6">
+                <h2 className="text-xl font-bold text-white mb-4">Withdrawal History</h2>
+                
+                {loadingHistory ? (
+                  <div className="flex justify-center py-8">
+                    <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left text-gray-400">
+                      <thead className="text-xs uppercase bg-gray-900/50">
+                        <tr>
+                          <th className="px-6 py-3 rounded-l-lg">Date</th>
+                          <th className="px-6 py-3">Amount</th>
+                          <th className="px-6 py-3">Currency</th>
+                          <th className="px-6 py-3">Wallet Address</th>
+                          <th className="px-6 py-3">Status</th>
+                          <th className="px-6 py-3 rounded-r-lg">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {withdrawals.map((withdrawal) => (
+                          <tr key={withdrawal._id} className="border-b border-gray-800">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {formatDate(withdrawal.createdAt)}
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-2">
+                                ${withdrawal.amount.toFixed(2)}
+                                <button
+                                  onClick={() => handleCopy(withdrawal.amount.toString())}
+                                  className="p-1 bg-indigo-500/10 text-indigo-400 rounded-lg hover:bg-indigo-500/20 transition-all"
+                                  title="Copy amount"
+                                >
+                                  <RiFileCopyLine className="text-sm" />
+                                </button>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 capitalize">
+                              {withdrawal.currency}
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-2">
+                                <span className="truncate max-w-[200px]">
+                                  {withdrawal.walletAddress}
+                                </span>
+                                <button
+                                  onClick={() => handleCopy(withdrawal.walletAddress)}
+                                  className="p-1 bg-indigo-500/10 text-indigo-400 rounded-lg hover:bg-indigo-500/20 transition-all"
+                                  title="Copy wallet address"
+                                >
+                                  <RiFileCopyLine className="text-sm" />
+                                </button>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${getStatusColor(withdrawal.status)}`}>
+                                {withdrawal.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              {withdrawal.status === 'pending' && (
+                                <button
+                                  onClick={() => handleDeleteWithdrawal(withdrawal._id)}
+                                  className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-all"
+                                  title="Delete withdrawal request"
+                                >
+                                  <RiDeleteBinLine />
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    {withdrawals.length === 0 && (
+                      <div className="text-center py-12">
+                        <RiMoneyDollarCircleLine className="text-4xl text-gray-600 mx-auto mb-4" />
+                        <p className="text-gray-400">No withdrawal requests found</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+                    {/* Withdrawal Reasons */}
+                    <WithdrawalReasons />
+
         </div>
       </div>
     </div>

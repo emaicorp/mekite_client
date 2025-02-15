@@ -46,7 +46,8 @@ function Sidebar() {
     { path: '/dashboard', name: 'Dashboard', icon: RiDashboardLine },
     { path: '/profile', name: 'Profile', icon: RiUserLine },
     { path: '/referral', name: 'Referral Panel', icon: RiTeamLine },
-    { path: '/transactions', name: 'Withdrawal', icon: RiWalletLine },
+    { path: '/withdrawal', name: 'Withdrawal', icon: RiWalletLine },
+    { path: '/transactions', name: 'Transactions', icon: RiWalletLine },
     { path: '/deposit', name: 'Deposit', icon: RiExchangeDollarLine },
   ];
 
