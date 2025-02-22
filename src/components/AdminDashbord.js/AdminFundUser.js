@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Sidebar from "./SideBard";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -9,61 +8,81 @@ import {
   RiArrowDownLine,
   RiWalletLine 
 } from "react-icons/ri";
+import api from '../../utils/axios';
+import toast from 'react-hot-toast';
 
 const AdminFundUser = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
-  const [currency, setCurrency] = useState("bitcoin");
   const [balanceChange, setBalanceChange] = useState(0);
   const [isWithdrawal, setIsWithdrawal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get(
-          "https://mekite-btc.onrender.com/api/all-users"
-        );
-        setUsers(response.data.users);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
     fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await api.get('/admin/users');
+      if (response.data.success) {
+        setUsers(response.data.users);
+      }
+    } catch (error) {
+      toast.error('Error fetching users');
+      console.error("Error fetching users:", error);
+    }
+  };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!selectedUser) {
-      alert("Please select a user.");
+      toast.error("Please select a user.");
+      return;
+    }
+
+    const user = users.find(u => u._id === selectedUser);
+    if (!user) {
+      toast.error("User not found");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await axios.put(
-        "https://mekite-btc.onrender.com/api/update-balance",
-        {
-          walletAddress: selectedUser,
-          currency,
-          balanceChange: parseFloat(balanceChange),
-          isWithdrawal,
-        }
-      );
-      setSuccessMessage(response.data.message);
-      setLoading(false);
-      
-      // Reset form
-      setSelectedUser("");
-      setBalanceChange(0);
-      setIsWithdrawal(false);
+      const formData = {
+        availableBalance: parseFloat(balanceChange),
+        balanceAction: isWithdrawal ? 'subtract' : 'add',
+        // amount: parseFloat(balanceChange),
+        email: user.email
+      };
 
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccessMessage(""), 3000);
+      const response = await api.patch(`admin/users/${selectedUser}`, formData);
+      
+      if (response.data.success) {
+        toast.success(isWithdrawal ? 'Balance deducted successfully' : 'Balance added successfully');
+        
+        // Update the local users state with the new balance
+        setUsers(prevUsers => prevUsers.map(u => {
+          if (u._id === selectedUser) {
+            return {
+              ...u,
+              availableBalance: isWithdrawal 
+                ? u.availableBalance - parseFloat(balanceChange)
+                : u.availableBalance + parseFloat(balanceChange)
+            };
+          }
+          return u;
+        }));
+
+        // Reset form
+        setSelectedUser("");
+        setBalanceChange(0);
+        setIsWithdrawal(false);
+      }
     } catch (error) {
+      toast.error(error.response?.data?.message || "An error occurred");
       console.error("Error updating balance:", error);
-      alert(error.response?.data?.message || "An error occurred.");
+    } finally {
       setLoading(false);
     }
   };
@@ -87,24 +106,10 @@ const AdminFundUser = () => {
                 Fund User Account
               </h1>
               <p className="text-gray-400">
-                Manage user balances and transactions
+                Manage user balances
               </p>
             </div>
           </div>
-
-          {/* Success Message */}
-          <AnimatePresence>
-            {successMessage && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400"
-              >
-                {successMessage}
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* Form */}
           <div className="relative p-[1px] rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
@@ -124,27 +129,10 @@ const AdminFundUser = () => {
                   >
                     <option value="">-- Select User --</option>
                     {users.map((user) => (
-                      <option key={user.walletAddress} value={user.walletAddress}>
-                        {user.fullName} ({user.walletAddress})
+                      <option key={user._id} value={user._id}>
+                        {user.username} ({user.email}) - Balance: ${user.availableBalance}
                       </option>
                     ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Currency Selection */}
-              <div>
-                <label className="block text-gray-400 mb-2">Select Currency</label>
-                <div className="relative">
-                  <RiWalletLine className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <select
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full bg-[#111827] text-white pl-10 pr-4 py-3 rounded-xl border border-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
-                  >
-                    <option value="bitcoin">Bitcoin</option>
-                    <option value="ethereum">Ethereum</option>
-                    <option value="usdt">USDT</option>
                   </select>
                 </div>
               </div>
@@ -160,6 +148,9 @@ const AdminFundUser = () => {
                     onChange={(e) => setBalanceChange(e.target.value)}
                     className="w-full bg-[#111827] text-white pl-10 pr-4 py-3 rounded-xl border border-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
                     placeholder="Enter amount"
+                    min="0"
+                    step="0.01"
+                    required
                   />
                 </div>
               </div>
@@ -176,7 +167,7 @@ const AdminFundUser = () => {
                   } flex items-center justify-center space-x-2 transition-all`}
                 >
                   <RiArrowUpLine />
-                  <span>Deposit</span>
+                  <span>Add Balance</span>
                 </button>
                 <button
                   type="button"
@@ -188,7 +179,7 @@ const AdminFundUser = () => {
                   } flex items-center justify-center space-x-2 transition-all`}
                 >
                   <RiArrowDownLine />
-                  <span>Withdrawal</span>
+                  <span>Deduct Balance</span>
                 </button>
               </div>
 
