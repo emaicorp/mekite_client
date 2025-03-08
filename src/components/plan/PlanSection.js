@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "../../nav/Navbar";
+import Navbar from "../layout/Navbar";
 import ChoosePlan from "./ChoosePlan";
 
 function PlanSection() {

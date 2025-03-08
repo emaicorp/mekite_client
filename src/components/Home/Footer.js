@@ -88,14 +88,12 @@ function Footer() {
                   href="mailto:admin@bitfluxcapital.com" 
                   className="hover:text-[#00df9a]"
                 >
-                  admin@bitfluxcapital.com
+                  bitfluxcapital@gmail.com
                 </a>
               </li>
               <li className="text-gray-300">
                 <span className="font-semibold">Address:</span><br />
-                4651 Westport Dr<br />
-                Mechanicsburg, PA,<br />
-                17055-4843 United States
+                Sydney Australia
               </li>
             </ul>
           </div>
