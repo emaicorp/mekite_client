@@ -4,7 +4,7 @@ const TawkToChat = () => {
   useEffect(() => {
     const script = document.createElement('script');
     script.async = true;
-    script.src = 'https://embed.tawk.to/67a90976825083258e128ca0/1ijm4pvom';
+    script.src = 'https://embed.tawk.to/67fbc122e6ecad190d7caef5/1ionml01r';
     script.charset = 'UTF-8';
     script.setAttribute('crossorigin', '*');
     
@@ -21,3 +21,5 @@ const TawkToChat = () => {
 };
 
 export default TawkToChat; 
+
+
