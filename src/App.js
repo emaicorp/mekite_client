@@ -5,8 +5,8 @@ import { useCountries } from './hooks/useCountries';
 import Header from './components/layout/Header';
 import AppRoutes from './routes/AppRoutes';
 import { Toaster } from 'react-hot-toast';
-// import TawkToChat from './components/TawkToChat';
-import SmartsuppChat from './components/smartSuppChat';
+import TawkToChat from './components/TawkToChat';
+// import SmartsuppChat from './components/smartSuppChat';
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ const App = () => {
           networkStatus={networkStatus}
         />
       </Router>
-      <SmartsuppChat />
+      <TawkToChat />
     </>
   );
 };
