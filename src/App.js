@@ -21,6 +21,7 @@ const App = () => {
 
   return (
     <>
+        <TawkToChat />
       <Toaster position="top-right" />
       <Router>
         <Header
@@ -34,7 +35,6 @@ const App = () => {
           networkStatus={networkStatus}
         />
       </Router>
-      <TawkToChat />
     </>
   );
 };
