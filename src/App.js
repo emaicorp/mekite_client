@@ -21,7 +21,7 @@ const App = () => {
 
   return (
     <>
-        {/* <TawkToChat /> */}
+        <TawkToChat />
       <Toaster position="top-right" />
       <Router>
         <Header
