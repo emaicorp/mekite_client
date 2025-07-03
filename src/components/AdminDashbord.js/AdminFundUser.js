@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./SideBard";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  RiUserLine, 
-  RiExchangeDollarLine, 
-  RiArrowUpLine, 
+import {
+  RiUserLine,
+  RiExchangeDollarLine,
+  RiArrowUpLine,
   RiArrowDownLine,
-  RiWalletLine 
+  RiWalletLine,
 } from "react-icons/ri";
-import api from '../../utils/axios';
-import toast from 'react-hot-toast';
+import api from "../../utils/axios";
+import toast from "react-hot-toast";
 
 const AdminFundUser = () => {
   const [users, setUsers] = useState([]);
@@ -17,6 +17,8 @@ const AdminFundUser = () => {
   const [balanceChange, setBalanceChange] = useState(0);
   const [isWithdrawal, setIsWithdrawal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [automationLoading, setAutomationLoading] = useState(false);
+  const [automationData, setAutomationData] = useState({});
 
   useEffect(() => {
     fetchUsers();
@@ -24,12 +26,12 @@ const AdminFundUser = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get('/admin/users');
+      const response = await api.get("/admin/users");
       if (response.data.success) {
         setUsers(response.data.users);
       }
     } catch (error) {
-      toast.error('Error fetching users');
+      toast.error("Error fetching users");
       console.error("Error fetching users:", error);
     }
   };
@@ -41,7 +43,7 @@ const AdminFundUser = () => {
       return;
     }
 
-    const user = users.find(u => u._id === selectedUser);
+    const user = users.find((u) => u._id === selectedUser);
     if (!user) {
       toast.error("User not found");
       return;
@@ -51,28 +53,34 @@ const AdminFundUser = () => {
     try {
       const formData = {
         availableBalance: parseFloat(balanceChange),
-        balanceAction: isWithdrawal ? 'subtract' : 'add',
+        balanceAction: isWithdrawal ? "subtract" : "add",
         // amount: parseFloat(balanceChange),
-        email: user.email
+        email: user.email,
       };
 
       const response = await api.patch(`admin/users/${selectedUser}`, formData);
-      
+
       if (response.data.success) {
-        toast.success(isWithdrawal ? 'Balance deducted successfully' : 'Balance added successfully');
-        
+        toast.success(
+          isWithdrawal
+            ? "Balance deducted successfully"
+            : "Balance added successfully"
+        );
+
         // Update the local users state with the new balance
-        setUsers(prevUsers => prevUsers.map(u => {
-          if (u._id === selectedUser) {
-            return {
-              ...u,
-              availableBalance: isWithdrawal 
-                ? u.availableBalance - parseFloat(balanceChange)
-                : u.availableBalance + parseFloat(balanceChange)
-            };
-          }
-          return u;
-        }));
+        setUsers((prevUsers) =>
+          prevUsers.map((u) => {
+            if (u._id === selectedUser) {
+              return {
+                ...u,
+                availableBalance: isWithdrawal
+                  ? u.availableBalance - parseFloat(balanceChange)
+                  : u.availableBalance + parseFloat(balanceChange),
+              };
+            }
+            return u;
+          })
+        );
 
         // Reset form
         setSelectedUser("");
@@ -86,11 +94,25 @@ const AdminFundUser = () => {
       setLoading(false);
     }
   };
+  // Automation function
+  async function handleAutomation() {
+    setAutomationLoading(true);
+    try {
+      const response = await api.get("/profit/distribute");
 
+      toast.success("Automation completed successfully");
+      setAutomationData(response.data.data);
+    } catch (error) {
+      toast.error("Error starting automation");
+      console.error("Error starting automation:", error);
+    } finally {
+      setAutomationLoading(false);
+    }
+  }
   return (
     <div className="min-h-screen bg-[#111827]">
       <Sidebar />
-      
+
       <div className="w-full md:pl-72 pt-16 md:pt-0">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -99,21 +121,38 @@ const AdminFundUser = () => {
           className="p-4 md:p-8 space-y-6"
         >
           {/* Header */}
-          <div className="relative p-6 rounded-2xl overflow-hidden bg-[#1a2234]">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-10"></div>
+          <div className="relative p-6 rounded-2xl overflow-hidden bg-[#1a2234] w-full flex items-center justify-between">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-10 "></div>
             <div className="relative">
               <h1 className="text-3xl font-bold text-white mb-2">
                 Fund User Account
               </h1>
-              <p className="text-gray-400">
-                Manage user balances
-              </p>
+              <p className="text-gray-400">Manage user balances</p>
             </div>
+            <button
+              onClick={handleAutomation}
+              className=" ml-auto bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-xl hover:from-indigo-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#1a2234] transition-all relative disabled:opacity-50 disabled:cursor-not-allowed p-3 cursor-pointer"
+            >
+              {automationLoading ? "Processing..." : "Start Automation"}
+            </button>
           </div>
-
+          {Object.entries(automationData).length > 0 && (
+            <div className="absolute top-0 right-0 left-0 bottom-0 bg-black/10 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs">
+              <div className="flex items-center justify-between bg-green-300 p-2 rounded-xl">
+                <h1 className="text-white text-lg font-bold">Automation Data</h1>
+                <button onClick={() => setAutomationData({})}>close</button>
+             
+              {Object.entries(automationData).map(([key, value]) => (
+                <div key={key}>
+                  <strong>{key}:</strong> {String(value)}
+                </div>
+              ))}
+               </div>
+            </div>
+          )}
           {/* Form */}
           <div className="relative p-[1px] rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
-            <form 
+            <form
               onSubmit={handleFormSubmit}
               className="relative bg-[#1a2234] rounded-2xl p-6 md:p-8 space-y-6"
             >
@@ -130,7 +169,8 @@ const AdminFundUser = () => {
                     <option value="">-- Select User --</option>
                     {users.map((user) => (
                       <option key={user._id} value={user._id}>
-                        {user.username} ({user.email}) - Balance: ${user.availableBalance}
+                        {user.username} ({user.email}) - Balance: $
+                        {user.availableBalance}
                       </option>
                     ))}
                   </select>
@@ -161,9 +201,9 @@ const AdminFundUser = () => {
                   type="button"
                   onClick={() => setIsWithdrawal(false)}
                   className={`flex-1 p-4 rounded-xl border ${
-                    !isWithdrawal 
-                      ? 'border-green-500 bg-green-500/10 text-green-400' 
-                      : 'border-gray-800 text-gray-400'
+                    !isWithdrawal
+                      ? "border-green-500 bg-green-500/10 text-green-400"
+                      : "border-gray-800 text-gray-400"
                   } flex items-center justify-center space-x-2 transition-all`}
                 >
                   <RiArrowUpLine />
@@ -173,9 +213,9 @@ const AdminFundUser = () => {
                   type="button"
                   onClick={() => setIsWithdrawal(true)}
                   className={`flex-1 p-4 rounded-xl border ${
-                    isWithdrawal 
-                      ? 'border-red-500 bg-red-500/10 text-red-400' 
-                      : 'border-gray-800 text-gray-400'
+                    isWithdrawal
+                      ? "border-red-500 bg-red-500/10 text-red-400"
+                      : "border-gray-800 text-gray-400"
                   } flex items-center justify-center space-x-2 transition-all`}
                 >
                   <RiArrowDownLine />

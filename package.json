@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^13.2.1",
     "ajv": "^8.12.0",
     "axios": "^1.7.9",
+    "caniuse-lite": "^1.0.30001726",
     "chart.js": "^3.9.1",
     "cra-template": "1.2.0",
     "date-fns": "^4.1.0",
