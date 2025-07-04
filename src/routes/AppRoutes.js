@@ -29,6 +29,8 @@ import ManageInvestmentPlans from '../components/AdminDashbord.js/ManageInvestme
 import Wallets from '../components/AdminDashbord.js/wallets';
 import AdminEmails from '../components/AdminDashbord.js/AdminEmails';
 import Transactions from '../components/Dashboard/Transactions';
+import DeductActive from '../components/AdminDashbord.js/DeductActive';
+
 const AppRoutes = ({ loading, setLoading, networkStatus }) => {
   const wrapComponent = (Component) => (
     <PageWrapper
@@ -68,6 +70,8 @@ const AppRoutes = ({ loading, setLoading, networkStatus }) => {
       <Route path="/investment-plans" element={wrapComponent(ManageInvestmentPlans)} />
       <Route path="/wallets" element={wrapComponent(Wallets)} />
       <Route path="/emails" element={wrapComponent(AdminEmails)} />
+      <Route path="/active-deposite" element={wrapComponent(DeductActive)} />
+
     </Routes>
   );
 };

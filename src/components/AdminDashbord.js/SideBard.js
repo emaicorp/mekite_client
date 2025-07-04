@@ -52,6 +52,11 @@ const Sidebar = () => {
       icon: RiSafeLine
     },
     {
+      path: "/active-deposite",
+      name: "Active Deposit",
+      icon: RiSafeLine
+    },
+    {
       path: "/investment-plans",
       name: "Investment Plans",
       icon: RiStackLine

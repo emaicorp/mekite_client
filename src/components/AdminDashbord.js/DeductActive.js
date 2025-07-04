@@ -1,102 +1,176 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { FaCopy } from 'react-icons/fa';
+import api from '../../utils/axios';
+import toast from 'react-hot-toast';
+import Sidebar from './SideBard';
 
 function DeductActive() {
-  const [username, setUsername] = useState('');
-  const [amount, setAmount] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
   const [users, setUsers] = useState([]);
-  const [copySuccess, setCopySuccess] = useState('');
-
-  const baseURL = 'https://mekite-btc.onrender.com/api'; // Replace with your API's base URL
-
-  const fetchUsers = async () => {
-    try {
-      const response = await axios.get(`${baseURL}/all-users`);
-      setUsers(response.data.users);
-    } catch (err) {
-      setError('Failed to fetch users.');
-    }
-  };
-
-  const deductDeposit = async () => {
-    try {
-      const response = await axios.post(`${baseURL}/deduct-deposit`, {
-        username,
-        amount,
-      });
-      setMessage(response.data.message);
-      setError('');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error deducting from deposit.');
-      setMessage('');
-    }
-  };
-
-  const copyUsername = (username) => {
-    navigator.clipboard.writeText(username)
-      .then(() => setCopySuccess('Username copied to clipboard!'))
-      .catch(() => setCopySuccess('Failed to copy username.'));
-  };
+  const [selectedUser, setSelectedUser] = useState('');
+  const [amount, setAmount] = useState('');
+  const [reason, setReason] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isDeduct, setIsDeduct] = useState(true); // true: deduct, false: fund
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
+  const fetchUsers = async () => {
+    try {
+      const response = await api.get('/admin/users');
+      if (response.data.success) {
+        setUsers(response.data.users);
+      }
+    } catch (error) {
+      toast.error('Error fetching users');
+      console.error('Error fetching users:', error);
+    }
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedUser) {
+      toast.error('Please select a user.');
+      return;
+    }
+    if (!amount || isNaN(parseFloat(amount))) {
+      toast.error('Please enter a valid amount.');
+      return;
+    }
+    if (isDeduct && !reason) {
+      toast.error('Please provide a reason for deduction.');
+      return;
+    }
+    setLoading(true);
+    try {
+      if (isDeduct) {
+        // Deduct from active deposit
+        const payload = {
+          userId: selectedUser,
+          amount: parseFloat(amount),
+          reason,
+        };
+        const response = await api.post('/admin/deduct-deposit', payload);
+        if (response.data.success) {
+          toast.success('Deposit deducted successfully');
+        }
+      } else {
+        // Fund active deposit
+        const payload = {
+          userId: selectedUser,
+          amount: parseFloat(amount),
+        };
+        const response = await api.put('/admin/fund-active-deposit', payload);
+        if (response.data.success) {
+          toast.success('Deposit funded successfully');
+        }
+      }
+      // Reset form
+      setSelectedUser('');
+      setAmount('');
+      setReason('');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'An error occurred');
+      console.error('Error updating deposit:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="container mx-auto p-6 bg-white rounded shadow-md mt-8">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Deduct from Active Deposit</h1>
+    <div className="min-h-screen bg-[#111827]">
+      <Sidebar />
 
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Deduct from Active Deposit</h2>
-        <div className="space-y-4">
-          <input
-            type="text"
-            placeholder="Username"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Amount"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-          <button
-            className="w-full px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
-            onClick={deductDeposit}
-          >
-            Deduct from Deposit
-          </button>
-        </div>
-      </div>
-
-      {/* Messages */}
-      {message && <p className="text-green-500">{message}</p>}
-      {error && <p className="text-red-500">{error}</p>}
-      {copySuccess && <p className="text-green-500">{copySuccess}</p>}
-
-      {/* Users List */}
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Users List</h2>
-        <div className="space-y-4">
-          {users.map((user, index) => (
-            <div key={index} className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm">
-              <div>
-                <p className="font-medium">Username: {user.username}</p>
-              </div>
+      <div className="w-full md:pl-72 pt-16 md:pt-0">
+        <div className="p-4 md:p-8 space-y-6">
+          {/* Header */}
+          <div className="relative p-6 rounded-2xl overflow-hidden bg-[#1a2234] w-full flex items-center justify-between">
+            {/* <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-10 "></div> */}
+            <div className="relative">
+              <h1 className="text-3xl font-bold text-white mb-2">
+                {isDeduct ? 'Deduct from Active Deposit' : 'Fund Active Deposit'}
+              </h1>
+              <p className="text-gray-400">Manage user active deposits</p>
+            </div>
+            <div className="flex gap-2">
               <button
-                className="ml-4 text-blue-500 hover:text-blue-700 transition duration-150"
-                onClick={() => copyUsername(user.username)}
+                onClick={() => setIsDeduct(false)}
+                className={`px-4 py-2 rounded-xl font-medium transition-all ${!isDeduct ? 'bg-green-500 text-white' : 'bg-gray-800 text-gray-400'}`}
               >
-                <FaCopy />
+                Fund
+              </button>
+              <button
+                onClick={() => setIsDeduct(true)}
+                className={`px-4 py-2 rounded-xl font-medium transition-all ${isDeduct ? 'bg-red-500 text-white' : 'bg-gray-800 text-gray-400'}`}
+              >
+                Deduct
               </button>
             </div>
-          ))}
+          </div>
+          {/* Form */}
+          <div className="relative p-[1px] rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500">
+            <form
+              onSubmit={handleFormSubmit}
+              className="relative bg-[#1a2234] rounded-2xl p-6 md:p-8 space-y-6"
+            >
+              {/* User Selection */}
+              <div>
+                <label className="block text-gray-400 mb-2">Select User</label>
+                <div className="relative">
+                  <select
+                    value={selectedUser}
+                    onChange={(e) => setSelectedUser(e.target.value)}
+                    className="w-full bg-[#111827] text-white pl-4 pr-4 py-3 rounded-xl border border-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                  >
+                    <option value="">-- Select User --</option>
+                    {users.map((user) => (
+                      <option key={user._id} value={user._id}>
+                        {user.username} ({user.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              {/* Amount Input */}
+              <div>
+                <label className="block text-gray-400 mb-2">Amount</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="w-full bg-[#111827] text-white pl-4 pr-4 py-3 rounded-xl border border-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                    placeholder="Enter amount"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+              </div>
+              {/* Reason Input (only for deduction) */}
+              {isDeduct && (
+                <div>
+                  <label className="block text-gray-400 mb-2">Reason</label>
+                  <input
+                    type="text"
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    className="w-full bg-[#111827] text-white pl-4 pr-4 py-3 rounded-xl border border-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                    placeholder="Enter reason for deduction"
+                    required={isDeduct}
+                  />
+                </div>
+              )}
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-4 px-6 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-xl hover:from-indigo-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#1a2234] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Processing...' : isDeduct ? 'Deduct from Deposit' : 'Fund Active Deposit'}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
