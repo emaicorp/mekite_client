@@ -4,7 +4,7 @@ const SmartsuppChat = () => {
   useEffect(() => {
     // Initialize Smartsupp
     window._smartsupp = window._smartsupp || {};
-    window._smartsupp.key = '3e89b380b632ad71f9760f64108a4c0f59a70af0';
+    window._smartsupp.key = 'f3a250723d490b0fcf625eb82afc6e46043e315b';
     
     // Load the Smartsupp script
     const loadSmartsupp = () => {
