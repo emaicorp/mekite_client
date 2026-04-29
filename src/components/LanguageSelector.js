@@ -1,12 +1,21 @@
 import React from 'react';
 
 function LanguageSelector({ buttonStyle, selectStyle }) {
-  const changeLanguage = (languageCode) => {
+  const changeLanguage = (languageCode, attemptsLeft = 10) => {
     try {
       const select = document.querySelector('.goog-te-combo');
       if (select) {
         select.value = languageCode;
-        select.dispatchEvent(new Event('change'));
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+        return;
+      }
+
+      if (attemptsLeft > 0) {
+        window.setTimeout(() => {
+          changeLanguage(languageCode, attemptsLeft - 1);
+        }, 300);
+      } else {
+        console.warn('Google Translate widget is not ready yet.');
       }
     } catch (error) {
       console.error('Language change error:', error);
