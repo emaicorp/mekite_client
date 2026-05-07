@@ -124,10 +124,10 @@ function ContactSection() {
                       <h3 className="text-xl font-semibold text-white">Visit Us</h3>
                     </div>
                     <p className="text-gray-400 mb-6">
-                      Our office is located in Sydney, Australia
+                      Our office is located in 1 Malmesbury Road, Cheadle Hulme, Cheadle, Greater Manchester, England, SK8 7QH
                     </p>
                     <a
-                      href="https://www.google.com/maps?q=Sydney,Australia"
+                      href="https://www.google.com/maps?q=1+Malmesbury+Road,+Cheadle+Hulme,+Cheadle,+Greater+Manchester,+England,+SK8+7QH"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block w-full py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:opacity-90 transition-opacity text-center"
@@ -177,8 +177,8 @@ function ContactSection() {
                   <h3 className="text-2xl font-bold text-white mb-6">Our Location</h3>
                   <div className="w-full h-[400px] rounded-xl overflow-hidden">
                     <iframe
-                      title="Australia Location"
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13222.523593008153!2d151.2071148!3d-33.8688199!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12ae2f98cfd9b7%3A0x5b3f733c1baf62d4!2sSydney%2C%20Australia!5e0!3m2!1sen!2sau!4v1692569461728!5m2!1sen!2sau"
+                      title="Our Location"
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13222.523593008153!2d151.2071148!3d-33.8688199!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12ae2f98cfd9b7%3A0x5b3f733c1baf62d4!2s1+Malmesbury+Road%2C+Cheadle+Hulme%2C+Cheadle%2C+Greater+Manchester%2C+England%2C+SK8+7QH!5e0!3m2!1sen!2sau!4v1692569461728!5m2!1sen!2sau"
                       width="100%"
                       height="100%"
                       style={{ border: 0 }}

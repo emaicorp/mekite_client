@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import LanguageSelector from '../LanguageSelector';
 
 function Footer() {
- 
+ const year = new Date().getFullYear()
 
   return (
     <footer className="bg-black text-white py-16">
@@ -25,7 +25,7 @@ function Footer() {
               />
             </div>
             <p className="text-sm text-gray-400">
-              Copyright ©2024 All rights reserved | Bitfluxcapital
+              Copyright ©{year} All rights reserved | Bitfluxcapital
             </p>
           </div>
 
@@ -66,15 +66,15 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/certificate" className="text-gray-300 hover:text-[#00df9a]">
+                <Link to="https://find-and-update.company-information.service.gov.uk/company/13751519" className="text-gray-300 hover:text-[#00df9a]">
                   Certificate
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/whitepaper" className="text-gray-300 hover:text-[#00df9a]">
                   Whitepaper
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -93,7 +93,7 @@ function Footer() {
               </li>
               <li className="text-gray-300">
                 <span className="font-semibold">Address:</span><br />
-                Sydney Australia
+                1 Malmesbury Road, Cheadle Hulme, Cheadle, Greater Manchester, England, SK8 7QH
               </li>
             </ul>
           </div>
