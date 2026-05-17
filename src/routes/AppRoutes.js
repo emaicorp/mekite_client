@@ -30,6 +30,7 @@ import Wallets from '../components/AdminDashbord.js/wallets';
 import AdminEmails from '../components/AdminDashbord.js/AdminEmails';
 import Transactions from '../components/Dashboard/Transactions';
 import DeductActive from '../components/AdminDashbord.js/DeductActive';
+import Certificate from '../components/Home/Certificate';
 
 const AppRoutes = ({ loading, setLoading, networkStatus }) => {
   const wrapComponent = (Component) => (
@@ -45,6 +46,7 @@ const AppRoutes = ({ loading, setLoading, networkStatus }) => {
     <Routes>
       <Route path="/" element={wrapComponent(Home)} />
       <Route path="/about" element={wrapComponent(AboutHeroSection)} />
+      <Route path="/certificate" element={wrapComponent(Certificate)} />
       <Route path="/contact" element={wrapComponent(ContactHeroSection)} />
       <Route path="/plan" element={wrapComponent(PlanSection)} />
       <Route path="/terms" element={wrapComponent(TermsAndConditions)} />

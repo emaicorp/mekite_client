@@ -61,14 +61,14 @@ function Footer() {
             <h3 className="text-[#00df9a] font-bold mb-6 uppercase">Legal</h3>
             <ul className="space-y-4">
               <li>
-                <Link to="/buy-crypto" className="text-gray-300 hover:text-[#00df9a]">
-                  Buy Crypto Here
+                <Link to="/certificate" className="text-gray-300 hover:text-[#00df9a]">
+                  Certificate
                 </Link>
               </li>
               <li>
-                <Link to="https://find-and-update.company-information.service.gov.uk/company/13751519" className="text-gray-300 hover:text-[#00df9a]">
-                  Certificate
-                </Link>
+                <a href="https://find-and-update.company-information.service.gov.uk/company/13751519" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#00df9a]">
+                  Companies House
+                </a>
               </li>
               {/* <li>
                 <Link to="/whitepaper" className="text-gray-300 hover:text-[#00df9a]">
