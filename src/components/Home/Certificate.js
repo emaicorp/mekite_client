@@ -50,7 +50,7 @@ function Certificate() {
                 <span className="text-[#00df9a] mr-3 font-bold">•</span>
                 <div>
                   <p className="font-semibold text-white">Company Number</p>
-                  <p>13751519</p>
+                  <p>6647065</p>
                 </div>
               </li>
               <li className="flex items-start">
@@ -120,7 +120,7 @@ function Certificate() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="https://find-and-update.company-information.service.gov.uk/company/13751519"
+              href="https://find-and-update.company-information.service.gov.uk/company/6647065"
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-3 bg-[#00df9a] text-black font-bold rounded-lg hover:bg-white transition-all duration-300 text-center"
@@ -172,7 +172,7 @@ function Certificate() {
         {/* Footer CTA */}
         <div className="mt-16 text-center">
           <p className="text-gray-400 mb-6 text-sm">
-            Registered and verified under Companies House • Company Number: 13751519
+            Registered and verified under Companies House • Company Number: 6647065
           </p>
           {/* <p className="text-gray-500 text-xs">
             © {year} Bitfluxcapital. All rights reserved. This certificate validates 

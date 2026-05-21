@@ -65,11 +65,11 @@ function Footer() {
                   Certificate
                 </Link>
               </li>
-              <li>
-                <a href="https://find-and-update.company-information.service.gov.uk/company/13751519" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#00df9a]">
+              {/* <li>
+                <a href="https://find-and-update.company-information.service.gov.uk/company/6647065" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#00df9a]">
                   Companies House
                 </a>
-              </li>
+              </li> */}
               {/* <li>
                 <Link to="/whitepaper" className="text-gray-300 hover:text-[#00df9a]">
                   Whitepaper
